@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const MOTION_TAGS = {
   div: motion.div,
@@ -15,19 +15,12 @@ const INITIAL = { opacity: 0, filter: "blur(20px)", y: 40 };
 const ANIMATE = { opacity: 1, filter: "blur(0px)", y: 0 };
 
 export function FadeUp({ as = "div", delay = 0, className, children, ...props }) {
-  // Read after mount, not during render: `initial`/`animate` must stay
-  // identical between server and client on the first paint, or a visitor
-  // with OS-level reduced motion enabled gets a hydration mismatch (the
-  // server always renders the full-motion branch since it has no window).
-  const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReduceMotion(query.matches);
-    const onChange = (event) => setReduceMotion(event.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
+  // initial/animate must stay identical between server and client on the
+  // first paint, or a visitor with OS-level reduced motion enabled gets a
+  // hydration mismatch (the server always renders the full-motion branch
+  // since it has no window). useReducedMotion() resolves to `false` on
+  // both server and client's first render, so only `transition` varies.
+  const reduceMotion = useReducedMotion();
 
   const MotionTag = MOTION_TAGS[as] ?? motion.div;
   const delaySeconds = delay / 1000;
