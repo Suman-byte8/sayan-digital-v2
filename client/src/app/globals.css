@@ -128,6 +128,13 @@ html.custom-cursor-active * {
   cursor: none !important;
 }
 
+/* Lenis drives smooth scrolling via JS; native CSS smooth-scroll must stay
+   off or the two fight each other on anchor jumps. */
+html.lenis,
+html.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);

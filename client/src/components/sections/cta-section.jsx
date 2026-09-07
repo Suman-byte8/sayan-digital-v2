@@ -2,23 +2,16 @@ import { ArrowRight, MessageCircle } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
+import { CtaHoleBackground } from "@/components/sections/cta-hole-background";
 
 export function CtaSection() {
   return (
     <section className="section-padding bg-background">
       <div className="container-premium">
-        <Reveal className="relative overflow-hidden rounded-3xl bg-linear-to-br from-(--brand) via-(--brand) to-[#0c2456] px-8 py-16 text-center shadow-premium-lg sm:px-16 sm:py-20">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.06]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-              backgroundSize: "28px 28px",
-            }}
-            aria-hidden
-          />
+        <Reveal className="relative overflow-hidden rounded-3xl bg-[#0c2456] px-8 py-16 text-center shadow-premium-lg sm:px-16 sm:py-20">
+          <CtaHoleBackground />
 
-          <div className="relative mx-auto max-w-2xl">
+          <div className="relative z-10 mx-auto max-w-2xl">
             <h2 className="font-serif text-4xl font-light tracking-[-0.01em] text-white sm:text-5xl">
               Turn Your Ideas Into Something <em className="italic">You Can Hold</em>.
             </h2>

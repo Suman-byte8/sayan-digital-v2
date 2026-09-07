@@ -1,5 +1,6 @@
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { CustomCursor } from "@/components/motion/custom-cursor";
+import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -25,9 +26,10 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${cormorant.variable} ${inter.variable} scroll-smooth antialiased`}
+      className={`${cormorant.variable} ${inter.variable} antialiased`}
     >
-      <body className="flex min-h-dvh flex-col bg-background">
+      <body className="flex min-h-dvh flex-col bg-background" suppressHydrationWarning>
+        <SmoothScroll />
         <CustomCursor />
         {children}
       </body>
