@@ -13,10 +13,10 @@ export function CustomCursor() {
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const ringX = useSpring(x, { stiffness: 300, damping: 30, mass: 0.6 });
-  const ringY = useSpring(y, { stiffness: 300, damping: 30, mass: 0.6 });
-  const dotX = useSpring(x, { stiffness: 800, damping: 40, mass: 0.3 });
-  const dotY = useSpring(y, { stiffness: 800, damping: 40, mass: 0.3 });
+  const ringX = useSpring(x, { stiffness: 550, damping: 32, mass: 0.4 });
+  const ringY = useSpring(y, { stiffness: 550, damping: 32, mass: 0.4 });
+  const dotX = useSpring(x, { stiffness: 1000, damping: 40, mass: 0.2 });
+  const dotY = useSpring(y, { stiffness: 1000, damping: 40, mass: 0.2 });
 
   useEffect(() => {
     if (!finePointer) return;
@@ -57,7 +57,7 @@ export function CustomCursor() {
         className="pointer-events-none fixed top-0 left-0 z-9999 rounded-full bg-white mix-blend-difference"
         style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{ width: isHover ? 0 : 6, height: isHover ? 0 : 6, opacity: isHover ? 0 : 1 }}
-        transition={{ duration: 0.2, ease: "easeOut" }}
+        transition={{ duration: 0.12, ease: "easeOut" }}
       />
       <motion.div
         className="pointer-events-none fixed top-0 left-0 z-9999 rounded-full border border-white mix-blend-difference"
@@ -67,7 +67,7 @@ export function CustomCursor() {
           height: isText ? 40 : isHover ? 64 : 28,
           backgroundColor: isHover ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0)",
         }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
+        transition={{ duration: 0.18, ease: "easeOut" }}
       />
     </>
   );
