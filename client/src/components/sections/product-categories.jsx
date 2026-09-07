@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
@@ -20,9 +21,11 @@ export function ProductCategories() {
           </div>
           <Reveal delay={160}>
             <Magnetic strength={0.3}>
-              <Button variant="outline" className="gap-2 rounded-full" data-cursor="hover">
-                View All Products
-                <ArrowRight size={16} />
+              <Button variant="outline" className="gap-2 rounded-full" data-cursor="hover" asChild>
+                <Link href="/products">
+                  View All Products
+                  <ArrowRight size={16} />
+                </Link>
               </Button>
             </Magnetic>
           </Reveal>

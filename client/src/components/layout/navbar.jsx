@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Menu, ShoppingBag, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FadeUp } from "@/components/motion/fade-up";
@@ -8,26 +8,11 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 import { NAV_LINKS, STATIONARY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
+import { useNavbarSolid } from "@/hooks/use-navbar-solid";
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const sentinel = document.getElementById("hero-end-sentinel");
-    if (!sentinel) return;
-
-    // isIntersecting alone can't tell "not yet scrolled to" (sentinel below
-    // the viewport) from "already scrolled past" (sentinel above it) — both
-    // report false. boundingClientRect.top's sign disambiguates.
-    const observer = new IntersectionObserver(
-      ([entry]) => setScrolled(entry.boundingClientRect.top < 0),
-      { threshold: 0 }
-    );
-    observer.observe(sentinel);
-
-    return () => observer.disconnect();
-  }, []);
+  const scrolled = useNavbarSolid();
 
   // The mobile menu panel drops an opaque light background under the nav
   // bar, so the "transparent over hero" white-text treatment must not
