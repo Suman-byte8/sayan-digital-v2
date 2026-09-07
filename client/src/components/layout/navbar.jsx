@@ -30,7 +30,7 @@ export function Navbar() {
       >
         <FadeUp
           as="a"
-          href="#home"
+          href="/"
           delay={0}
           className={`text-sm font-semibold tracking-[0.18em] transition-colors duration-300 ${
             solid ? "text-foreground" : "text-white"
