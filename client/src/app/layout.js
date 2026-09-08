@@ -1,4 +1,5 @@
 import { Cormorant_Garamond, Inter } from "next/font/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { CustomCursor } from "@/components/motion/custom-cursor";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import "./globals.css";
@@ -33,6 +34,7 @@ export default function RootLayout({ children }) {
         <CustomCursor />
         {children}
       </body>
+      <GoogleAnalytics gaId="G-QQC8VCXRBG" />
     </html>
   );
 }
