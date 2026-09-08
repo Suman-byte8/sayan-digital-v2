@@ -25,7 +25,7 @@ export function AboutSection() {
             aria-hidden
           />
 
-          <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-3xl shadow-premium-lg">
+          <div className="relative mx-auto aspect-4/3 w-full max-w-md overflow-hidden rounded-3xl shadow-premium-lg">
             <Image
               src="https://res.cloudinary.com/iopfstic/image/upload/v1788885895/3f458d4d-d8da-4321-8ff5-c8f941d5f6ef.png"
               alt="Custom printed mug by Sayan Digital"
