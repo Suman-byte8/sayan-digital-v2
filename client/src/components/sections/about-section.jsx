@@ -27,11 +27,11 @@ export function AboutSection() {
 
           <div className="relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-3xl shadow-premium-lg">
             <Image
-              src="/assets/custom_mug_product.png"
-              alt="Custom printed photo mugs by Sayan Digital"
+              src="https://res.cloudinary.com/iopfstic/image/upload/v1788885895/3f458d4d-d8da-4321-8ff5-c8f941d5f6ef.png"
+              alt="Custom printed mug by Sayan Digital"
               fill
               sizes="(min-width: 1024px) 28rem, 90vw"
-              className="object-cover object-bottom"
+              className="object-cover"
             />
           </div>
 
