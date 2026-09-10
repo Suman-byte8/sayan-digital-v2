@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Building2, MapPin, Palette, Sparkles, Truck } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
 import { Badge } from "@/components/ui/badge";
@@ -26,12 +25,13 @@ export function AboutSection() {
           />
 
           <div className="relative mx-auto aspect-4/3 w-full max-w-md overflow-hidden rounded-3xl shadow-premium-lg">
-            <Image
-              src="https://res.cloudinary.com/iopfstic/image/upload/v1788885895/3f458d4d-d8da-4321-8ff5-c8f941d5f6ef.png"
-              alt="Custom printed mug by Sayan Digital"
-              fill
-              sizes="(min-width: 1024px) 28rem, 90vw"
-              className="object-cover"
+            <video
+              src="https://res.cloudinary.com/iopfstic/video/upload/v1789062620/animate_this_mug_product_20260910231046.mp4"
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="absolute inset-0 size-full object-cover"
             />
           </div>
 
