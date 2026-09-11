@@ -1,10 +1,40 @@
 import { Star } from "lucide-react";
+import { ReactMarques } from "react-marques";
 import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
 import { SpotlightCard } from "@/components/motion/spotlight-card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { GOOGLE_RATING, TESTIMONIALS } from "@/constants/testimonials";
+
+function TestimonialCard({ testimonial }) {
+  return (
+    <SpotlightCard
+      data-cursor="hover"
+      className="card-premium card-premium-hover flex h-full w-80 shrink-0 flex-col gap-4 rounded-2xl p-6 transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-(--brand)/30"
+    >
+      <div className="relative z-10 flex items-center gap-1 text-(--gold)">
+        {Array.from({ length: 5 }).map((_, s) => (
+          <Star key={s} size={14} fill="currentColor" strokeWidth={0} />
+        ))}
+      </div>
+      <p className="relative z-10 text-[14px] leading-relaxed text-muted-foreground">
+        &ldquo;{testimonial.quote}&rdquo;
+      </p>
+      <div className="relative z-10 mt-auto flex items-center gap-3 pt-2">
+        <Avatar size="lg">
+          <AvatarFallback className="bg-(--brand)/10 text-xs font-semibold text-(--brand)">
+            {testimonial.initials}
+          </AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="text-[13px] font-semibold text-foreground">{testimonial.name}</p>
+          <p className="text-[11px] text-muted-foreground">{testimonial.role}</p>
+        </div>
+      </div>
+    </SpotlightCard>
+  );
+}
 
 export function TestimonialsSection() {
   return (
@@ -27,40 +57,20 @@ export function TestimonialsSection() {
           </Reveal>
         </div>
 
-        <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
-          {TESTIMONIALS.map((testimonial, i) => (
-            <Reveal key={testimonial.initials} delay={i * 90}>
-              <SpotlightCard
-                data-cursor="hover"
-                className="card-premium card-premium-hover flex h-full flex-col gap-4 rounded-2xl p-6 transition-[border-color,transform] duration-300 hover:-translate-y-1 hover:border-(--brand)/30"
-              >
-                <div className="relative z-10 flex items-center gap-1 text-(--gold)">
-                  {Array.from({ length: 5 }).map((_, s) => (
-                    <Star key={s} size={14} fill="currentColor" strokeWidth={0} />
-                  ))}
-                </div>
-                <p className="relative z-10 text-[14px] leading-relaxed text-muted-foreground">
-                  &ldquo;{testimonial.quote}&rdquo;
-                </p>
-                <div className="relative z-10 mt-auto flex items-center gap-3 pt-2">
-                  <Avatar size="lg">
-                    <AvatarFallback className="bg-(--brand)/10 text-xs font-semibold text-(--brand)">
-                      {testimonial.initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="text-[13px] font-semibold text-foreground">
-                      {testimonial.name}
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">{testimonial.role}</p>
-                  </div>
-                </div>
-              </SpotlightCard>
-            </Reveal>
-          ))}
-        </div>
+        <Reveal delay={220} className="mt-14 flex flex-col gap-6">
+          <ReactMarques fade pauseOnHover style={{ "--duration": "48s" }}>
+            {TESTIMONIALS.map((testimonial) => (
+              <TestimonialCard key={`row1-${testimonial.initials}`} testimonial={testimonial} />
+            ))}
+          </ReactMarques>
+          <ReactMarques fade pauseOnHover reverse style={{ "--duration": "48s" }}>
+            {TESTIMONIALS.map((testimonial) => (
+              <TestimonialCard key={`row2-${testimonial.initials}`} testimonial={testimonial} />
+            ))}
+          </ReactMarques>
+        </Reveal>
 
-        <Reveal delay={200} className="mt-10 flex justify-center">
+        <Reveal delay={280} className="mt-10 flex justify-center">
           <Magnetic strength={0.3}>
             <Button data-cursor="hover" variant="outline" className="rounded-full">
               View All Reviews on Google
