@@ -27,11 +27,15 @@ export default function Home() {
         original single-viewport design) and sits at z-0, which — per CSS
         stacking rules — paints ABOVE plain static-flow siblings regardless
         of DOM order. This wrapper gives everything after the Hero its own
-        stacking context above that fixed layer.
+        stacking context above that fixed layer — which also means the
+        negative top margin below (pulling the ribbon up to overlap the
+        Hero's bottom edge) is safe: this wrapper's opaque bg-background
+        still fully covers the fixed video in the overlap area, so nothing
+        from the Hero shows through underneath the ribbon.
       */}
-      <div className="relative z-10 bg-background">
-        <TrustHighlights />
+      <div className="relative z-10 -mt-16 bg-background md:-mt-24">
         <MarqueeStrip />
+        <TrustHighlights />
         <AboutSection />
         <ProductCategories />
         <WhyChooseUs />

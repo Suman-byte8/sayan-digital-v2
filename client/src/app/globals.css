@@ -144,6 +144,15 @@ html.lenis-smooth {
   }
 }
 
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 .animate-marquee {
   --marquee-duration: 32s;
   animation: marquee var(--marquee-duration) linear infinite;
@@ -153,6 +162,14 @@ html.lenis-smooth {
   .animate-marquee {
     --marquee-duration: 46s;
   }
+}
+
+.ribbon-track {
+  animation: marquee var(--ribbon-duration, 24s) linear infinite;
+}
+
+.ribbon-track-reverse {
+  animation: marquee-reverse var(--ribbon-duration, 24s) linear infinite;
 }
 
 .marquee-fade {
