@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AtSign, Mail, MapPin, Phone } from "lucide-react";
+import { FooterWordmark } from "@/components/layout/footer-wordmark";
 import { NAV_LINKS, STATIONARY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
 
@@ -98,6 +99,8 @@ export function Footer() {
           </ul>
         </div>
       </div>
+
+      <FooterWordmark />
 
       <div className="border-t border-border">
         <div className="container-premium flex flex-col items-center justify-between gap-3 py-6 text-center sm:flex-row sm:text-left">
