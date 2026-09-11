@@ -2,6 +2,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { CustomCursor } from "@/components/motion/custom-cursor";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -32,7 +33,7 @@ export default function RootLayout({ children }) {
       <body className="flex min-h-dvh flex-col bg-background" suppressHydrationWarning>
         <SmoothScroll />
         <CustomCursor />
-        {children}
+        <Providers>{children}</Providers>
       </body>
       <GoogleAnalytics gaId="G-QQC8VCXRBG" />
     </html>
