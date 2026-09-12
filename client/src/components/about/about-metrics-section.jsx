@@ -1,3 +1,4 @@
+import { CountUpNumber } from "@/components/motion/count-up-number";
 import { Reveal } from "@/components/motion/reveal";
 import { ABOUT_METRICS } from "@/constants/about";
 
@@ -9,8 +10,8 @@ export function AboutMetricsSection() {
           <div className="grid grid-cols-1 gap-10 text-center sm:grid-cols-2 lg:grid-cols-4">
             {ABOUT_METRICS.map((metric) => (
               <div key={metric.label} className="flex flex-col items-center">
-                <span className="font-serif text-5xl font-light text-(--brand)">
-                  {metric.value}
+                <span className="font-serif text-5xl font-bold text-(--brand)">
+                  <CountUpNumber target={metric.target} suffix={metric.suffix} />
                 </span>
                 <span className="mt-2 text-[15px] font-semibold text-foreground">
                   {metric.label}
@@ -19,10 +20,6 @@ export function AboutMetricsSection() {
               </div>
             ))}
           </div>
-          <p className="mt-10 text-center text-[12px] text-muted-foreground italic">
-            Figures shown are a sample layout — final numbers will reflect real workshop
-            records.
-          </p>
         </Reveal>
       </div>
     </section>

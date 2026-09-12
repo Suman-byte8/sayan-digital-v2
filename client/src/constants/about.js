@@ -81,22 +81,26 @@ export const ABOUT_CAPABILITIES = [
 
 export const ABOUT_METRICS = [
   {
-    value: "[X,XXX]+",
+    target: 5000,
+    suffix: "+",
     label: "Personalized Items Hand-Finished",
     sublabel: "Across gifts, drinkware & apparel",
   },
   {
-    value: "[XXX]+",
+    target: 1000,
+    suffix: "+",
     label: "Corporate & Institutional Clients",
     sublabel: "Schools, colleges & corporate offices",
   },
   {
-    value: "[XX]+",
+    target: 30,
+    suffix: "+",
     label: "Custom Printing Techniques",
     sublabel: "Under one roof in Malda",
   },
   {
-    value: "[XX.X%]",
+    target: 99,
+    suffix: "%",
     label: "Client Satisfaction Rate",
     sublabel: "Repeat and referral orders",
   },
