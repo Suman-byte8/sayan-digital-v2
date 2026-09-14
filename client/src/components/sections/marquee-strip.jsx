@@ -34,9 +34,11 @@ export function MarqueeStrip() {
     // scales with width (extreme on wide/short viewports), which was
     // reaching up far enough to cover the hero's hours pill above it.
     // Clipping to a fixed height keeps the crossing-ribbon look contained
-    // regardless of viewport size.
-    <div className="relative h-32.5 overflow-hidden py-2">
-      <div className="relative flex flex-col gap-0">
+    // regardless of viewport size. The box is generous enough (and the
+    // stack centered within it) that it only trims the extreme bleed at
+    // very wide viewports instead of cutting into the bands themselves.
+    <div className="relative flex h-44 items-center overflow-hidden py-2 sm:h-52 lg:h-60">
+      <div className="relative flex w-full flex-col gap-0">
         <InfiniteRibbon tone="brand" rotation={-3.5} duration={55}>
           <RibbonText />
         </InfiniteRibbon>
