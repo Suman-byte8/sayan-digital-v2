@@ -14,7 +14,6 @@ const fraunces = Fraunces({
 });
 
 const ACCESS_COOKIE = "sd_preview_access";
-const ACCESS_MAX_AGE = 60 * 60 * 24 * 30; // 30 days
 
 function formatTime(date) {
   const h = String(date.getHours()).padStart(2, "0");
@@ -68,7 +67,9 @@ export function ComingSoonView() {
   }
 
   function handleVisitAnyway() {
-    document.cookie = `${ACCESS_COOKIE}=true; path=/; max-age=${ACCESS_MAX_AGE}`;
+    // No max-age/expires: a session cookie only, cleared when the browser
+    // closes, so opening the site fresh always shows this page again.
+    document.cookie = `${ACCESS_COOKIE}=true; path=/`;
     router.push("/");
   }
 
