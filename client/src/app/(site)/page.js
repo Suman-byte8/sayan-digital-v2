@@ -10,7 +10,6 @@ import { CustomizationShowcase } from "@/components/sections/customization-showc
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { LocalTrustSection } from "@/components/sections/local-trust-section";
 import { CtaSection } from "@/components/sections/cta-section";
-import { Footer } from "@/components/layout/footer";
 
 export default function Home() {
   return (
@@ -42,7 +41,6 @@ export default function Home() {
         <TestimonialsSection />
         <LocalTrustSection />
         <CtaSection />
-        <Footer />
       </div>
     </>
   );

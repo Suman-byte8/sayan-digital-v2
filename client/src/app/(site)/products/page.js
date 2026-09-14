@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { ChevronRight, Home as HomeIcon, Palette, ShieldCheck, Truck } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import {
+  ChevronRight,
+  Home as HomeIcon,
+  Palette,
+  ShieldCheck,
+  Truck,
+} from "lucide-react";
 import { CtaSection } from "@/components/sections/cta-section";
 import { ProductCatalogExplorer } from "@/components/products/product-catalog-explorer";
 import { Reveal } from "@/components/motion/reveal";
@@ -24,8 +28,6 @@ const TRUST_PILLS = [
 export default function ProductsPage() {
   return (
     <>
-      <Navbar />
-
       <main className="bg-background pt-24">
         <section className="container-premium pt-8 pb-6 md:pt-12">
           <nav
@@ -55,8 +57,9 @@ export default function ProductsPage() {
               </Reveal>
               <Reveal delay={160}>
                 <p className="body-copy mt-4">
-                  Explore our collection of custom-crafted drinkware, apparel, corporate
-                  identity, trophies and keepsakes — personalized right here in Malda.
+                  Explore our collection of custom-crafted drinkware, apparel,
+                  corporate identity, trophies and keepsakes — personalized
+                  right here in Malda.
                 </p>
               </Reveal>
             </div>
@@ -68,14 +71,19 @@ export default function ProductsPage() {
                   className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-premium"
                 >
                   <Icon size={16} className="text-(--brand)" />
-                  <span className="text-[12px] font-medium text-foreground">{label}</span>
+                  <span className="text-[12px] font-medium text-foreground">
+                    {label}
+                  </span>
                 </div>
               ))}
             </Reveal>
           </div>
         </section>
 
-        <ProductCatalogExplorer products={PRODUCT_CATALOG} categories={CATEGORIES} />
+        <ProductCatalogExplorer
+          products={PRODUCT_CATALOG}
+          categories={CATEGORIES}
+        />
 
         <section className="container-premium pb-16">
           <Reveal className="flex flex-col items-center justify-between gap-5 rounded-2xl bg-(--paper-muted) px-8 py-10 text-center sm:flex-row sm:text-left">
@@ -84,8 +92,8 @@ export default function ProductsPage() {
                 Need it in bulk for your business?
               </h2>
               <p className="body-copy mt-2">
-                Corporate gifting, ID kits and event merchandise — custom quoted for any order
-                size.
+                Corporate gifting, ID kits and event merchandise — custom quoted
+                for any order size.
               </p>
             </div>
             <Magnetic strength={0.3}>
@@ -102,7 +110,6 @@ export default function ProductsPage() {
       </main>
 
       <CtaSection />
-      <Footer />
     </>
   );
 }

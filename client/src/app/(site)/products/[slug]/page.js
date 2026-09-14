@@ -1,6 +1,4 @@
 import { notFound } from "next/navigation";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { CtaSection } from "@/components/sections/cta-section";
 import { ProductDetailView } from "@/components/products/product-detail-view";
 import { RelatedProducts } from "@/components/products/related-products";
@@ -47,15 +45,15 @@ export default async function ProductDetailPage({ params }) {
   const { product, catalog } = found;
 
   const relatedProducts = catalog
-    .filter((item) => item.category === product.category && item.key !== product.key)
+    .filter(
+      (item) => item.category === product.category && item.key !== product.key,
+    )
     .slice(0, 4);
 
   const isStationery = catalog === STATIONERY_CATALOG;
 
   return (
     <>
-      <Navbar />
-
       <main className="bg-background pt-24">
         <ProductDetailView
           product={product}
@@ -66,7 +64,6 @@ export default async function ProductDetailPage({ params }) {
       </main>
 
       <CtaSection />
-      <Footer />
     </>
   );
 }

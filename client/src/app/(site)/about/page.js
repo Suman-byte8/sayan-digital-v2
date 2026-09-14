@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { ChevronRight, Home as HomeIcon } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { CtaSection } from "@/components/sections/cta-section";
 import { AboutStorySection } from "@/components/about/about-story-section";
 import { AboutValuesSection } from "@/components/about/about-values-section";
@@ -18,8 +16,6 @@ export const metadata = {
 export default function AboutPage() {
   return (
     <>
-      <Navbar />
-
       <main className="bg-background pt-24">
         <section className="relative overflow-hidden">
           <div
@@ -60,9 +56,9 @@ export default function AboutPage() {
               </Reveal>
               <Reveal delay={160}>
                 <p className="body-copy mt-5">
-                  From our Malda workshop, we bring artisanal craftsmanship together with
-                  modern digital printing to turn your moments, brand identities and ideas
-                  into lasting physical keepsakes.
+                  From our Malda workshop, we bring artisanal craftsmanship
+                  together with modern digital printing to turn your moments,
+                  brand identities and ideas into lasting physical keepsakes.
                 </p>
               </Reveal>
             </div>
@@ -76,7 +72,6 @@ export default function AboutPage() {
       </main>
 
       <CtaSection />
-      <Footer />
     </>
   );
 }

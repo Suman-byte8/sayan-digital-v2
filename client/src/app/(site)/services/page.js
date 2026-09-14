@@ -1,13 +1,14 @@
 import Link from "next/link";
 import { ChevronRight, Home as HomeIcon } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { CtaSection } from "@/components/sections/cta-section";
 import { ServiceDetailRow } from "@/components/services/service-detail-row";
 import { ServicesProcessSection } from "@/components/services/services-process-section";
 import { ServicesBenchmarksSection } from "@/components/services/services-benchmarks-section";
 import { Reveal } from "@/components/motion/reveal";
-import { SERVICE_DETAILS, SERVICE_TELEMETRY } from "@/constants/services-detail";
+import {
+  SERVICE_DETAILS,
+  SERVICE_TELEMETRY,
+} from "@/constants/services-detail";
 
 export const metadata = {
   title: "Services — Sayan Digital",
@@ -18,8 +19,6 @@ export const metadata = {
 export default function ServicesPage() {
   return (
     <>
-      <Navbar />
-
       <main className="bg-background pt-24">
         <section className="relative overflow-hidden">
           <div
@@ -60,8 +59,9 @@ export default function ServicesPage() {
               </Reveal>
               <Reveal delay={160}>
                 <p className="body-copy mt-5 max-w-2xl">
-                  From concept and design adjustment to press and delivery across Malda and West
-                  Bengal — the same careful standard whether it&apos;s one gift or a bulk order.
+                  From concept and design adjustment to press and delivery
+                  across Malda and West Bengal — the same careful standard
+                  whether it&apos;s one gift or a bulk order.
                 </p>
               </Reveal>
             </div>
@@ -90,7 +90,11 @@ export default function ServicesPage() {
         <section className="section-padding bg-(--paper-muted)">
           <div className="container-premium flex flex-col gap-24 md:gap-28">
             {SERVICE_DETAILS.map((service, i) => (
-              <ServiceDetailRow key={service.key} service={service} reversed={i % 2 === 1} />
+              <ServiceDetailRow
+                key={service.key}
+                service={service}
+                reversed={i % 2 === 1}
+              />
             ))}
           </div>
         </section>
@@ -100,7 +104,6 @@ export default function ServicesPage() {
       </main>
 
       <CtaSection />
-      <Footer />
     </>
   );
 }

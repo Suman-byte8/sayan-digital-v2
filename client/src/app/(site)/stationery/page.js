@@ -1,13 +1,20 @@
 import Link from "next/link";
-import { ChevronRight, Gift, Home as HomeIcon, Palette, Truck } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
+import {
+  ChevronRight,
+  Gift,
+  Home as HomeIcon,
+  Palette,
+  Truck,
+} from "lucide-react";
 import { CtaSection } from "@/components/sections/cta-section";
 import { StationeryCatalogSection } from "@/components/stationery/stationery-catalog-section";
 import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
-import { STATIONERY_CATALOG, STATIONERY_CATEGORIES } from "@/constants/stationery-catalog";
+import {
+  STATIONERY_CATALOG,
+  STATIONERY_CATEGORIES,
+} from "@/constants/stationery-catalog";
 
 export const metadata = {
   title: "Sayan Stationary — Sayan Digital",
@@ -24,8 +31,6 @@ const TRUST_PILLS = [
 export default function StationeryPage() {
   return (
     <>
-      <Navbar />
-
       <main className="bg-background pt-24">
         <section className="container-premium pt-8 pb-6 md:pt-12">
           <nav
@@ -55,8 +60,9 @@ export default function StationeryPage() {
               </Reveal>
               <Reveal delay={160}>
                 <p className="body-copy mt-4">
-                  Notebooks, pens, files, art supplies and gifting — the everyday stationery line
-                  alongside our print studio, from the same Malda workshop.
+                  Notebooks, pens, files, art supplies and gifting — the
+                  everyday stationery line alongside our print studio, from the
+                  same Malda workshop.
                 </p>
               </Reveal>
             </div>
@@ -68,14 +74,19 @@ export default function StationeryPage() {
                   className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 shadow-premium"
                 >
                   <Icon size={16} className="text-(--brand)" />
-                  <span className="text-[12px] font-medium text-foreground">{label}</span>
+                  <span className="text-[12px] font-medium text-foreground">
+                    {label}
+                  </span>
                 </div>
               ))}
             </Reveal>
           </div>
         </section>
 
-        <StationeryCatalogSection products={STATIONERY_CATALOG} categories={STATIONERY_CATEGORIES} />
+        <StationeryCatalogSection
+          products={STATIONERY_CATALOG}
+          categories={STATIONERY_CATEGORIES}
+        />
 
         <section className="container-premium pb-16">
           <Reveal className="flex flex-col items-center justify-between gap-5 rounded-2xl bg-(--paper-muted) px-8 py-10 text-center sm:flex-row sm:text-left">
@@ -84,8 +95,8 @@ export default function StationeryPage() {
                 Stocking up for school or office?
               </h2>
               <p className="body-copy mt-2">
-                Bulk notebook, file and stationery kits — custom quoted for institutions and
-                businesses.
+                Bulk notebook, file and stationery kits — custom quoted for
+                institutions and businesses.
               </p>
             </div>
             <Magnetic strength={0.3}>
@@ -102,7 +113,6 @@ export default function StationeryPage() {
       </main>
 
       <CtaSection />
-      <Footer />
     </>
   );
 }

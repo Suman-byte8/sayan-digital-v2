@@ -1,7 +1,5 @@
 import Link from "next/link";
 import { ChevronRight, Home as HomeIcon } from "lucide-react";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
 import { CtaSection } from "@/components/sections/cta-section";
 import { QuickContactStrip } from "@/components/contact/quick-contact-strip";
 import { ContactForm } from "@/components/contact/contact-form";
@@ -19,8 +17,6 @@ export const metadata = {
 export default function ContactPage() {
   return (
     <>
-      <Navbar />
-
       <main className="bg-background pt-24">
         <section className="relative overflow-hidden pb-4">
           <div
@@ -55,20 +51,25 @@ export default function ContactPage() {
                 </Reveal>
                 <Reveal delay={80}>
                   <h1 className="heading-section mt-4">
-                    Let&apos;s bring your idea to <em className="italic">print</em>.
+                    Let&apos;s bring your idea to{" "}
+                    <em className="italic">print</em>.
                   </h1>
                 </Reveal>
                 <Reveal delay={160}>
                   <p className="body-copy mt-5">
-                    Visit our studio in Malda, send your artwork for a quote, or reach out
-                    directly on WhatsApp for a tailored consultation.
+                    Visit our studio in Malda, send your artwork for a quote, or
+                    reach out directly on WhatsApp for a tailored consultation.
                   </p>
                 </Reveal>
               </div>
 
               <Reveal delay={200} className="text-left lg:text-right">
-                <p className="text-[13px] font-semibold text-foreground">{BRAND.location}</p>
-                <p className="text-[12px] text-muted-foreground">{BRAND.hours}</p>
+                <p className="text-[13px] font-semibold text-foreground">
+                  {BRAND.location}
+                </p>
+                <p className="text-[12px] text-muted-foreground">
+                  {BRAND.hours}
+                </p>
               </Reveal>
             </div>
           </div>
@@ -91,7 +92,6 @@ export default function ContactPage() {
       </main>
 
       <CtaSection />
-      <Footer />
     </>
   );
 }
