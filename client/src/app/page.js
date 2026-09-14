@@ -26,7 +26,7 @@ export default function Home() {
           the hero's overflow-hidden. Negative top margin pulls it up to
           overlap the hero's bottom edge. z-20 paints it above every hero
           layer (video z-0, scrims z-1, content z-10). */}
-      <div className="relative z-20 -mt-28 md:-mt-36 lg:-mt-40">
+      <div className="relative z-20 -mt-8 md:-mt-10 lg:-mt-12">
         <MarqueeStrip />
       </div>
 
