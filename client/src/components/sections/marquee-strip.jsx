@@ -29,7 +29,13 @@ function RibbonText() {
 
 export function MarqueeStrip() {
   return (
-    <div className="relative py-2">
+    // Fixed height + overflow-hidden: each band is rotated a few degrees
+    // across the full viewport width, and that rotation's vertical bleed
+    // scales with width (extreme on wide/short viewports), which was
+    // reaching up far enough to cover the hero's hours pill above it.
+    // Clipping to a fixed height keeps the crossing-ribbon look contained
+    // regardless of viewport size.
+    <div className="relative h-32.5 overflow-hidden py-2">
       <div className="relative flex flex-col gap-0">
         <InfiniteRibbon tone="brand" rotation={-3.5} duration={55}>
           <RibbonText />
