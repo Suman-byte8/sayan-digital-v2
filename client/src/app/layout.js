@@ -2,6 +2,13 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { CustomCursor } from "@/components/motion/custom-cursor";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  SITE_URL,
+  buildLocalBusinessJsonLd,
+  buildMetadata,
+  buildWebsiteJsonLd,
+} from "@/lib/seo";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -18,9 +25,19 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Sayan Digital — Customized Printing in Malda, West Bengal",
-  description:
-    "Sayan Digital is a customized printing and personalization store in Malda, West Bengal — premium sublimation printing, personalized gifts, corporate merchandise and more.",
+  metadataBase: new URL(SITE_URL),
+  ...buildMetadata({
+    title: "Sayan Digital | Custom Printing & Personalized Gifts in Malda",
+    description:
+      "Sayan Digital provides customized sublimation printing, personalized gifts, photo printing, custom T-shirts, mugs, corporate gifts, ID cards and lanyard printing in Malda, West Bengal.",
+    path: "/",
+  }),
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#15398a",
 };
 
 export default function RootLayout({ children }) {
@@ -30,6 +47,7 @@ export default function RootLayout({ children }) {
       className={`${cormorant.variable} ${inter.variable} antialiased`}
     >
       <body className="flex min-h-dvh flex-col bg-background" suppressHydrationWarning>
+        <JsonLd data={[buildLocalBusinessJsonLd(), buildWebsiteJsonLd()]} />
         <SmoothScroll />
         <CustomCursor />
         {children}

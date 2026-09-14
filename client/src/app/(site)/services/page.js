@@ -9,16 +9,25 @@ import {
   SERVICE_DETAILS,
   SERVICE_TELEMETRY,
 } from "@/constants/services-detail";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Services — Sayan Digital",
+export const metadata = buildMetadata({
+  title: "Custom Printing Services in Malda — Sayan Digital",
   description:
     "Custom printing services from Sayan Digital in Malda, West Bengal — personalized gifting, corporate merchandise, ID cards, apparel, engraving, signage and bulk fulfillment.",
-};
+  path: "/services",
+});
+
+const BREADCRUMB_ITEMS = [
+  { name: "Home", path: "/" },
+  { name: "Services", path: "/services" },
+];
 
 export default function ServicesPage() {
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
       <main className="bg-background pt-24">
         <section className="relative overflow-hidden">
           <div

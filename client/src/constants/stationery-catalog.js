@@ -1,5 +1,5 @@
 /*
- * Full /stationery catalog data for the Sayan Stationary line — a
+ * Full /stationery catalog data for the Sayan Stationery line — a
  * secondary line alongside Sayan Digital's main printing catalog
  * (constants/products-catalog.js). Structure mirrors that file exactly
  * so both catalogs can share the same product-detail route and card

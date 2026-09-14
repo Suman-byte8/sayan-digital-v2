@@ -6,16 +6,25 @@ import { AboutValuesSection } from "@/components/about/about-values-section";
 import { AboutCapabilitiesSection } from "@/components/about/about-capabilities-section";
 import { AboutMetricsSection } from "@/components/about/about-metrics-section";
 import { Reveal } from "@/components/motion/reveal";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "About Us — Sayan Digital",
+export const metadata = buildMetadata({
+  title: "About Sayan Digital — Custom Printing Studio in Malda",
   description:
     "Sayan Digital is a customized printing and personalization studio in Malda, West Bengal — the story, values and craftsmanship behind every print.",
-};
+  path: "/about",
+});
+
+const BREADCRUMB_ITEMS = [
+  { name: "Home", path: "/" },
+  { name: "About", path: "/about" },
+];
 
 export default function AboutPage() {
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
       <main className="bg-background pt-24">
         <section className="relative overflow-hidden">
           <div

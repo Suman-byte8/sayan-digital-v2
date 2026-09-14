@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { FooterWordmark } from "@/components/layout/footer-wordmark";
 import { FacebookIcon, GithubIcon, GoogleIcon, InstagramIcon } from "@/components/icons/brand-icons";
-import { NAV_LINKS, STATIONARY_LINK } from "@/constants/navigation";
+import { NAV_LINKS, STATIONERY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
 
 const SOCIAL_LINKS = [
@@ -32,10 +32,10 @@ export function Footer() {
             {BRAND.tagline} — based in {BRAND.location}.
           </p>
           <Link
-            href={STATIONARY_LINK.href}
+            href={STATIONERY_LINK.href}
             className="mt-4 inline-block text-[13px] font-semibold text-(--brand)"
           >
-            {STATIONARY_LINK.label} →
+            {STATIONERY_LINK.label} →
           </Link>
         </div>
 

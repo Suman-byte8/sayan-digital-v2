@@ -7,16 +7,25 @@ import { ContactLocationCard } from "@/components/contact/contact-location-card"
 import { ContactFaqSection } from "@/components/contact/contact-faq-section";
 import { Reveal } from "@/components/motion/reveal";
 import { BRAND } from "@/constants/brand";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Contact Us — Sayan Digital",
+export const metadata = buildMetadata({
+  title: "Contact Sayan Digital — Printing Studio in Malda",
   description:
     "Get in touch with Sayan Digital, a customized printing and personalization studio in Malda, West Bengal — call, WhatsApp, email, or send a quote request.",
-};
+  path: "/contact",
+});
+
+const BREADCRUMB_ITEMS = [
+  { name: "Home", path: "/" },
+  { name: "Contact", path: "/contact" },
+];
 
 export default function ContactPage() {
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
       <main className="bg-background pt-24">
         <section className="relative overflow-hidden pb-4">
           <div

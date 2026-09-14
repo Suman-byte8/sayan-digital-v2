@@ -8,12 +8,18 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ProfileView } from "@/components/profile/profile-view";
+import { buildMetadata } from "@/lib/seo";
 
-export const metadata = {
+// Personal account/order area — no SEO value and contains customer-specific
+// data, so it's kept out of search results (also excluded from sitemap.js
+// and disallowed in robots.js).
+export const metadata = buildMetadata({
   title: "My Account & Orders — Sayan Digital",
   description:
     "Manage your customized printing orders, review digital artwork proofs, track deliveries, and manage your delivery addresses at Sayan Digital.",
-};
+  path: "/profile",
+  noIndex: true,
+});
 
 const TRUST_ITEMS = [
   {

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { FadeUp } from "@/components/motion/fade-up";
 import { Magnetic } from "@/components/motion/magnetic";
 import { MobileMenu } from "@/components/layout/mobile-menu";
-import { NAV_LINKS, STATIONARY_LINK } from "@/constants/navigation";
+import { NAV_LINKS, STATIONERY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
 import { useNavbarSolid } from "@/hooks/use-navbar-solid";
 
@@ -59,15 +59,15 @@ export function Navbar() {
 
           <FadeUp
             as="a"
-            href={STATIONARY_LINK.href}
-            delay={STATIONARY_LINK.delay}
+            href={STATIONERY_LINK.href}
+            delay={STATIONERY_LINK.delay}
             className={`rounded-full border px-3 py-1 text-[12px] font-semibold transition-colors duration-300 ${
               solid
                 ? "border-(--brand)/25 text-(--brand) hover:bg-(--brand)/5"
                 : "border-white/35 text-white hover:bg-white/10"
             }`}
           >
-            {STATIONARY_LINK.label}
+            {STATIONERY_LINK.label}
           </FadeUp>
         </div>
 

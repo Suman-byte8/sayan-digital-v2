@@ -4,8 +4,14 @@ import { ProductDetailView } from "@/components/products/product-detail-view";
 import { RelatedProducts } from "@/components/products/related-products";
 import { PRODUCT_CATALOG } from "@/constants/products-catalog";
 import { STATIONERY_CATALOG } from "@/constants/stationery-catalog";
+import { JsonLd } from "@/components/seo/json-ld";
+import {
+  buildBreadcrumbJsonLd,
+  buildMetadata,
+  buildProductJsonLd,
+} from "@/lib/seo";
 
-// Both catalogs (Sayan Digital printing + Sayan Stationary) share this one
+// Both catalogs (Sayan Digital printing + Sayan Stationery) share this one
 // detail route/component instead of each getting their own — a slug is
 // looked up across both, and "related products" stays within whichever
 // catalog it was found in.
@@ -28,13 +34,17 @@ export async function generateMetadata({ params }) {
   const found = findProduct(slug);
 
   if (!found) {
-    return { title: "Product Not Found — Sayan Digital" };
+    return { title: "Product Not Found — Sayan Digital", robots: { index: false, follow: true } };
   }
 
-  return {
-    title: `${found.product.name} — Sayan Digital`,
-    description: found.product.description,
-  };
+  const { product } = found;
+
+  return buildMetadata({
+    title: `${product.name} — Sayan Digital`,
+    description: product.description,
+    path: `/products/${product.key}`,
+    image: product.image,
+  });
 }
 
 export default async function ProductDetailPage({ params }) {
@@ -51,13 +61,26 @@ export default async function ProductDetailPage({ params }) {
     .slice(0, 4);
 
   const isStationery = catalog === STATIONERY_CATALOG;
+  const catalogHref = isStationery ? "/stationery" : "/products";
+  const catalogLabel = isStationery ? "Sayan Stationery" : "Products";
+  const productPath = `/products/${product.key}`;
 
   return (
     <>
+      <JsonLd
+        data={[
+          buildBreadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: catalogLabel, path: catalogHref },
+            { name: product.name, path: productPath },
+          ]),
+          buildProductJsonLd(product, productPath),
+        ]}
+      />
       <main className="bg-background pt-24">
         <ProductDetailView
           product={product}
-          catalogHref={isStationery ? "/stationery" : "/products"}
+          catalogHref={catalogHref}
           catalogLabel={isStationery ? "Stationery" : "Products"}
         />
         <RelatedProducts products={relatedProducts} />

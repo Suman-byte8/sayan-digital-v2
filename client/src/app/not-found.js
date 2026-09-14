@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 export const metadata = {
   title: "Page Not Found — Sayan Digital",
   description: "The page you are looking for doesn't exist or has been moved.",
+  robots: { index: false, follow: true },
 };
 
 export default function NotFound() {

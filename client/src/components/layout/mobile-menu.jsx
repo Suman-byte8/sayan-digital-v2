@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { NAV_LINKS, STATIONARY_LINK } from "@/constants/navigation";
+import { NAV_LINKS, STATIONERY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
 
 export function MobileMenu({ open, onNavigate }) {
@@ -33,14 +33,14 @@ export function MobileMenu({ open, onNavigate }) {
             ))}
 
             <motion.a
-              href={STATIONARY_LINK.href}
+              href={STATIONERY_LINK.href}
               onClick={onNavigate}
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: NAV_LINKS.length * 0.05, ease: "easeOut" }}
               className="py-3 text-[15px] font-semibold text-(--brand)"
             >
-              {STATIONARY_LINK.label}
+              {STATIONERY_LINK.label}
             </motion.a>
 
             <motion.a

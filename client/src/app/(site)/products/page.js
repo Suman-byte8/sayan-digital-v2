@@ -12,12 +12,20 @@ import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
 import { CATEGORIES, PRODUCT_CATALOG } from "@/constants/products-catalog";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
-export const metadata = {
-  title: "Products — Sayan Digital",
+export const metadata = buildMetadata({
+  title: "Custom Printing Products — Sayan Digital, Malda",
   description:
     "Browse Sayan Digital's full catalog of customized printing products — mugs, ID cards, corporate gifts, apparel, trophies, stationery and more.",
-};
+  path: "/products",
+});
+
+const BREADCRUMB_ITEMS = [
+  { name: "Home", path: "/" },
+  { name: "Products", path: "/products" },
+];
 
 const TRUST_PILLS = [
   { icon: Truck, label: "Pan-Bengal Delivery" },
@@ -28,6 +36,7 @@ const TRUST_PILLS = [
 export default function ProductsPage() {
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
       <main className="bg-background pt-24">
         <section className="container-premium pt-8 pb-6 md:pt-12">
           <nav

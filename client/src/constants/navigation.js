@@ -6,8 +6,8 @@ export const NAV_LINKS = [
   { label: "Contact", href: "/contact", delay: 260 },
 ];
 
-export const STATIONARY_LINK = {
-  label: "Sayan Stationary",
+export const STATIONERY_LINK = {
+  label: "Sayan Stationery",
   href: "/stationery",
   delay: 300,
 };

@@ -11,16 +11,24 @@ import { StationeryCatalogSection } from "@/components/stationery/stationery-cat
 import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
+import { JsonLd } from "@/components/seo/json-ld";
+import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 import {
   STATIONERY_CATALOG,
   STATIONERY_CATEGORIES,
 } from "@/constants/stationery-catalog";
 
-export const metadata = {
-  title: "Sayan Stationary — Sayan Digital",
+export const metadata = buildMetadata({
+  title: "Sayan Stationery — Notebooks, Pens & Art Supplies in Malda",
   description:
-    "Browse Sayan Stationary's notebooks, pens, files, art supplies, office essentials and gifting — from our Malda studio.",
-};
+    "Shop Sayan Stationery in Malda for notebooks, pens, files, art & craft supplies and office essentials — the everyday stationery line from Sayan Digital's studio.",
+  path: "/stationery",
+});
+
+const BREADCRUMB_ITEMS = [
+  { name: "Home", path: "/" },
+  { name: "Sayan Stationery", path: "/stationery" },
+];
 
 const TRUST_PILLS = [
   { icon: Truck, label: "Pan-Bengal Delivery" },
@@ -31,6 +39,7 @@ const TRUST_PILLS = [
 export default function StationeryPage() {
   return (
     <>
+      <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
       <main className="bg-background pt-24">
         <section className="container-premium pt-8 pb-6 md:pt-12">
           <nav
@@ -45,17 +54,17 @@ export default function StationeryPage() {
               Home
             </Link>
             <ChevronRight size={13} />
-            <span className="font-medium text-(--brand)">Sayan Stationary</span>
+            <span className="font-medium text-(--brand)">Sayan Stationery</span>
           </nav>
 
           <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-xl">
               <Reveal>
-                <p className="eyebrow-label">Sayan Stationary</p>
+                <p className="eyebrow-label">Sayan Stationery</p>
               </Reveal>
               <Reveal delay={80}>
                 <h1 className="heading-section mt-4">
-                  Everyday tools, <em className="italic">thoughtfully</em> made.
+                  Everyday stationery, <em className="italic">thoughtfully</em> made in Malda.
                 </h1>
               </Reveal>
               <Reveal delay={160}>
