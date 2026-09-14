@@ -8,13 +8,13 @@ import { HoursPill } from "@/components/home/hours-pill";
 
 export function HeroSection() {
   return (
-    <main className="relative h-dvh w-full overflow-hidden bg-[#0a0c0b]">
+    <main className="relative min-h-dvh w-full overflow-hidden bg-[#0a0c0b]">
       <HeroBackgroundVideo />
       <HeroScrim />
 
       <Navbar />
 
-      <div className="relative z-10 flex h-[calc(100dvh-72px)] max-w-3xl flex-col justify-end px-6 pb-24 md:px-12 md:pb-32 lg:pb-36">
+      <div className="relative z-10 flex min-h-[calc(100dvh-72px)] max-w-3xl flex-col justify-end px-6 pt-28 pb-24 md:px-12 md:pt-32 md:pb-32 lg:pb-36">
         <HeroEyebrow />
         <HeroHeadline />
         <HeroCtaGroup />

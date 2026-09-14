@@ -94,9 +94,17 @@
 .bottom-tint {
   background: linear-gradient(
     180deg,
-    rgba(10, 12, 11, 0) 45%,
-    rgba(10, 12, 11, 0.7) 100%
+    rgba(10, 12, 11, 0) 20%,
+    rgba(10, 12, 11, 0.35) 50%,
+    rgba(10, 12, 11, 0.75) 100%
   );
+}
+
+/* Guarantees hero text stays legible even when the video's brighter frames
+   land behind it — the bottom-tint gradient alone isn't enough on short
+   viewports where the text occupies more of the scrim-free upper area. */
+.hero-text-shadow {
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
 }
 
 @keyframes ripple {
