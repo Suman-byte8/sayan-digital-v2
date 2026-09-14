@@ -55,6 +55,7 @@ export function CatalogProductCard({ product }) {
 
   const isHoverDevice = useMediaQuery("(hover: hover) and (pointer: fine)");
   const [isSaved, setIsSaved] = useState(false);
+  const detailHref = `/products/${product.key}`;
 
   function handleSave(event) {
     event.preventDefault();
@@ -71,7 +72,7 @@ export function CatalogProductCard({ product }) {
       className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-premium"
     >
       <div className="relative overflow-hidden">
-        <div className="aspect-square">
+        <Link href={detailHref} className="block aspect-square" data-cursor="hover">
           <Image
             src={image}
             alt={name}
@@ -79,7 +80,7 @@ export function CatalogProductCard({ product }) {
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
             className="object-cover transition-transform duration-500 group-hover:scale-110"
           />
-        </div>
+        </Link>
 
         <span className="absolute top-3 left-3 max-w-[60%] truncate rounded-full bg-card/90 px-2.5 py-1 text-[10px] font-bold tracking-wider text-(--brand) uppercase backdrop-blur-sm">
           {categoryLabel}
@@ -119,9 +120,11 @@ export function CatalogProductCard({ product }) {
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>
-          <h3 className="text-[15px] font-semibold text-foreground transition-colors group-hover:text-(--brand)">
-            {name}
-          </h3>
+          <Link href={detailHref} data-cursor="hover">
+            <h3 className="text-[15px] font-semibold text-foreground transition-colors group-hover:text-(--brand)">
+              {name}
+            </h3>
+          </Link>
           {/* Touch devices get the full description inline — the hover
               reveal panel below never opens without a real hover. */}
           <p
@@ -194,7 +197,13 @@ export function CatalogProductCard({ product }) {
               </div>
             </motion.div>
 
-            <motion.div variants={itemVariants}>
+            <motion.div variants={itemVariants} className="flex flex-col gap-2">
+              <Link
+                href={detailHref}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-[13px] font-medium text-foreground transition-colors duration-150 hover:bg-muted"
+              >
+                View Details
+              </Link>
               <Link
                 href="/contact"
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-(--brand) py-2.5 text-[13px] font-medium text-white transition-transform duration-150 active:scale-[0.97]"
