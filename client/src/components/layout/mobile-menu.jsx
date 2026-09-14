@@ -43,11 +43,25 @@ export function MobileMenu({ open, onNavigate }) {
               {STATIONARY_LINK.label}
             </motion.a>
 
+            <motion.a
+              href="/profile"
+              onClick={onNavigate}
+              initial={{ opacity: 0, x: -12 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: (NAV_LINKS.length + 0.5) * 0.05, ease: "easeOut" }}
+              className="flex items-center justify-between border-t border-border/70 py-3 text-[15px] font-medium text-foreground"
+            >
+              <span>My Account & Orders</span>
+              <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[11px] font-semibold text-(--brand)">
+                VIP
+              </span>
+            </motion.a>
+
             <motion.div
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: (NAV_LINKS.length + 1) * 0.05, ease: "easeOut" }}
-              className="mt-4"
+              className="mt-3"
             >
               <Button className="h-auto w-full justify-center gap-2 rounded-full py-3 text-[13px]">
                 <ShoppingBag size={16} />

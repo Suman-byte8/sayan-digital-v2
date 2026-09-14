@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Menu, ShoppingBag, X } from "lucide-react";
+import Link from "next/link";
+import { Menu, ShoppingBag, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FadeUp } from "@/components/motion/fade-up";
 import { Magnetic } from "@/components/motion/magnetic";
@@ -70,6 +71,23 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <FadeUp delay={320} className="hidden lg:block">
+            <Magnetic strength={0.3}>
+              <Link
+                href="/profile"
+                data-cursor="hover"
+                aria-label="My Account & Orders"
+                className={`flex size-9 items-center justify-center rounded-full border transition-all duration-300 ${
+                  solid
+                    ? "border-border text-foreground hover:bg-(--paper-muted) hover:border-(--brand)/40"
+                    : "border-white/30 text-white hover:bg-white/10"
+                }`}
+              >
+                <User size={15} />
+              </Link>
+            </Magnetic>
+          </FadeUp>
+
           <FadeUp delay={340} className="hidden lg:block">
             <Magnetic strength={0.3}>
               <Button
