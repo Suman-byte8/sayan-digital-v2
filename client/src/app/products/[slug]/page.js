@@ -5,41 +5,63 @@ import { CtaSection } from "@/components/sections/cta-section";
 import { ProductDetailView } from "@/components/products/product-detail-view";
 import { RelatedProducts } from "@/components/products/related-products";
 import { PRODUCT_CATALOG } from "@/constants/products-catalog";
+import { STATIONERY_CATALOG } from "@/constants/stationery-catalog";
+
+// Both catalogs (Sayan Digital printing + Sayan Stationary) share this one
+// detail route/component instead of each getting their own — a slug is
+// looked up across both, and "related products" stays within whichever
+// catalog it was found in.
+const CATALOGS = [PRODUCT_CATALOG, STATIONERY_CATALOG];
+
+function findProduct(slug) {
+  for (const catalog of CATALOGS) {
+    const product = catalog.find((item) => item.key === slug);
+    if (product) return { product, catalog };
+  }
+  return null;
+}
 
 export function generateStaticParams() {
-  return PRODUCT_CATALOG.map((product) => ({ slug: product.key }));
+  return CATALOGS.flat().map((product) => ({ slug: product.key }));
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const product = PRODUCT_CATALOG.find((item) => item.key === slug);
+  const found = findProduct(slug);
 
-  if (!product) {
+  if (!found) {
     return { title: "Product Not Found — Sayan Digital" };
   }
 
   return {
-    title: `${product.name} — Sayan Digital`,
-    description: product.description,
+    title: `${found.product.name} — Sayan Digital`,
+    description: found.product.description,
   };
 }
 
 export default async function ProductDetailPage({ params }) {
   const { slug } = await params;
-  const product = PRODUCT_CATALOG.find((item) => item.key === slug);
+  const found = findProduct(slug);
 
-  if (!product) notFound();
+  if (!found) notFound();
+  const { product, catalog } = found;
 
-  const relatedProducts = PRODUCT_CATALOG.filter(
-    (item) => item.category === product.category && item.key !== product.key
-  ).slice(0, 4);
+  const relatedProducts = catalog
+    .filter((item) => item.category === product.category && item.key !== product.key)
+    .slice(0, 4);
+
+  const isStationery = catalog === STATIONERY_CATALOG;
 
   return (
     <>
       <Navbar />
 
       <main className="bg-background pt-24">
-        <ProductDetailView product={product} />
+        <ProductDetailView
+          product={product}
+          catalogHref={isStationery ? "/stationery" : "/products"}
+          catalogLabel={isStationery ? "Stationery" : "Products"}
+        />
         <RelatedProducts products={relatedProducts} />
       </main>
 

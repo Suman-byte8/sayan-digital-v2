@@ -3,6 +3,7 @@
 import {
   ArrowRight,
   Award,
+  BookOpen,
   Briefcase,
   Building2,
   Camera,
@@ -54,6 +55,7 @@ import {
 export const ICONS = {
   ArrowRight,
   Award,
+  BookOpen,
   Briefcase,
   Building2,
   Camera,

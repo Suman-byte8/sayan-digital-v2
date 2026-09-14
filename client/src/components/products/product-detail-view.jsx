@@ -38,13 +38,13 @@ const ORDERING_NOTES = CONTACT_FAQS.filter(
 );
 
 function buildInquiryMailto(product) {
-  const subject = `Print Inquiry — ${product.name}`;
+  const subject = `Order Inquiry — ${product.name}`;
   const lines = [
     `I'm interested in ordering: ${product.name}`,
     `Category: ${product.categoryLabel}`,
     "Quantity needed: ",
     "",
-    "Please share a digital proof before production.",
+    "Please confirm availability, pricing and (if applicable) a digital proof before production.",
   ];
   return `mailto:${BRAND.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
     lines.join("\n")
@@ -56,7 +56,7 @@ function buildWhatsappHref(product) {
   return `https://wa.me/${BRAND.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
 }
 
-export function ProductDetailView({ product }) {
+export function ProductDetailView({ product, catalogHref = "/products", catalogLabel = "Products" }) {
   const [isSaved, setIsSaved] = useState(false);
   const [activeTab, setActiveTab] = useState("overview");
 
@@ -81,8 +81,8 @@ export function ProductDetailView({ product }) {
           Home
         </Link>
         <ChevronRight size={13} />
-        <Link href="/products" className="transition-colors hover:text-(--brand)">
-          Products
+        <Link href={catalogHref} className="transition-colors hover:text-(--brand)">
+          {catalogLabel}
         </Link>
         <ChevronRight size={13} />
         <span className="max-w-[50vw] truncate font-medium text-(--brand)">{product.name}</span>

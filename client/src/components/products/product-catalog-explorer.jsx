@@ -6,8 +6,18 @@ import { CatalogProductCard } from "@/components/products/catalog-product-card";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 
-export function ProductCatalogExplorer({ products, categories }) {
-  const [activeCategory, setActiveCategory] = useState("all");
+export function ProductCatalogExplorer({
+  products,
+  categories,
+  // Optional controlled category (e.g. so an external "shop by category"
+  // section can drive this same explorer). Falls back to owning its own
+  // state when not provided, so existing callers are unaffected.
+  activeCategory: controlledCategory,
+  onCategoryChange,
+}) {
+  const [internalCategory, setInternalCategory] = useState("all");
+  const activeCategory = controlledCategory ?? internalCategory;
+  const setActiveCategory = onCategoryChange ?? setInternalCategory;
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("featured");
 

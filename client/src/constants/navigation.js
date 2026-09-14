@@ -8,6 +8,6 @@ export const NAV_LINKS = [
 
 export const STATIONARY_LINK = {
   label: "Sayan Stationary",
-  href: "#",
+  href: "/stationery",
   delay: 300,
 };
