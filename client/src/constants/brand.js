@@ -3,7 +3,7 @@
 export const BRAND = {
   name: "Sayan Digital",
   tagline: "Digital & Customised Printing Unit",
-  logoSrc: "/assets/sayan_digital_logo.png",
+  logoSrc: "https://res.cloudinary.com/iopfstic/image/upload/v1789387281/logo.png",
   location: "Malda, West Bengal",
   navCta: "Shop Now",
   phone: "+91-8597507902",

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { Menu, ShoppingBag, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,15 +30,15 @@ export function Navbar() {
             : "border-b border-transparent bg-transparent"
         }`}
       >
-        <FadeUp
-          as="a"
-          href="/"
-          delay={0}
-          className={`text-sm font-semibold tracking-[0.18em] transition-colors duration-300 ${
-            solid ? "text-foreground" : "text-white"
-          }`}
-        >
-          {BRAND.name.toUpperCase()}
+        <FadeUp as="a" href="/" delay={0} aria-label={BRAND.name} className="flex items-center">
+          <Image
+            src={BRAND.logoSrc}
+            alt={BRAND.name}
+            width={160}
+            height={40}
+            priority
+            className="h-6 w-auto object-contain"
+          />
         </FadeUp>
 
         <div className="hidden items-center gap-8 lg:flex">
