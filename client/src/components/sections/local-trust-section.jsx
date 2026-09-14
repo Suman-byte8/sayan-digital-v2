@@ -92,10 +92,6 @@ export function LocalTrustSection() {
                 <MapPin size={16} />
                 Visit Our Store
               </Button>
-
-              <p className="text-[11px] text-muted-foreground/70">
-                Contact details shown are placeholders pending final business information.
-              </p>
             </CardContent>
           </Card>
         </Reveal>

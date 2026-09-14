@@ -86,10 +86,6 @@ export function ContactLocationCard() {
               Book a Visit
             </a>
           </div>
-
-          <p className="text-[11px] text-muted-foreground/70">
-            Contact details shown are placeholders pending final business information.
-          </p>
         </div>
       </div>
 

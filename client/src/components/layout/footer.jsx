@@ -73,15 +73,29 @@ export function Footer() {
             </li>
             <li className="flex items-start gap-2 text-[13px] text-muted-foreground">
               <Phone size={15} className="mt-0.5 shrink-0" />
-              {BRAND.phone}
+              <span className="flex flex-col">
+                <a href={`tel:${BRAND.phone}`} className="transition-colors hover:text-foreground">
+                  {BRAND.phone}
+                </a>
+                <a
+                  href={`tel:${BRAND.phoneSecondary}`}
+                  className="transition-colors hover:text-foreground"
+                >
+                  {BRAND.phoneSecondary}
+                </a>
+              </span>
             </li>
             <li className="flex items-start gap-2 text-[13px] text-muted-foreground">
               <Mail size={15} className="mt-0.5 shrink-0" />
-              {BRAND.email}
+              <a href={`mailto:${BRAND.email}`} className="transition-colors hover:text-foreground">
+                {BRAND.email}
+              </a>
             </li>
             <li>
               <a
                 href={BRAND.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
               >
                 <AtSign size={15} />
@@ -90,7 +104,29 @@ export function Footer() {
             </li>
             <li>
               <a
+                href={BRAND.facebook}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+              >
+                Facebook
+              </a>
+            </li>
+            <li>
+              <a
+                href={BRAND.github}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
+              >
+                GitHub
+              </a>
+            </li>
+            <li>
+              <a
                 href={BRAND.googleBusiness}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
               >
                 Google Business Profile
@@ -107,7 +143,17 @@ export function Footer() {
           <p className="text-[12px] text-muted-foreground">
             © 2026 {BRAND.name}. All rights reserved.
           </p>
-          <p className="text-[12px] text-muted-foreground/70">Crafted with care.</p>
+          <p className="text-[12px] text-muted-foreground/70">
+            Developed By{" "}
+            <a
+              href="https://sumancodes.netlify.app"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-muted-foreground transition-colors hover:text-foreground"
+            >
+              Suman Saha
+            </a>
+          </p>
         </div>
       </div>
     </footer>
