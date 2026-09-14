@@ -27,26 +27,30 @@ export function InfiniteRibbon({
 
   return (
     <div
-      className={cn("w-full max-w-full overflow-hidden py-3.5 shadow-premium-lg", bg, className)}
+      className={cn("w-full py-3.5 shadow-premium-lg", bg, className)}
       style={rotation ? { transform: `rotate(${rotation}deg)` } : undefined}
     >
-      <span className="sr-only">{children}</span>
-      <div
-        aria-hidden="true"
-        className={cn(
-          "flex w-max items-center whitespace-nowrap",
-          reverse ? "ribbon-track-reverse" : "ribbon-track",
-        )}
-        style={{ "--ribbon-duration": `${Math.max(0.1, duration)}s` }}
-      >
-        {Array.from({ length: repeatCount * 2 }, (_, index) => (
-          <span key={index} className="flex items-center select-none">
-            <span className={cn("text-[13px] font-medium tracking-[0.24em] uppercase sm:text-sm", text)}>
-              {children}
+      {/* Inner div: overflow-hidden hides the duplicate scroll content for
+          the seamless loop, but is not rotated so no corner clipping occurs */}
+      <div className="overflow-hidden w-full max-w-full">
+        <span className="sr-only">{children}</span>
+        <div
+          aria-hidden="true"
+          className={cn(
+            "flex w-max items-center whitespace-nowrap",
+            reverse ? "ribbon-track-reverse" : "ribbon-track",
+          )}
+          style={{ "--ribbon-duration": `${Math.max(0.1, duration)}s` }}
+        >
+          {Array.from({ length: repeatCount * 2 }, (_, index) => (
+            <span key={index} className="flex items-center select-none">
+              <span className={cn("text-[13px] font-medium tracking-[0.24em] uppercase sm:text-sm", text)}>
+                {children}
+              </span>
+              <Sparkles size={13} className={cn("mx-7 shrink-0", icon)} aria-hidden />
             </span>
-            <Sparkles size={13} className={cn("mx-7 shrink-0", icon)} aria-hidden />
-          </span>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

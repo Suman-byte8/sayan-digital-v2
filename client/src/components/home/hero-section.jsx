@@ -14,7 +14,7 @@ export function HeroSection() {
 
       <Navbar />
 
-      <div className="relative z-10 flex h-[calc(100dvh-72px)] max-w-3xl flex-col justify-end px-6 pb-16 md:px-12 md:pb-24">
+      <div className="relative z-10 flex h-[calc(100dvh-72px)] max-w-3xl flex-col justify-end px-6 pb-24 md:px-12 md:pb-32 lg:pb-36">
         <HeroEyebrow />
         <HeroHeadline />
         <HeroCtaGroup />

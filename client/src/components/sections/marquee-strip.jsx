@@ -29,7 +29,7 @@ function RibbonText() {
 
 export function MarqueeStrip() {
   return (
-    <div className="relative overflow-hidden bg-background pt-6 pb-20 md:pt-10 md:pb-28">
+    <div className="relative py-2">
       <div className="relative flex flex-col gap-0">
         <InfiniteRibbon tone="brand" rotation={-3.5} duration={55}>
           <RibbonText />
