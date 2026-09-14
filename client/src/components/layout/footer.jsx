@@ -1,8 +1,16 @@
 import Link from "next/link";
-import { AtSign, Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import { FooterWordmark } from "@/components/layout/footer-wordmark";
+import { FacebookIcon, GithubIcon, GoogleIcon, InstagramIcon } from "@/components/icons/brand-icons";
 import { NAV_LINKS, STATIONARY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
+
+const SOCIAL_LINKS = [
+  { key: "instagram", href: BRAND.instagram, label: "Instagram", Icon: InstagramIcon },
+  { key: "facebook", href: BRAND.facebook, label: "Facebook", Icon: FacebookIcon },
+  { key: "github", href: BRAND.github, label: "GitHub", Icon: GithubIcon },
+  { key: "google", href: BRAND.googleBusiness, label: "Google Business Profile", Icon: GoogleIcon },
+];
 
 const BUSINESS_LINKS = [
   "Customized Printing",
@@ -73,10 +81,11 @@ export function Footer() {
             </li>
             <li className="flex items-start gap-2 text-[13px] text-muted-foreground">
               <Phone size={15} className="mt-0.5 shrink-0" />
-              <span className="flex flex-col">
+              <span className="flex flex-wrap items-center gap-x-1.5">
                 <a href={`tel:${BRAND.phone}`} className="transition-colors hover:text-foreground">
                   {BRAND.phone}
                 </a>
+                <span aria-hidden="true">/</span>
                 <a
                   href={`tel:${BRAND.phoneSecondary}`}
                   className="transition-colors hover:text-foreground"
@@ -91,46 +100,19 @@ export function Footer() {
                 {BRAND.email}
               </a>
             </li>
-            <li>
-              <a
-                href={BRAND.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-              >
-                <AtSign size={15} />
-                Instagram
-              </a>
-            </li>
-            <li>
-              <a
-                href={BRAND.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Facebook
-              </a>
-            </li>
-            <li>
-              <a
-                href={BRAND.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-              >
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a
-                href={BRAND.googleBusiness}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[13px] text-muted-foreground transition-colors hover:text-foreground"
-              >
-                Google Business Profile
-              </a>
+            <li className="flex items-center gap-3 pt-1">
+              {SOCIAL_LINKS.map(({ key, href, label, Icon }) => (
+                <a
+                  key={key}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={label}
+                  className="text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Icon size={17} />
+                </a>
+              ))}
             </li>
           </ul>
         </div>
