@@ -14,31 +14,29 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function ProofsTab({ proofs: initialProofs }) {
-  const [proofs, setProofs] = useState(initialProofs);
+export function ProofsTab({ proofs, onApprove }) {
   const [selectedProof, setSelectedProof] = useState(null);
   const [commentText, setCommentText] = useState("");
   const [feedbackSuccess, setFeedbackSuccess] = useState(false);
+  const [approvingId, setApprovingId] = useState(null);
 
-  function handleApprove(proofId) {
-    setProofs((prev) =>
-      prev.map((p) =>
-        p.id === proofId
-          ? {
-              ...p,
-              status: "approved",
-              approvedDate: `Today, ${new Date().toLocaleDateString("en-IN", {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-              })}`,
-            }
-          : p
-      )
-    );
-    alert("Proof Approved! Sayan Digital's print unit will now proceed to physical production.");
+  async function handleApprove(proofId) {
+    setApprovingId(proofId);
+    try {
+      await onApprove(proofId);
+      alert("Proof Approved! Sayan Digital's print unit will now proceed to physical production.");
+    } catch {
+      alert("Couldn't approve this proof — please try again.");
+    } finally {
+      setApprovingId(null);
+    }
   }
 
+  // No backend workflow exists yet for revision comments (see
+  // server/README.md's proofs caveat - there's no admin side to receive
+  // this either, since proofs themselves aren't created by anything yet)
+  // - kept as a local-only stub so the UI doesn't dead-end, not wired to
+  // a real endpoint.
   function handleRequestRevision(proofId) {
     if (!commentText.trim()) {
       alert("Please enter the specific design changes or corrections needed.");
@@ -154,11 +152,12 @@ export function ProofsTab({ proofs: initialProofs }) {
                     <>
                       <Button
                         size="sm"
+                        disabled={approvingId === proof.id}
                         className="flex-1 gap-1.5 rounded-full bg-emerald-700 hover:bg-emerald-800 text-white text-xs"
                         onClick={() => handleApprove(proof.id)}
                       >
                         <Check size={14} />
-                        Approve for Printing
+                        {approvingId === proof.id ? "Approving…" : "Approve for Printing"}
                       </Button>
                       <Button
                         variant="outline"

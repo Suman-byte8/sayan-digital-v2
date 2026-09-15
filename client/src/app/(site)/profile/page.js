@@ -8,6 +8,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { ProfileView } from "@/components/profile/profile-view";
+import { AuthGate } from "@/components/auth/auth-gate";
 import { buildMetadata } from "@/lib/seo";
 
 // Personal account/order area — no SEO value and contains customer-specific
@@ -60,7 +61,9 @@ export default function ProfilePage() {
         </nav>
 
         {/* Master Profile Layout */}
-        <ProfileView />
+        <AuthGate>
+          <ProfileView />
+        </AuthGate>
 
         {/* Bottom Trust Indicators */}
         <div className="mt-16 grid grid-cols-1 gap-4 sm:grid-cols-3">

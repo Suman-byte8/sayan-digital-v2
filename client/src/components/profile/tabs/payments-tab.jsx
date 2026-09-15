@@ -4,43 +4,46 @@ import { useState } from "react";
 import { CreditCard, QrCode, Building2, Plus, CheckCircle2, Trash2, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function PaymentsTab({ paymentMethods: initialMethods }) {
-  const [methods, setMethods] = useState(initialMethods);
+export function PaymentsTab({ paymentMethods: methods, onAdd, onRemove, onSetPrimary }) {
   const [showAddModal, setShowAddModal] = useState(false);
   const [newVpa, setNewVpa] = useState("");
+  const [formError, setFormError] = useState("");
+  const [saving, setSaving] = useState(false);
 
-  function handleRemove(id) {
+  async function handleRemove(id) {
     if (confirm("Remove this payment method?")) {
-      setMethods((prev) => prev.filter((m) => m.id !== id));
+      await onRemove(id);
     }
   }
 
-  function handleSetPrimary(id) {
-    setMethods((prev) =>
-      prev.map((m) => ({
-        ...m,
-        isPrimary: m.id === id,
-      }))
-    );
+  async function handleSetPrimary(id) {
+    await onSetPrimary(id);
   }
 
-  function handleAddUpi(e) {
+  async function handleAddUpi(e) {
     e.preventDefault();
     if (!newVpa.includes("@")) {
-      alert("Please enter a valid UPI ID (e.g. yourname@okhdfcbank).");
+      setFormError("Please enter a valid UPI ID (e.g. yourname@okhdfcbank).");
       return;
     }
-    const newMethod = {
-      id: `pay-${Date.now()}`,
-      type: "upi",
-      title: "Saved UPI VPA",
-      detail: newVpa.trim(),
-      isPrimary: methods.length === 0,
-      badge: "Verified VPA",
-    };
-    setMethods((prev) => [...prev, newMethod]);
-    setNewVpa("");
-    setShowAddModal(false);
+
+    setSaving(true);
+    setFormError("");
+    try {
+      await onAdd({
+        type: "upi",
+        title: "Saved UPI VPA",
+        detail: newVpa.trim(),
+        isPrimary: methods.length === 0,
+        badge: "UPI",
+      });
+      setNewVpa("");
+      setShowAddModal(false);
+    } catch (error) {
+      setFormError(error.message || "Failed to save UPI ID.");
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -132,9 +135,10 @@ export function PaymentsTab({ paymentMethods: initialMethods }) {
       <div className="flex items-start gap-3 rounded-2xl border border-border/80 bg-(--paper-muted) p-4 text-xs text-muted-foreground">
         <ShieldCheck size={18} className="shrink-0 text-emerald-700 mt-0.5" />
         <div>
-          <strong className="text-foreground font-medium">PCI-DSS 256-bit Bank Grade Security:</strong>{" "}
-          Sayan Digital encrypts all transaction records with AES-256 tokenization. UPI handles are
-          routed directly through NPCI rails.
+          <strong className="text-foreground font-medium">A note on what&rsquo;s saved here:</strong>{" "}
+          These are personal reference labels for your own convenience — not connected to a payment
+          processor. Please never enter a full card number or CVV; use a masked reference (e.g.
+          &ldquo;•••• 4892&rdquo;) instead.
         </div>
       </div>
 
@@ -148,6 +152,9 @@ export function PaymentsTab({ paymentMethods: initialMethods }) {
             </p>
 
             <form onSubmit={handleAddUpi} className="mt-4 space-y-4 text-xs">
+              {formError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive">{formError}</p>
+              )}
               <div>
                 <label className="font-medium text-foreground">Virtual Payment Address (UPI ID)</label>
                 <input
@@ -170,8 +177,8 @@ export function PaymentsTab({ paymentMethods: initialMethods }) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="rounded-full text-xs">
-                  Verify & Save UPI
+                <Button type="submit" size="sm" disabled={saving} className="rounded-full text-xs">
+                  {saving ? "Saving…" : "Save UPI ID"}
                 </Button>
               </div>
             </form>

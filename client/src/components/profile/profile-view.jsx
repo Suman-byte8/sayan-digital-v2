@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   User,
   Package,
@@ -19,15 +18,9 @@ import {
   Headphones,
   Sparkles,
 } from "lucide-react";
-import {
-  INITIAL_USER_PROFILE,
-  INITIAL_ORDERS,
-  INITIAL_PROOFS,
-  INITIAL_ADDRESSES,
-  INITIAL_WISHLIST,
-  INITIAL_PAYMENT_METHODS,
-  INITIAL_NOTIFICATIONS,
-} from "@/constants/profile-data";
+import { useAuth } from "@/context/auth-context";
+import { profileApi } from "@/lib/auth-api";
+import { toOrderView, toProofView, memberSinceLabel, loyaltyTier } from "@/lib/profile-view-model";
 import { OrdersTab } from "@/components/profile/tabs/orders-tab";
 import { ProofsTab } from "@/components/profile/tabs/proofs-tab";
 import { AddressesTab } from "@/components/profile/tabs/addresses-tab";
@@ -62,26 +55,119 @@ const NAV_GROUPS = [
 ];
 
 export function ProfileView() {
+  const { user, accessToken, logout, updateUser } = useAuth();
   const [activeTab, setActiveTab] = useState("orders");
-  const [profile, setProfile] = useState(INITIAL_USER_PROFILE);
-  const [orders] = useState(INITIAL_ORDERS);
-  const [proofs] = useState(INITIAL_PROOFS);
-  const [addresses] = useState(INITIAL_ADDRESSES);
-  const [wishlist] = useState(INITIAL_WISHLIST);
-  const [paymentMethods] = useState(INITIAL_PAYMENT_METHODS);
-  const [notifications] = useState(INITIAL_NOTIFICATIONS);
+  const [orders, setOrders] = useState([]);
+  const [proofs, setProofs] = useState([]);
+  const [addresses, setAddresses] = useState([]);
+  const [wishlist, setWishlist] = useState([]);
+  const [paymentMethods, setPaymentMethods] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const activeOrdersCount = orders.filter(
+  useEffect(() => {
+    if (!accessToken) return;
+
+    Promise.all([
+      profileApi.listOrders(accessToken),
+      profileApi.listProofs(accessToken),
+      profileApi.listAddresses(accessToken),
+      profileApi.listWishlist(accessToken),
+      profileApi.listPaymentMethods(accessToken),
+    ])
+      .then(([ordersRes, proofsRes, addressesRes, wishlistRes, paymentsRes]) => {
+        setOrders(ordersRes.data);
+        setProofs(proofsRes.data);
+        setAddresses(addressesRes.data);
+        setWishlist(wishlistRes.data);
+        setPaymentMethods(paymentsRes.data);
+      })
+      .finally(() => setLoading(false));
+  }, [accessToken]);
+
+  const mappedOrders = orders.map(toOrderView);
+  const mappedProofs = proofs.map(toProofView);
+
+  const activeOrdersCount = mappedOrders.filter(
     (o) => o.status === "in-production" || o.status === "shipped"
   ).length;
-  const pendingProofsCount = proofs.filter((p) => p.status === "pending").length;
+  const pendingProofsCount = mappedProofs.filter((p) => p.status === "pending").length;
+  const { tier } = loyaltyTier(user.loyaltyPoints);
+  const avatarInitials = user.name
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+  const memberSince = memberSinceLabel(user.createdAt);
+  const pointsValueRupees = Math.floor(user.loyaltyPoints / 10);
 
-  const router = useRouter();
-
-  function handleSignOut() {
+  async function handleSignOut() {
     if (confirm("Are you sure you want to sign out of your account?")) {
-      router.push("/");
+      await logout();
     }
+  }
+
+  // Address handlers
+  async function handleCreateAddress(data) {
+    const { data: created } = await profileApi.createAddress(accessToken, data);
+    setAddresses((prev) => [created, ...prev].map((a) => (data.isDefaultShipping && a.id !== created.id ? { ...a, isDefaultShipping: false } : a)));
+  }
+  async function handleUpdateAddress(id, data) {
+    const { data: updated } = await profileApi.updateAddress(accessToken, id, data);
+    setAddresses((prev) =>
+      prev.map((a) => (a.id === id ? updated : data.isDefaultShipping ? { ...a, isDefaultShipping: false } : a)),
+    );
+  }
+  async function handleDeleteAddress(id) {
+    await profileApi.deleteAddress(accessToken, id);
+    setAddresses((prev) => prev.filter((a) => a.id !== id));
+  }
+  async function handleSetDefaultAddress(id) {
+    await handleUpdateAddress(id, { isDefaultShipping: true });
+  }
+
+  // Wishlist handlers
+  async function handleRemoveWishlistItem(id) {
+    await profileApi.removeWishlistItem(accessToken, id);
+    setWishlist((prev) => prev.filter((item) => item.id !== id));
+  }
+
+  // Payment method handlers
+  async function handleAddPaymentMethod(data) {
+    const { data: created } = await profileApi.createPaymentMethod(accessToken, data);
+    setPaymentMethods((prev) =>
+      [created, ...prev].map((m) => (data.isPrimary && m.id !== created.id ? { ...m, isPrimary: false } : m)),
+    );
+  }
+  async function handleRemovePaymentMethod(id) {
+    await profileApi.deletePaymentMethod(accessToken, id);
+    setPaymentMethods((prev) => prev.filter((m) => m.id !== id));
+  }
+  async function handleSetPrimaryPaymentMethod(id) {
+    await profileApi.setPrimaryPaymentMethod(accessToken, id);
+    setPaymentMethods((prev) => prev.map((m) => ({ ...m, isPrimary: m.id === id })));
+  }
+
+  // Proof handlers
+  async function handleApproveProof(id) {
+    await profileApi.approveProof(accessToken, id);
+    setProofs((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, status: "APPROVED", approvedAt: new Date().toISOString() } : p)),
+    );
+  }
+
+  // Notification handlers
+  async function handleToggleNotification(field, value) {
+    const { data } = await profileApi.update(accessToken, { [field]: value });
+    updateUser(data);
+  }
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[40vh] items-center justify-center">
+        <div className="size-8 animate-spin rounded-full border-2 border-(--brand)/20 border-t-(--brand)" />
+      </div>
+    );
   }
 
   return (
@@ -100,7 +186,7 @@ export function ProfileView() {
           {/* User Info with Avatar */}
           <div className="flex items-center gap-5">
             <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl border-2 border-(--brand)/20 bg-(--brand) text-white shadow-md flex items-center justify-center font-serif text-2xl font-light">
-              <span>{profile.avatarInitials}</span>
+              <span>{avatarInitials}</span>
               <button
                 type="button"
                 onClick={() => alert("Upload photo feature: select an image file to update your profile photo.")}
@@ -114,19 +200,19 @@ export function ProfileView() {
             <div>
               <div className="flex flex-wrap items-center gap-2.5">
                 <h1 className="font-serif text-2xl font-normal text-foreground sm:text-3xl">
-                  {profile.name}
+                  {user.name}
                 </h1>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-500/10 px-3 py-0.5 text-xs font-semibold text-amber-800 dark:text-amber-400">
                   <Sparkles size={12} />
-                  {profile.tier}
+                  {tier}
                 </span>
               </div>
 
               <p className="mt-1 text-xs text-muted-foreground">
-                {profile.email} · {profile.phone}
+                {user.email} {user.phone ? `· ${user.phone}` : ""}
               </p>
               <p className="mt-0.5 text-[11px] text-muted-foreground/80">
-                Customer at Sayan Digital since {profile.memberSince} · Malda, WB
+                Customer at Sayan Digital since {memberSince} · Malda, WB
               </p>
             </div>
           </div>
@@ -141,12 +227,14 @@ export function ProfileView() {
               <div>
                 <div className="flex items-center gap-1.5">
                   <span className="font-serif text-lg font-semibold text-amber-950">
-                    {profile.loyaltyPoints.toLocaleString("en-IN")}
+                    {user.loyaltyPoints.toLocaleString("en-IN")}
                   </span>
                   <span className="text-[11px] font-medium text-amber-800">Coins</span>
                 </div>
                 <p className="text-[11px] text-amber-900/80">
-                  Save ₹{profile.pointsValueRupees} on your next order
+                  {pointsValueRupees > 0
+                    ? `Save ₹${pointsValueRupees} on your next order`
+                    : "Earn coins with every completed order"}
                 </p>
               </div>
             </div>
@@ -329,20 +417,36 @@ export function ProfileView() {
         <main className="min-w-0">
           <div className="rounded-3xl border border-border bg-card p-6 shadow-sm sm:p-8">
             {activeTab === "orders" && (
-              <OrdersTab orders={orders} onSelectTab={(tab) => setActiveTab(tab)} />
+              <OrdersTab orders={mappedOrders} onSelectTab={(tab) => setActiveTab(tab)} />
             )}
-            {activeTab === "proofs" && <ProofsTab proofs={proofs} />}
-            {activeTab === "wishlist" && <WishlistTab wishlist={wishlist} />}
+            {activeTab === "proofs" && (
+              <ProofsTab proofs={mappedProofs} onApprove={handleApproveProof} />
+            )}
+            {activeTab === "wishlist" && (
+              <WishlistTab wishlist={wishlist} onRemove={handleRemoveWishlistItem} />
+            )}
             {activeTab === "personal-info" && (
-              <PersonalInfoTab
-                profile={profile}
-                onUpdateProfile={(updated) => setProfile(updated)}
+              <PersonalInfoTab profile={user} onUpdateProfile={(updated) => updateUser(updated)} />
+            )}
+            {activeTab === "addresses" && (
+              <AddressesTab
+                addresses={addresses}
+                onCreate={handleCreateAddress}
+                onUpdate={handleUpdateAddress}
+                onDelete={handleDeleteAddress}
+                onSetDefault={handleSetDefaultAddress}
               />
             )}
-            {activeTab === "addresses" && <AddressesTab addresses={addresses} />}
-            {activeTab === "payments" && <PaymentsTab paymentMethods={paymentMethods} />}
+            {activeTab === "payments" && (
+              <PaymentsTab
+                paymentMethods={paymentMethods}
+                onAdd={handleAddPaymentMethod}
+                onRemove={handleRemovePaymentMethod}
+                onSetPrimary={handleSetPrimaryPaymentMethod}
+              />
+            )}
             {activeTab === "notifications" && (
-              <NotificationsTab notifications={notifications} />
+              <NotificationsTab notifications={user} onToggle={handleToggleNotification} />
             )}
           </div>
         </main>

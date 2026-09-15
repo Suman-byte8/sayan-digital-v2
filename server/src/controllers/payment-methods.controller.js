@@ -23,6 +23,20 @@ export async function createPaymentMethod(req, res) {
   res.status(201).json({ success: true, data: method });
 }
 
+export async function setPrimaryPaymentMethod(req, res) {
+  const { id } = req.validated.params;
+
+  const existing = await prisma.paymentMethod.findFirst({ where: { id, userId: req.userId } });
+  if (!existing) throw new ApiError(404, "Payment method not found");
+
+  await prisma.paymentMethod.updateMany({
+    where: { userId: req.userId },
+    data: { isPrimary: false },
+  });
+  const method = await prisma.paymentMethod.update({ where: { id }, data: { isPrimary: true } });
+  res.json({ success: true, data: method });
+}
+
 export async function deletePaymentMethod(req, res) {
   const { id } = req.validated.params;
   const { count } = await prisma.paymentMethod.deleteMany({ where: { id, userId: req.userId } });

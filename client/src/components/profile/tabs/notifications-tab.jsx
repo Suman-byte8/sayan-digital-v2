@@ -3,17 +3,34 @@
 import { useState } from "react";
 import { MessageCircle, Bell, Mail, Sparkles, CheckCircle2 } from "lucide-react";
 
-export function NotificationsTab({ notifications: initialNotifications }) {
-  const [settings, setSettings] = useState(initialNotifications);
-  const [savedBadge, setSavedBadge] = useState(false);
+// Short display keys (matching the JSX below) -> real User columns.
+const FIELD_MAP = {
+  orderUpdatesWhatsapp: "notifyOrderUpdatesWhatsapp",
+  deliverySms: "notifyDeliverySms",
+  designProofAlerts: "notifyDesignProofAlerts",
+  festiveDiscountAlerts: "notifyFestiveDiscounts",
+};
 
-  function toggle(key) {
-    setSettings((prev) => {
-      const updated = { ...prev, [key]: !prev[key] };
+export function NotificationsTab({ notifications, onToggle }) {
+  const [savedBadge, setSavedBadge] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const settings = {
+    orderUpdatesWhatsapp: notifications.notifyOrderUpdatesWhatsapp,
+    deliverySms: notifications.notifyDeliverySms,
+    designProofAlerts: notifications.notifyDesignProofAlerts,
+    festiveDiscountAlerts: notifications.notifyFestiveDiscounts,
+  };
+
+  async function toggle(key) {
+    setSaving(true);
+    try {
+      await onToggle(FIELD_MAP[key], !settings[key]);
       setSavedBadge(true);
       setTimeout(() => setSavedBadge(false), 2000);
-      return updated;
-    });
+    } finally {
+      setSaving(false);
+    }
   }
 
   return (
@@ -55,6 +72,7 @@ export function NotificationsTab({ notifications: initialNotifications }) {
           <label className="relative inline-flex cursor-pointer items-center">
             <input
               type="checkbox"
+              disabled={saving}
               checked={settings.orderUpdatesWhatsapp}
               onChange={() => toggle("orderUpdatesWhatsapp")}
               className="peer sr-only"
@@ -83,6 +101,7 @@ export function NotificationsTab({ notifications: initialNotifications }) {
           <label className="relative inline-flex cursor-pointer items-center">
             <input
               type="checkbox"
+              disabled={saving}
               checked={settings.designProofAlerts}
               onChange={() => toggle("designProofAlerts")}
               className="peer sr-only"
@@ -109,6 +128,7 @@ export function NotificationsTab({ notifications: initialNotifications }) {
           <label className="relative inline-flex cursor-pointer items-center">
             <input
               type="checkbox"
+              disabled={saving}
               checked={settings.deliverySms}
               onChange={() => toggle("deliverySms")}
               className="peer sr-only"
@@ -137,6 +157,7 @@ export function NotificationsTab({ notifications: initialNotifications }) {
           <label className="relative inline-flex cursor-pointer items-center">
             <input
               type="checkbox"
+              disabled={saving}
               checked={settings.festiveDiscountAlerts}
               onChange={() => toggle("festiveDiscountAlerts")}
               className="peer sr-only"

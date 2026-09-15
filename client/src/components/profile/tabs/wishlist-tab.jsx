@@ -5,12 +5,26 @@ import Link from "next/link";
 import { Heart, ShoppingBag, Trash2, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function WishlistTab({ wishlist: initialWishlist }) {
-  const [items, setItems] = useState(initialWishlist);
-  const [addedId, setAddedId] = useState(null);
+// wishlist entries come from the API as { id, product: {...} } — flatten
+// to the shape this component's cards already display.
+function toDisplayItem(entry) {
+  return {
+    id: entry.id,
+    name: entry.product.name,
+    category: entry.product.category,
+    description: entry.product.description,
+    price: entry.product.price,
+    inStock: entry.product.stock > 0,
+    image: entry.product.images?.[0],
+  };
+}
 
-  function handleRemove(id) {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+export function WishlistTab({ wishlist, onRemove }) {
+  const [addedId, setAddedId] = useState(null);
+  const items = wishlist.map(toDisplayItem);
+
+  async function handleRemove(id) {
+    await onRemove(id);
   }
 
   function handleAddToCart(id) {

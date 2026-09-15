@@ -4,10 +4,11 @@ import { useState } from "react";
 import { MapPin, Plus, Edit2, Trash2, CheckCircle2, ShieldCheck, Home, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export function AddressesTab({ addresses: initialAddresses }) {
-  const [addresses, setAddresses] = useState(initialAddresses);
+export function AddressesTab({ addresses, onCreate, onUpdate, onDelete, onSetDefault }) {
   const [showModal, setShowModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [formError, setFormError] = useState("");
 
   // Form State
   const [formData, setFormData] = useState({
@@ -41,11 +42,11 @@ export function AddressesTab({ addresses: initialAddresses }) {
   function handleOpenEdit(addr) {
     setEditingAddress(addr);
     setFormData({
-      label: addr.label.includes("Office") ? "Office" : "Home",
+      label: addr.label,
       recipientName: addr.recipientName,
       phone: addr.phone,
       addressLine1: addr.addressLine1,
-      addressLine2: addr.addressLine2,
+      addressLine2: addr.addressLine2 ?? "",
       city: addr.city,
       state: addr.state,
       pincode: addr.pincode,
@@ -54,56 +55,37 @@ export function AddressesTab({ addresses: initialAddresses }) {
     setShowModal(true);
   }
 
-  function handleSetDefault(id) {
-    setAddresses((prev) =>
-      prev.map((a) => ({
-        ...a,
-        isDefaultShipping: a.id === id,
-      }))
-    );
+  async function handleSetDefault(id) {
+    await onSetDefault(id);
   }
 
-  function handleDelete(id) {
+  async function handleDelete(id) {
     if (confirm("Are you sure you want to remove this delivery address?")) {
-      setAddresses((prev) => prev.filter((a) => a.id !== id));
+      await onDelete(id);
     }
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!formData.recipientName || !formData.addressLine1 || !formData.pincode) {
-      alert("Please fill in recipient name, street address, and pincode.");
+      setFormError("Please fill in recipient name, street address, and pincode.");
       return;
     }
 
-    if (editingAddress) {
-      setAddresses((prev) =>
-        prev.map((a) =>
-          a.id === editingAddress.id
-            ? {
-                ...a,
-                ...formData,
-                label: `${formData.label} ${formData.isDefaultShipping ? "(Primary)" : ""}`,
-              }
-            : formData.isDefaultShipping
-            ? { ...a, isDefaultShipping: false }
-            : a
-        )
-      );
-    } else {
-      const newAddr = {
-        id: `addr-${Date.now()}`,
-        ...formData,
-        label: `${formData.label} ${formData.isDefaultShipping ? "(Primary)" : ""}`,
-      };
-      if (formData.isDefaultShipping) {
-        setAddresses((prev) => prev.map((a) => ({ ...a, isDefaultShipping: false })).concat(newAddr));
+    setSaving(true);
+    setFormError("");
+    try {
+      if (editingAddress) {
+        await onUpdate(editingAddress.id, formData);
       } else {
-        setAddresses((prev) => [...prev, newAddr]);
+        await onCreate(formData);
       }
+      setShowModal(false);
+    } catch (error) {
+      setFormError(error.message || "Failed to save address.");
+    } finally {
+      setSaving(false);
     }
-
-    setShowModal(false);
   }
 
   return (
@@ -227,6 +209,9 @@ export function AddressesTab({ addresses: initialAddresses }) {
             </p>
 
             <form onSubmit={handleSubmit} className="mt-5 space-y-4 text-xs">
+              {formError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive">{formError}</p>
+              )}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="font-medium text-foreground">Address Type</label>
@@ -348,8 +333,8 @@ export function AddressesTab({ addresses: initialAddresses }) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="rounded-full text-xs">
-                  Save Address
+                <Button type="submit" size="sm" disabled={saving} className="rounded-full text-xs">
+                  {saving ? "Saving…" : "Save Address"}
                 </Button>
               </div>
             </form>

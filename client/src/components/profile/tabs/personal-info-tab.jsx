@@ -3,47 +3,70 @@
 import { useState } from "react";
 import { User, ShieldCheck, Building2, Key, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { profileApi, ApiRequestError } from "@/lib/auth-api";
+import { useAuth } from "@/context/auth-context";
 
 export function PersonalInfoTab({ profile, onUpdateProfile }) {
+  const { accessToken } = useAuth();
   const [formData, setFormData] = useState({
-    firstName: profile.firstName || "Sayan",
-    lastName: profile.lastName || "Mukherjee",
-    email: profile.email || "sayan.mukherjee@gmail.com",
-    phone: profile.phone || "+91 98320 45678",
-    businessName: profile.businessName || "Sayan Media & Creative Studio",
-    gstin: profile.gstin || "19AAECS1234M1Z5",
+    name: profile.name ?? "",
+    phone: profile.phone ?? "",
+    businessName: profile.businessName ?? "",
+    gstin: profile.gstin ?? "",
   });
 
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const [saving, setSaving] = useState(false);
   const [securityModal, setSecurityModal] = useState(false);
   const [passwordState, setPasswordState] = useState({ current: "", new: "", confirm: "" });
+  const [passwordError, setPasswordError] = useState("");
+  const [changingPassword, setChangingPassword] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (onUpdateProfile) {
-      onUpdateProfile({
-        ...profile,
-        ...formData,
-        name: `${formData.firstName} ${formData.lastName}`.trim(),
-      });
+    setSaving(true);
+    setSaveError("");
+    try {
+      const { data } = await profileApi.update(accessToken, formData);
+      onUpdateProfile?.(data);
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 2500);
+    } catch (error) {
+      setSaveError(error instanceof ApiRequestError ? error.message : "Failed to save changes.");
+    } finally {
+      setSaving(false);
     }
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 2500);
   }
 
-  function handlePasswordSubmit(e) {
+  async function handlePasswordSubmit(e) {
     e.preventDefault();
+    setPasswordError("");
+
     if (!passwordState.current || !passwordState.new) {
-      alert("Please fill in both current and new password.");
+      setPasswordError("Please fill in both current and new password.");
       return;
     }
     if (passwordState.new !== passwordState.confirm) {
-      alert("New password and confirm password do not match.");
+      setPasswordError("New password and confirm password do not match.");
       return;
     }
-    alert("Password updated successfully!");
-    setSecurityModal(false);
-    setPasswordState({ current: "", new: "", confirm: "" });
+
+    setChangingPassword(true);
+    try {
+      await profileApi.changePassword(accessToken, {
+        currentPassword: passwordState.current,
+        newPassword: passwordState.new,
+      });
+      setSecurityModal(false);
+      setPasswordState({ current: "", new: "", confirm: "" });
+    } catch (error) {
+      setPasswordError(
+        error instanceof ApiRequestError ? error.message : "Failed to update password.",
+      );
+    } finally {
+      setChangingPassword(false);
+    }
   }
 
   return (
@@ -68,23 +91,12 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
 
           <div className="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
-              <label className="text-xs font-medium text-foreground">First Name</label>
+              <label className="text-xs font-medium text-foreground">Full Name</label>
               <input
                 type="text"
                 required
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                className="mt-1.5 w-full rounded-xl border border-border bg-background p-2.5 text-xs text-foreground focus:border-(--brand) focus:outline-none focus:ring-1 focus:ring-(--brand)"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-medium text-foreground">Last Name</label>
-              <input
-                type="text"
-                required
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="mt-1.5 w-full rounded-xl border border-border bg-background p-2.5 text-xs text-foreground focus:border-(--brand) focus:outline-none focus:ring-1 focus:ring-(--brand)"
               />
             </div>
@@ -93,12 +105,13 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
               <label className="text-xs font-medium text-foreground">Email Address</label>
               <input
                 type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="mt-1.5 w-full rounded-xl border border-border bg-background p-2.5 text-xs text-foreground focus:border-(--brand) focus:outline-none focus:ring-1 focus:ring-(--brand)"
+                disabled
+                value={profile.email}
+                className="mt-1.5 w-full cursor-not-allowed rounded-xl border border-border bg-muted p-2.5 text-xs text-muted-foreground"
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">Used for digital print proofs and invoices.</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                Your sign-in email — contact us to change it.
+              </p>
             </div>
 
             <div>
@@ -165,9 +178,10 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
                 Profile updated successfully!
               </span>
             )}
+            {saveError && <span className="text-xs font-medium text-destructive">{saveError}</span>}
           </div>
-          <Button type="submit" size="sm" className="rounded-full px-6 py-2 text-xs">
-            Save Profile Changes
+          <Button type="submit" size="sm" disabled={saving} className="rounded-full px-6 py-2 text-xs">
+            {saving ? "Saving…" : "Save Profile Changes"}
           </Button>
         </div>
       </form>
@@ -214,6 +228,9 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
             </p>
 
             <form onSubmit={handlePasswordSubmit} className="mt-4 space-y-3 text-xs">
+              {passwordError && (
+                <p className="rounded-lg bg-destructive/10 px-3 py-2 text-destructive">{passwordError}</p>
+              )}
               <div>
                 <label className="font-medium text-foreground">Current Password</label>
                 <input
@@ -257,8 +274,8 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" size="sm" className="rounded-full text-xs">
-                  Update Password
+                <Button type="submit" size="sm" disabled={changingPassword} className="rounded-full text-xs">
+                  {changingPassword ? "Updating…" : "Update Password"}
                 </Button>
               </div>
             </form>
