@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Save, Tags, X } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { ImageUploader } from "@/components/products/image-uploader";
 
@@ -35,6 +37,14 @@ export function ProductForm({ mode, productId, initialData }) {
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    api
+      .listCategories()
+      .then((result) => setCategories(result.data))
+      .catch(() => setCategories([]));
+  }, []);
 
   function handleChange(field, value) {
     setValues((prev) => ({ ...prev, [field]: value }));
@@ -168,12 +178,36 @@ export function ProductForm({ mode, productId, initialData }) {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Category" error={errors.category?.[0]}>
-          <input
+        <Field
+          label="Category"
+          error={errors.category?.[0]}
+          hint={
+            <>
+              Don&rsquo;t see it?{" "}
+              <Link href="/categories" className="inline-flex items-center gap-1 text-brand hover:underline">
+                <Tags size={12} />
+                Manage categories
+              </Link>
+            </>
+          }
+        >
+          <select
             value={values.category ?? ""}
             onChange={(e) => handleChange("category", e.target.value)}
             className="input"
-          />
+          >
+            <option value="">No category</option>
+            {/* Covers a legacy/imported category value not (yet) in the
+                managed list, so the current selection is never silently lost. */}
+            {values.category && !categories.some((c) => c.name === values.category) && (
+              <option value={values.category}>{values.category}</option>
+            )}
+            {categories.map((category) => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+          </select>
         </Field>
 
         <Field
@@ -241,15 +275,17 @@ export function ProductForm({ mode, productId, initialData }) {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
         >
+          <Save size={15} />
           {submitting ? "Saving…" : mode === "create" ? "Create product" : "Save changes"}
         </button>
         <button
           type="button"
           onClick={() => router.push("/products")}
-          className="rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+          className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
         >
+          <X size={15} />
           Cancel
         </button>
       </div>

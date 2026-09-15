@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Plus, Tags } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { ProductTable } from "@/components/products/product-table";
 
@@ -37,12 +38,22 @@ export default async function ProductsPage({ searchParams }) {
             Manage the Sayan Digital product catalog.
           </p>
         </div>
-        <Link
-          href="/products/new"
-          className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90"
-        >
-          Add product
-        </Link>
+        <div className="flex gap-3">
+          <Link
+            href="/categories"
+            className="flex items-center gap-1.5 rounded-md border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+          >
+            <Tags size={15} />
+            Manage Categories
+          </Link>
+          <Link
+            href="/products/new"
+            className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90"
+          >
+            <Plus size={15} />
+            Add product
+          </Link>
+        </div>
       </div>
 
       <div className="mb-4 flex gap-2">

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft, Pencil } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { ProductImageGallery } from "@/components/products/product-image-gallery";
 
@@ -41,14 +42,19 @@ export default async function ProductDetailPage({ params }) {
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
-        <Link href="/products" className="text-sm text-muted-foreground hover:text-foreground">
-          ← Back to products
+        <Link
+          href="/products"
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft size={15} />
+          Back to products
         </Link>
         <div className="flex gap-3">
           <Link
             href={`/products/${id}/edit`}
-            className="rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90"
+            className="flex items-center gap-1.5 rounded-md bg-brand px-4 py-2 text-sm font-medium text-brand-foreground hover:opacity-90"
           >
+            <Pencil size={15} />
             Edit product
           </Link>
         </div>

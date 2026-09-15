@@ -61,17 +61,24 @@ async function uploadImage(file) {
   return body;
 }
 
+function withQuery(path, params = {}) {
+  const query = new URLSearchParams(
+    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== "")),
+  ).toString();
+  return `${path}${query ? `?${query}` : ""}`;
+}
+
 export const api = {
   uploadImage,
-  listProducts: (params = {}) => {
-    const query = new URLSearchParams(
-      Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== "")),
-    ).toString();
-    return request(`/products${query ? `?${query}` : ""}`);
-  },
+  listProducts: (params = {}) => request(withQuery("/products", params)),
   getProduct: (id) => request(`/products/${id}`),
   createProduct: (data) => request("/products", { method: "POST", body: JSON.stringify(data) }),
   updateProduct: (id, data) =>
     request(`/products/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteProduct: (id) => request(`/products/${id}`, { method: "DELETE" }),
+
+  listCategories: () => request("/categories"),
+  createCategory: (data) => request("/categories", { method: "POST", body: JSON.stringify(data) }),
+  deleteCategory: (id) => request(`/categories/${id}`, { method: "DELETE" }),
+  searchTaxonomy: (q) => request(withQuery("/categories/taxonomy/search", { q })),
 };

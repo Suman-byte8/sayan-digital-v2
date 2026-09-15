@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { Eye, Pencil, Trash2 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 
 const currencyFormatter = new Intl.NumberFormat("en-IN", {
@@ -112,22 +113,25 @@ export function ProductTable({ products }) {
                   <div className="flex justify-end gap-3">
                     <Link
                       href={`/products/${product.id}`}
-                      className="text-sm font-medium text-foreground hover:underline"
+                      className="flex items-center gap-1 text-sm font-medium text-foreground hover:underline"
                     >
+                      <Eye size={14} />
                       View
                     </Link>
                     <Link
                       href={`/products/${product.id}/edit`}
-                      className="text-sm font-medium text-brand hover:underline"
+                      className="flex items-center gap-1 text-sm font-medium text-brand hover:underline"
                     >
+                      <Pencil size={14} />
                       Edit
                     </Link>
                     <button
                       type="button"
                       onClick={() => handleDelete(product)}
                       disabled={deletingId === product.id}
-                      className="text-sm font-medium text-destructive hover:underline disabled:opacity-50"
+                      className="flex items-center gap-1 text-sm font-medium text-destructive hover:underline disabled:opacity-50"
                     >
+                      <Trash2 size={14} />
                       {deletingId === product.id ? "Deleting…" : "Delete"}
                     </button>
                   </div>
