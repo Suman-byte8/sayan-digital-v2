@@ -8,26 +8,28 @@ let driveClient = null;
 function getDriveClient() {
   if (driveClient) return driveClient;
 
-  if (!env.GOOGLE_SERVICE_ACCOUNT_KEY || !env.GOOGLE_DRIVE_FOLDER_ID) {
+  const { GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET, GOOGLE_OAUTH_REFRESH_TOKEN, GOOGLE_DRIVE_FOLDER_ID } =
+    env;
+
+  if (
+    !GOOGLE_OAUTH_CLIENT_ID ||
+    !GOOGLE_OAUTH_CLIENT_SECRET ||
+    !GOOGLE_OAUTH_REFRESH_TOKEN ||
+    !GOOGLE_DRIVE_FOLDER_ID
+  ) {
     throw new ApiError(
       503,
-      "Image uploads aren't configured yet — set GOOGLE_SERVICE_ACCOUNT_KEY and GOOGLE_DRIVE_FOLDER_ID in server/.env (see server/README.md).",
+      "Image uploads aren't configured yet — run `npm run drive:auth` in server/ and set the resulting values in server/.env (see server/README.md).",
     );
   }
 
-  let credentials;
-  try {
-    credentials = JSON.parse(env.GOOGLE_SERVICE_ACCOUNT_KEY);
-  } catch {
-    throw new ApiError(500, "GOOGLE_SERVICE_ACCOUNT_KEY is not valid JSON.");
-  }
+  // OAuth2 (a real Google account's own consent), not a service account key —
+  // some Google Cloud projects have service-account-key creation disabled by
+  // an org policy, which this sidesteps entirely.
+  const oauth2Client = new google.auth.OAuth2(GOOGLE_OAUTH_CLIENT_ID, GOOGLE_OAUTH_CLIENT_SECRET);
+  oauth2Client.setCredentials({ refresh_token: GOOGLE_OAUTH_REFRESH_TOKEN });
 
-  const auth = new google.auth.GoogleAuth({
-    credentials,
-    scopes: ["https://www.googleapis.com/auth/drive"],
-  });
-
-  driveClient = google.drive({ version: "v3", auth });
+  driveClient = google.drive({ version: "v3", auth: oauth2Client });
   return driveClient;
 }
 

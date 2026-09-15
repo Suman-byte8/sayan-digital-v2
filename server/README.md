@@ -56,30 +56,47 @@ All responses are JSON: `{ success, data }` on success, `{ success: false, error
 
 ## Image uploads (Google Drive)
 
-Product images upload to a shared Google Drive folder rather than local/
-cloud object storage. One-time setup:
+Product images upload to a Drive folder in a real Google account via OAuth2
+(**not** a service account key — many Google Cloud projects now have
+service-account-key creation disabled by an org policy, `Secure by Default`,
+so OAuth sidesteps that entirely). One-time setup:
 
 1. [Google Cloud Console](https://console.cloud.google.com/) → create (or
    pick) a project → **APIs & Services → Library** → enable the
    **Google Drive API**.
-2. **APIs & Services → Credentials → Create Credentials → Service account**.
-   Give it any name; no roles needed at the project level.
-3. Open the new service account → **Keys → Add key → Create new key → JSON**.
-   This downloads a `.json` file — paste its *entire contents* as one line
-   into `GOOGLE_SERVICE_ACCOUNT_KEY` in `.env`.
-4. In Google Drive, create a folder for product images and **Share** it with
-   the service account's email (looks like
-   `something@project-id.iam.gserviceaccount.com`, found in the JSON key as
-   `client_email` or on the service account's page) with **Editor** access.
-5. Copy the folder's id from its URL —
-   `drive.google.com/drive/folders/<FOLDER_ID>` — into
-   `GOOGLE_DRIVE_FOLDER_ID` in `.env`.
+2. **APIs & Services → OAuth consent screen** → set it up (External user
+   type is fine for a personal/small-business Google account): app name,
+   your email as support/developer contact. You don't need to add any scopes
+   here or submit for verification.
+3. **APIs & Services → Credentials → Create Credentials → OAuth client ID**.
+   Application type: **Desktop app**. Name it anything. This gives you a
+   **Client ID** and **Client secret** — put those in `.env` as
+   `GOOGLE_OAUTH_CLIENT_ID` / `GOOGLE_OAUTH_CLIENT_SECRET`.
+4. Run:
+   ```bash
+   npm run drive:auth
+   ```
+   This opens your browser to sign in and approve access (use whichever
+   Google account you want the product images stored under), then prints
+   two lines — paste them into `.env`:
+   - `GOOGLE_OAUTH_REFRESH_TOKEN` — long-lived, used to authenticate every
+     future upload without signing in again.
+   - `GOOGLE_DRIVE_FOLDER_ID` — a "Sayan Digital Product Images" folder the
+     script creates in that account's Drive for uploads to live in.
+5. **APIs & Services → OAuth consent screen → Publishing status → Publish
+   app** (moves it from "Testing" to "In production"). Because this only
+   requests the non-sensitive `drive.file` scope (access limited to files
+   *this app* creates — never your whole Drive), publishing doesn't require
+   Google's verification review. **Do this** — apps left in "Testing" get a
+   refresh token that expires after 7 days, so uploads would silently start
+   failing a week in otherwise.
 
 Uploaded files are made viewable by "anyone with the link" (required for
 them to render as `<img>`s anywhere outside Drive itself) and served back as
 `https://lh3.googleusercontent.com/d/<fileId>` — directly embeddable, unlike
-Drive's own "view" page URL. Without both env vars set, every other endpoint
-still works; only `POST /uploads/image` responds `503` until configured.
+Drive's own "view" page URL. Without all four env vars set, every other
+endpoint still works; only `POST /uploads/image` responds `503` until
+configured.
 
 ## Known dev-tooling advisory
 
