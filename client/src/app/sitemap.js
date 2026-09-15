@@ -14,6 +14,8 @@ export default function sitemap() {
     { path: "/services", changeFrequency: "monthly", priority: 0.8 },
     { path: "/stationery", changeFrequency: "weekly", priority: 0.9 },
     { path: "/contact", changeFrequency: "monthly", priority: 0.6 },
+    { path: "/privacy-policy", changeFrequency: "yearly", priority: 0.3 },
+    { path: "/terms-of-service", changeFrequency: "yearly", priority: 0.3 },
   ].map(({ path, changeFrequency, priority }) => ({
     url: new URL(path, SITE_URL).toString(),
     changeFrequency,

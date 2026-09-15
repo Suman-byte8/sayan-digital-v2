@@ -122,9 +122,22 @@ export function Footer() {
 
       <div className="border-t border-border">
         <div className="container-premium flex flex-col items-center justify-between gap-3 py-6 text-center sm:flex-row sm:text-left">
-          <p className="text-[12px] text-muted-foreground">
-            © 2026 {BRAND.name}. All rights reserved.
-          </p>
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:gap-4">
+            <p className="text-[12px] text-muted-foreground">
+              © 2026 {BRAND.name}. All rights reserved.
+            </p>
+            <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
+              <Link href="/privacy-policy" className="transition-colors hover:text-foreground">
+                Privacy Policy
+              </Link>
+              <span aria-hidden="true" className="text-border">
+                ·
+              </span>
+              <Link href="/terms-of-service" className="transition-colors hover:text-foreground">
+                Terms of Service
+              </Link>
+            </div>
+          </div>
           <p className="text-[12px] text-muted-foreground/70">
             Developed By{" "}
             <a
