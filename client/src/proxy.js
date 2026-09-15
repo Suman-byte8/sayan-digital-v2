@@ -16,7 +16,12 @@ export function proxy(request) {
 }
 
 export const config = {
-  // Runs on every route except Next.js internals, the favicon, public
-  // assets, and the coming-soon page itself (avoids a redirect loop).
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|assets|coming-soon).*)"],
+  // Runs on every route except Next.js internals, favicon/icon/manifest
+  // files, public assets, crawler infrastructure (robots.txt, sitemap.xml —
+  // these must stay reachable even while gated, or search engines can never
+  // fetch a valid robots.txt/sitemap once the gate is lifted), and the
+  // coming-soon page itself (avoids a redirect loop).
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|icon\\d*.png|apple-icon.png|manifest.webmanifest|robots.txt|sitemap.xml|assets|coming-soon).*)",
+  ],
 };
