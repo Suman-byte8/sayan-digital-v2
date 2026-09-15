@@ -6,6 +6,11 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive().default(4000),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
   CORS_ORIGIN: z.string().default("http://localhost:3000"),
+  // Optional: image uploads (POST /api/uploads/image) need both set. Server
+  // still boots without them — only that one route 503s until configured.
+  // See server/README.md for how to create these.
+  GOOGLE_SERVICE_ACCOUNT_KEY: z.string().optional(),
+  GOOGLE_DRIVE_FOLDER_ID: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

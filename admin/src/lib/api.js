@@ -38,7 +38,31 @@ async function request(path, options = {}) {
   return body;
 }
 
+async function uploadImage(file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  let response;
+  try {
+    response = await fetch(`${API_URL}/uploads/image`, { method: "POST", body: formData });
+  } catch {
+    throw new ApiRequestError(
+      `Could not reach the API at ${API_URL}. Is the backend server running?`,
+      0,
+    );
+  }
+
+  const body = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new ApiRequestError(body?.error ?? `Upload failed with status ${response.status}`, response.status);
+  }
+
+  return body;
+}
+
 export const api = {
+  uploadImage,
   listProducts: (params = {}) => {
     const query = new URLSearchParams(
       Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== "")),

@@ -4,6 +4,7 @@ import helmet from "helmet";
 import morgan from "morgan";
 import { env } from "./config/env.js";
 import productsRouter from "./routes/products.routes.js";
+import uploadsRouter from "./routes/uploads.routes.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
@@ -24,6 +25,7 @@ app.get("/health", (req, res) => {
 });
 
 app.use("/api/products", productsRouter);
+app.use("/api/uploads", uploadsRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

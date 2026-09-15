@@ -41,17 +41,45 @@ after any `schema.prisma` change or fresh `npm install`).
 
 Base URL: `http://localhost:4000/api`
 
-| Method | Path            | Body                              | Description         |
-| ------ | --------------- | ---------------------------------- | -------------------- |
-| GET    | `/products`     | —                                   | List (paginated: `?page=&limit=&category=&search=`) |
-| GET    | `/products/:id` | —                                   | Get one product     |
-| POST   | `/products`     | `{ name, slug, price, ... }`       | Create a product    |
-| PUT    | `/products/:id` | any subset of the create fields    | Update a product    |
-| DELETE | `/products/:id` | —                                   | Delete a product    |
+| Method | Path             | Body                                    | Description         |
+| ------ | ---------------- | ---------------------------------------- | -------------------- |
+| GET    | `/products`      | —                                         | List (paginated: `?page=&limit=&category=&search=`) |
+| GET    | `/products/:id`  | —                                         | Get one product     |
+| POST   | `/products`      | `{ name, slug, price, ... }`             | Create a product    |
+| PUT    | `/products/:id`  | any subset of the create fields          | Update a product    |
+| DELETE | `/products/:id`  | —                                         | Delete a product    |
+| POST   | `/uploads/image` | multipart form, field name `file`        | Upload an image, returns `{ url, fileId }` |
 
 All responses are JSON: `{ success, data }` on success, `{ success: false, error, details? }` on failure.
 
 `GET /health` — liveness check, returns `{ status: "ok" }`.
+
+## Image uploads (Google Drive)
+
+Product images upload to a shared Google Drive folder rather than local/
+cloud object storage. One-time setup:
+
+1. [Google Cloud Console](https://console.cloud.google.com/) → create (or
+   pick) a project → **APIs & Services → Library** → enable the
+   **Google Drive API**.
+2. **APIs & Services → Credentials → Create Credentials → Service account**.
+   Give it any name; no roles needed at the project level.
+3. Open the new service account → **Keys → Add key → Create new key → JSON**.
+   This downloads a `.json` file — paste its *entire contents* as one line
+   into `GOOGLE_SERVICE_ACCOUNT_KEY` in `.env`.
+4. In Google Drive, create a folder for product images and **Share** it with
+   the service account's email (looks like
+   `something@project-id.iam.gserviceaccount.com`, found in the JSON key as
+   `client_email` or on the service account's page) with **Editor** access.
+5. Copy the folder's id from its URL —
+   `drive.google.com/drive/folders/<FOLDER_ID>` — into
+   `GOOGLE_DRIVE_FOLDER_ID` in `.env`.
+
+Uploaded files are made viewable by "anyone with the link" (required for
+them to render as `<img>`s anywhere outside Drive itself) and served back as
+`https://lh3.googleusercontent.com/d/<fileId>` — directly embeddable, unlike
+Drive's own "view" page URL. Without both env vars set, every other endpoint
+still works; only `POST /uploads/image` responds `503` until configured.
 
 ## Known dev-tooling advisory
 
