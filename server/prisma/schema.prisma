@@ -14,7 +14,12 @@ model Product {
   description String?
   price       Decimal  @db.Decimal(10, 2)
   category    String?
-  imageUrl    String?
+  // Multiple product photos — images[0] is treated as the cover/thumbnail
+  // everywhere a single image is needed (table, cards, JSON-LD).
+  images      String[] @default([])
+  // Wholesale-style minimum order quantity (e.g. lanyards, bulk stationery).
+  // Optional — most products have no minimum.
+  minOrderQty Int?
   stock       Int      @default(0)
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())

@@ -36,6 +36,7 @@ export default async function EditProductPage({ params }) {
           ...product,
           price: String(product.price),
           stock: String(product.stock),
+          minOrderQty: product.minOrderQty != null ? String(product.minOrderQty) : "",
         }}
       />
     </div>

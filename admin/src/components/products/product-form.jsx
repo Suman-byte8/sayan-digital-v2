@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, ApiRequestError } from "@/lib/api";
+import { ImageUploader } from "@/components/products/image-uploader";
 
 function slugify(value) {
   return value
@@ -18,7 +19,8 @@ const EMPTY_PRODUCT = {
   description: "",
   price: "",
   category: "",
-  imageUrl: "",
+  images: [],
+  minOrderQty: "",
   stock: "0",
   isActive: true,
 };
@@ -30,30 +32,9 @@ export function ProductForm({ mode, productId, initialData }) {
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
 
   function handleChange(field, value) {
     setValues((prev) => ({ ...prev, [field]: value }));
-  }
-
-  async function handleImageSelect(event) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
-    setUploading(true);
-    setUploadError("");
-    try {
-      const result = await api.uploadImage(file);
-      handleChange("imageUrl", result.data.url);
-    } catch (error) {
-      setUploadError(
-        error instanceof ApiRequestError ? error.message : "Image upload failed.",
-      );
-    } finally {
-      setUploading(false);
-      event.target.value = "";
-    }
   }
 
   function handleNameChange(value) {
@@ -76,7 +57,8 @@ export function ProductForm({ mode, productId, initialData }) {
       description: values.description || null,
       price: Number(values.price),
       category: values.category || null,
-      imageUrl: values.imageUrl || null,
+      images: values.images,
+      minOrderQty: values.minOrderQty ? Number(values.minOrderQty) : null,
       stock: Number(values.stock),
       isActive: values.isActive,
     };
@@ -164,41 +146,37 @@ export function ProductForm({ mode, productId, initialData }) {
         </Field>
       </div>
 
-      <Field label="Category" error={errors.category?.[0]}>
-        <input
-          value={values.category ?? ""}
-          onChange={(e) => handleChange("category", e.target.value)}
-          className="input"
-        />
-      </Field>
+      <div className="grid grid-cols-2 gap-4">
+        <Field label="Category" error={errors.category?.[0]}>
+          <input
+            value={values.category ?? ""}
+            onChange={(e) => handleChange("category", e.target.value)}
+            className="input"
+          />
+        </Field>
 
-      <Field label="Image" error={errors.imageUrl?.[0] || uploadError}>
-        <div className="flex items-start gap-3">
-          {values.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset
-            <img
-              src={values.imageUrl}
-              alt="Product preview"
-              className="size-16 shrink-0 rounded-md border border-border object-cover"
-            />
-          )}
-          <div className="flex-1 space-y-2">
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif"
-              onChange={handleImageSelect}
-              disabled={uploading}
-              className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-foreground hover:file:bg-border"
-            />
-            {uploading && <p className="text-xs text-muted-foreground">Uploading…</p>}
-            <input
-              value={values.imageUrl ?? ""}
-              onChange={(e) => handleChange("imageUrl", e.target.value)}
-              placeholder="or paste an image URL directly"
-              className="input"
-            />
-          </div>
-        </div>
+        <Field
+          label="Minimum Order Quantity"
+          error={errors.minOrderQty?.[0]}
+          hint="Optional — for wholesale-only items like lanyards. Leave blank if there's no minimum."
+        >
+          <input
+            type="number"
+            min="1"
+            step="1"
+            value={values.minOrderQty ?? ""}
+            onChange={(e) => handleChange("minOrderQty", e.target.value)}
+            placeholder="No minimum"
+            className="input"
+          />
+        </Field>
+      </div>
+
+      <Field label="Photos" error={errors.images?.[0]}>
+        <ImageUploader
+          images={values.images}
+          onChange={(images) => handleChange("images", images)}
+        />
       </Field>
 
       <label className="flex items-center gap-2 text-sm text-foreground">

@@ -13,7 +13,10 @@ const productBaseSchema = {
   description: z.string().trim().max(2000).optional().nullable(),
   price: z.coerce.number().positive("Price must be greater than 0"),
   category: z.string().trim().max(100).optional().nullable(),
-  imageUrl: z.string().trim().url("imageUrl must be a valid URL").optional().nullable(),
+  images: z.array(z.string().trim().url("Each image must be a valid URL")).default([]),
+  // Optional wholesale minimum (e.g. "50" for lanyards sold in bulk only).
+  // Omit/null for products with no minimum order quantity.
+  minOrderQty: z.coerce.number().int().positive().optional().nullable(),
   stock: z.coerce.number().int().nonnegative().default(0),
   isActive: z.boolean().default(true),
 };

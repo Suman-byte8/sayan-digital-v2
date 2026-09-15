@@ -50,9 +50,11 @@ export function ProductTable({ products }) {
         <table className="w-full text-left text-sm">
           <thead className="border-b border-border bg-muted/50 text-xs font-medium tracking-wide text-muted-foreground uppercase">
             <tr>
+              <th className="px-4 py-3">Photo</th>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Price</th>
+              <th className="px-4 py-3">Min. Qty</th>
               <th className="px-4 py-3">Stock</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Actions</th>
@@ -62,12 +64,33 @@ export function ProductTable({ products }) {
             {products.map((product) => (
               <tr key={product.id}>
                 <td className="px-4 py-3">
-                  <p className="font-medium text-foreground">{product.name}</p>
+                  <Link href={`/products/${product.id}`}>
+                    {product.images?.[0] ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset
+                      <img
+                        src={product.images[0]}
+                        alt={product.name}
+                        className="size-12 rounded-md border border-border object-cover"
+                      />
+                    ) : (
+                      <div className="flex size-12 items-center justify-center rounded-md border border-dashed border-border text-[10px] text-muted-foreground">
+                        No photo
+                      </div>
+                    )}
+                  </Link>
+                </td>
+                <td className="px-4 py-3">
+                  <Link href={`/products/${product.id}`} className="hover:underline">
+                    <p className="font-medium text-foreground">{product.name}</p>
+                  </Link>
                   <p className="text-xs text-muted-foreground">{product.slug}</p>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{product.category || "—"}</td>
                 <td className="px-4 py-3 text-foreground">
                   {currencyFormatter.format(product.price)}
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {product.minOrderQty ? `${product.minOrderQty} pcs` : "—"}
                 </td>
                 <td className="px-4 py-3 text-foreground">{product.stock}</td>
                 <td className="px-4 py-3">
@@ -83,6 +106,12 @@ export function ProductTable({ products }) {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex justify-end gap-3">
+                    <Link
+                      href={`/products/${product.id}`}
+                      className="text-sm font-medium text-foreground hover:underline"
+                    >
+                      View
+                    </Link>
                     <Link
                       href={`/products/${product.id}/edit`}
                       className="text-sm font-medium text-brand hover:underline"
