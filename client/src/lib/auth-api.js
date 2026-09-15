@@ -43,6 +43,32 @@ async function request(path, { token, ...options } = {}) {
   return body;
 }
 
+async function uploadAvatarRequest(token, file) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  let response;
+  try {
+    response = await fetch(`${API_URL}/profile/avatar`, {
+      method: "POST",
+      credentials: "include",
+      cache: "no-store",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    });
+  } catch {
+    throw new ApiRequestError(`Could not reach the API at ${API_URL}.`, 0);
+  }
+
+  const body = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new ApiRequestError(body?.error ?? `Upload failed with status ${response.status}`, response.status);
+  }
+
+  return body;
+}
+
 export const authApi = {
   signup: (data) => request("/auth/signup", { method: "POST", body: JSON.stringify(data) }),
   login: (data) => request("/auth/login", { method: "POST", body: JSON.stringify(data) }),
@@ -54,6 +80,7 @@ export const authApi = {
 export const profileApi = {
   get: (token) => request("/profile", { token }),
   update: (token, data) => request("/profile", { method: "PATCH", body: JSON.stringify(data), token }),
+  uploadAvatar: (token, file) => uploadAvatarRequest(token, file),
   changePassword: (token, data) =>
     request("/profile/password", { method: "PATCH", body: JSON.stringify(data), token }),
 

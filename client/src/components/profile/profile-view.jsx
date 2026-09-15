@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   User,
   Package,
@@ -63,6 +64,9 @@ export function ProfileView() {
   const [wishlist, setWishlist] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarError, setAvatarError] = useState("");
+  const avatarInputId = useId();
 
   useEffect(() => {
     if (!accessToken) return;
@@ -156,6 +160,25 @@ export function ProfileView() {
     );
   }
 
+  // Avatar handler — the file is compressed to WebP and stored in Drive
+  // server-side (POST /profile/avatar); we just hand over the raw file.
+  async function handleAvatarSelect(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    setAvatarError("");
+    try {
+      const { data } = await profileApi.uploadAvatar(accessToken, file);
+      updateUser(data);
+    } catch (error) {
+      setAvatarError(error.message || "Failed to upload photo.");
+    } finally {
+      setUploadingAvatar(false);
+      event.target.value = "";
+    }
+  }
+
   // Notification handlers
   async function handleToggleNotification(field, value) {
     const { data } = await profileApi.update(accessToken, { [field]: value });
@@ -186,15 +209,38 @@ export function ProfileView() {
           {/* User Info with Avatar */}
           <div className="flex items-center gap-5">
             <div className="relative size-20 shrink-0 overflow-hidden rounded-2xl border-2 border-(--brand)/20 bg-(--brand) text-white shadow-md flex items-center justify-center font-serif text-2xl font-light">
-              <span>{avatarInitials}</span>
-              <button
-                type="button"
-                onClick={() => alert("Upload photo feature: select an image file to update your profile photo.")}
+              {user.avatarUrl ? (
+                <Image
+                  src={user.avatarUrl}
+                  alt={user.name}
+                  fill
+                  sizes="80px"
+                  className="object-cover"
+                />
+              ) : (
+                <span>{avatarInitials}</span>
+              )}
+              {uploadingAvatar && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <div className="size-5 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                </div>
+              )}
+              <label
+                htmlFor={avatarInputId}
                 aria-label="Upload profile picture"
-                className="absolute bottom-1 right-1 flex size-6 items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition-transform hover:scale-110"
+                data-cursor="hover"
+                className="absolute bottom-1 right-1 flex size-6 cursor-pointer items-center justify-center rounded-full bg-black/70 text-white backdrop-blur-sm transition-transform hover:scale-110"
               >
                 <Camera size={12} />
-              </button>
+              </label>
+              <input
+                id={avatarInputId}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                onChange={handleAvatarSelect}
+                disabled={uploadingAvatar}
+                className="hidden"
+              />
             </div>
 
             <div>
@@ -214,6 +260,9 @@ export function ProfileView() {
               <p className="mt-0.5 text-[11px] text-muted-foreground/80">
                 Customer at Sayan Digital since {memberSince} · Malda, WB
               </p>
+              {avatarError && (
+                <p className="mt-1 text-[11px] font-medium text-destructive">{avatarError}</p>
+              )}
             </div>
           </div>
 
