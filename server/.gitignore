@@ -1,0 +1,15 @@
+node_modules
+
+# generated Prisma client (regenerate with `npm run prisma:generate`)
+src/generated
+
+# env files
+.env
+.env.*.local
+
+# logs
+npm-debug.log*
+*.log
+
+# OS
+.DS_Store
