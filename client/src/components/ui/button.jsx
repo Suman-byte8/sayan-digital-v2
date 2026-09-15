@@ -60,6 +60,10 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      // Some browser extensions (password managers, form fillers) inject
+      // attributes like `fdprocessedid` onto every <button> before React
+      // hydrates — a false-positive hydration mismatch, not an app bug.
+      suppressHydrationWarning
       {...props} />
   );
 }
