@@ -13,6 +13,15 @@ const envSchema = z.object({
   GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
   GOOGLE_OAUTH_REFRESH_TOKEN: z.string().optional(),
   GOOGLE_DRIVE_FOLDER_ID: z.string().optional(),
+
+  // Required — signs customer-account access tokens. Generate with:
+  // node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
+  JWT_SECRET: z.string().min(32, "JWT_SECRET must be at least 32 characters"),
+  // Access tokens are short-lived JWTs; refresh tokens are opaque random
+  // strings stored hashed in the Session table (revocable — see
+  // src/lib/auth.js) and issued as an httpOnly cookie, not a JWT.
+  JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
+  REFRESH_TOKEN_EXPIRES_DAYS: z.coerce.number().int().positive().default(30),
 });
 
 const parsed = envSchema.safeParse(process.env);

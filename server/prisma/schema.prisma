@@ -54,5 +54,195 @@ model Product {
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
+  wishlistedBy WishlistItem[]
+  orderItems   OrderItem[]
+
   @@map("products")
+}
+
+// ---------------------------------------------------------------------
+// Customer accounts (client/ storefront) — separate from the admin panel,
+// which has no login of its own yet and talks to this API directly.
+// ---------------------------------------------------------------------
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  // Never store or log the plain password — only its bcrypt hash.
+  passwordHash String
+  phone        String?
+  businessName String?
+  gstin        String?
+  avatarUrl    String?
+  loyaltyPoints Int     @default(0)
+
+  // Notification preferences — simple per-user booleans rather than a
+  // separate table, since it's always exactly one row per user.
+  notifyOrderUpdatesWhatsapp Boolean @default(true)
+  notifyDeliverySms          Boolean @default(true)
+  notifyDesignProofAlerts    Boolean @default(true)
+  notifyPromotionalEmail     Boolean @default(false)
+  notifyFestiveDiscounts     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions       Session[]
+  addresses      Address[]
+  wishlistItems  WishlistItem[]
+  orders         Order[]
+  paymentMethods PaymentMethod[]
+  proofs         Proof[]
+
+  @@map("users")
+}
+
+// One row per active refresh token, so logout/expiry are real (server-can
+// revoke) rather than relying purely on a stateless JWT's own expiry.
+// The refresh token itself is never stored — only its SHA-256 hash, same
+// principle as password hashing (a stolen DB row shouldn't hand out a
+// usable token).
+model Session {
+  id               String   @id @default(uuid())
+  userId           String
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokenHash String   @unique
+  userAgent        String?
+  expiresAt        DateTime
+  createdAt        DateTime @default(now())
+
+  @@map("sessions")
+}
+
+model Address {
+  id                String   @id @default(uuid())
+  userId            String
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  label             String
+  recipientName     String
+  phone             String
+  addressLine1      String
+  addressLine2      String?
+  city              String
+  state             String
+  pincode           String
+  isDefaultShipping Boolean  @default(false)
+  isDefaultBilling  Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("addresses")
+}
+
+model WishlistItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@map("wishlist_items")
+}
+
+enum OrderStatus {
+  PENDING
+  IN_PRODUCTION
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+// No checkout/cart flow exists yet (see server/README.md) — this schema
+// and its list endpoint are real and ready, but every user's order list
+// is genuinely empty until that flow is built. Not seeded with demo data.
+model Order {
+  id             String      @id @default(uuid())
+  userId         String
+  user           User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderNumber    String      @unique
+  status         OrderStatus @default(PENDING)
+  totalAmount    Decimal     @db.Decimal(10, 2)
+  shippingCarrier String?
+  trackingNumber String?
+  paymentMethod  String?
+  isPaid         Boolean     @default(false)
+  estimatedDelivery DateTime?
+  deliveredAt    DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  items OrderItem[]
+
+  @@map("orders")
+}
+
+// A snapshot of the product at order time (name/price/image) — standard
+// e-commerce practice, since the live Product row can change or be
+// deleted later but a past order's receipt shouldn't.
+model OrderItem {
+  id            String  @id @default(uuid())
+  orderId       String
+  order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId     String?
+  product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name          String
+  customization String?
+  image         String?
+  quantity      Int
+  price         Decimal @db.Decimal(10, 2)
+
+  @@map("order_items")
+}
+
+// User-entered payment references for their own bookkeeping only — NOT
+// connected to a real payment gateway/processor. Deliberately has no
+// field for a full card number, CVV, or expiry — only masked/display
+// text the user types themselves (e.g. "•••• •••• •••• 4892"), the same
+// way this already worked in the UI mockup this replaces. Wiring up real
+// payment processing later means integrating a gateway (Razorpay/Stripe)
+// and its own tokenization — never storing raw card data here.
+model PaymentMethod {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String
+  title     String
+  detail    String
+  isPrimary Boolean  @default(false)
+  badge     String?
+  createdAt DateTime @default(now())
+
+  @@map("payment_methods")
+}
+
+enum ProofStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// Design-proof review before production. Schema + a real list endpoint
+// exist, but there's no admin-side workflow to create/attach a proof to
+// an order yet (see server/README.md) — every user's proof list is
+// genuinely empty until that's built, same caveat as Order above.
+model Proof {
+  id            String      @id @default(uuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title         String
+  product       String
+  orderRef      String?
+  designer      String?
+  status        ProofStatus @default(PENDING)
+  notes         String?
+  dimensions    String?
+  colorProfile  String?
+  previewUrl    String?
+  submittedAt   DateTime    @default(now())
+  approvedAt    DateTime?
+
+  @@map("proofs")
 }
