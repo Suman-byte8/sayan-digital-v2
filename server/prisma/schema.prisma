@@ -12,6 +12,23 @@ enum ProductType {
   STATIONERY
 }
 
+// The managed list of category names offered when adding/editing a
+// product — populated by picking a match from the Google Product
+// Taxonomy search or by adding a custom one (see src/lib/taxonomy.js and
+// routes/categories.routes.js). Product.category stays a plain string
+// (not a foreign key) so existing/imported product rows never break;
+// this table is a curated suggestion list layered on top of that.
+model Category {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  // "taxonomy" (picked from the Google Product Taxonomy search) or
+  // "custom" (typed by hand, no match found).
+  source    String   @default("custom")
+  createdAt DateTime @default(now())
+
+  @@map("categories")
+}
+
 model Product {
   id          String      @id @default(uuid())
   name        String
