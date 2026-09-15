@@ -9,12 +9,20 @@ export const metadata = {
   title: "Products — Sayan Digital Admin",
 };
 
-export default async function ProductsPage() {
+const TYPE_TABS = [
+  { value: undefined, label: "All" },
+  { value: "PRINTING", label: "Printing Products" },
+  { value: "STATIONERY", label: "Sayan Stationery" },
+];
+
+export default async function ProductsPage({ searchParams }) {
+  const { type } = await searchParams;
+
   let products = [];
   let loadError = null;
 
   try {
-    const result = await api.listProducts({ limit: 100 });
+    const result = await api.listProducts({ limit: 100, type });
     products = result.data;
   } catch (error) {
     loadError = error instanceof ApiRequestError ? error.message : "Failed to load products.";
@@ -35,6 +43,22 @@ export default async function ProductsPage() {
         >
           Add product
         </Link>
+      </div>
+
+      <div className="mb-4 flex gap-2">
+        {TYPE_TABS.map((tab) => (
+          <Link
+            key={tab.label}
+            href={tab.value ? `/products?type=${tab.value}` : "/products"}
+            className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+              type === tab.value
+                ? "bg-brand text-brand-foreground"
+                : "bg-muted text-muted-foreground hover:bg-border"
+            }`}
+          >
+            {tab.label}
+          </Link>
+        ))}
       </div>
 
       {loadError ? (

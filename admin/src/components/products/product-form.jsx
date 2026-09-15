@@ -19,6 +19,9 @@ const EMPTY_PRODUCT = {
   description: "",
   price: "",
   category: "",
+  type: "PRINTING",
+  unit: "",
+  badge: "",
   images: [],
   minOrderQty: "",
   stock: "0",
@@ -57,6 +60,9 @@ export function ProductForm({ mode, productId, initialData }) {
       description: values.description || null,
       price: Number(values.price),
       category: values.category || null,
+      type: values.type,
+      unit: values.unit || null,
+      badge: values.badge || null,
       images: values.images,
       minOrderQty: values.minOrderQty ? Number(values.minOrderQty) : null,
       stock: Number(values.stock),
@@ -121,6 +127,21 @@ export function ProductForm({ mode, productId, initialData }) {
         />
       </Field>
 
+      <Field
+        label="Catalog"
+        error={errors.type?.[0]}
+        hint="Which storefront section this appears in."
+      >
+        <select
+          value={values.type}
+          onChange={(e) => handleChange("type", e.target.value)}
+          className="input"
+        >
+          <option value="PRINTING">Printing Products (/products)</option>
+          <option value="STATIONERY">Sayan Stationery (/stationery)</option>
+        </select>
+      </Field>
+
       <div className="grid grid-cols-2 gap-4">
         <Field label="Price (INR)" error={errors.price?.[0]}>
           <input
@@ -167,6 +188,33 @@ export function ProductForm({ mode, productId, initialData }) {
             value={values.minOrderQty ?? ""}
             onChange={(e) => handleChange("minOrderQty", e.target.value)}
             placeholder="No minimum"
+            className="input"
+          />
+        </Field>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          label="Unit"
+          error={errors.unit?.[0]}
+          hint='Shown next to price, e.g. "pc", "set", "100 pcs".'
+        >
+          <input
+            value={values.unit ?? ""}
+            onChange={(e) => handleChange("unit", e.target.value)}
+            placeholder="pc"
+            className="input"
+          />
+        </Field>
+
+        <Field
+          label="Badge"
+          error={errors.badge?.[0]}
+          hint='Optional highlight, e.g. "Customizable", "220 GSM".'
+        >
+          <input
+            value={values.badge ?? ""}
+            onChange={(e) => handleChange("badge", e.target.value)}
             className="input"
           />
         </Field>

@@ -79,7 +79,13 @@ export default async function ProductDetailPage({ params }) {
           </p>
 
           <dl className="mt-6 grid grid-cols-2 gap-4 rounded-lg border border-border bg-card p-4">
+            <DetailItem
+              label="Catalog"
+              value={product.type === "STATIONERY" ? "Sayan Stationery" : "Printing Products"}
+            />
             <DetailItem label="Category" value={product.category || "—"} />
+            <DetailItem label="Unit" value={product.unit || "—"} />
+            <DetailItem label="Badge" value={product.badge || "—"} />
             <DetailItem
               label="Minimum Order Quantity"
               value={product.minOrderQty ? `${product.minOrderQty} pcs` : "No minimum"}

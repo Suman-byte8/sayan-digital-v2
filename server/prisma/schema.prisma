@@ -7,23 +7,35 @@ datasource db {
   provider = "postgresql"
 }
 
+enum ProductType {
+  PRINTING
+  STATIONERY
+}
+
 model Product {
-  id          String   @id @default(uuid())
+  id          String      @id @default(uuid())
   name        String
-  slug        String   @unique
+  slug        String      @unique
   description String?
-  price       Decimal  @db.Decimal(10, 2)
+  price       Decimal     @db.Decimal(10, 2)
   category    String?
+  // Distinguishes the two storefront catalogs (client's /products vs
+  // /stationery) — everything lives in one table, filtered by this.
+  type        ProductType @default(PRINTING)
+  // Ordering unit shown next to price, e.g. "pc", "set", "100 pcs".
+  unit        String?
+  // Short merchandising label, e.g. "Customizable", "220 GSM".
+  badge       String?
   // Multiple product photos — images[0] is treated as the cover/thumbnail
   // everywhere a single image is needed (table, cards, JSON-LD).
-  images      String[] @default([])
+  images      String[]    @default([])
   // Wholesale-style minimum order quantity (e.g. lanyards, bulk stationery).
   // Optional — most products have no minimum.
   minOrderQty Int?
-  stock       Int      @default(0)
-  isActive    Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  stock       Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
   @@map("products")
 }

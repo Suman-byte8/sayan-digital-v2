@@ -2,6 +2,8 @@ import { z } from "zod";
 
 const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
+export const PRODUCT_TYPES = ["PRINTING", "STATIONERY"];
+
 const productBaseSchema = {
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(200),
   slug: z
@@ -13,6 +15,12 @@ const productBaseSchema = {
   description: z.string().trim().max(2000).optional().nullable(),
   price: z.coerce.number().positive("Price must be greater than 0"),
   category: z.string().trim().max(100).optional().nullable(),
+  // Which storefront catalog this belongs to (client's /products vs /stationery).
+  type: z.enum(PRODUCT_TYPES).default("PRINTING"),
+  // Ordering unit shown next to price, e.g. "pc", "set", "100 pcs".
+  unit: z.string().trim().max(40).optional().nullable(),
+  // Short merchandising label, e.g. "Customizable", "220 GSM".
+  badge: z.string().trim().max(60).optional().nullable(),
   images: z.array(z.string().trim().url("Each image must be a valid URL")).default([]),
   // Optional wholesale minimum (e.g. "50" for lanyards sold in bulk only).
   // Omit/null for products with no minimum order quantity.
@@ -34,9 +42,15 @@ export const productIdParamSchema = z.object({
   id: z.string().uuid("Invalid product id"),
 });
 
+export const productSlugParamSchema = z.object({
+  slug: z.string().trim().min(1),
+});
+
 export const productListQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   category: z.string().trim().optional(),
   search: z.string().trim().optional(),
+  type: z.enum(PRODUCT_TYPES).optional(),
+  isActive: z.coerce.boolean().optional(),
 });

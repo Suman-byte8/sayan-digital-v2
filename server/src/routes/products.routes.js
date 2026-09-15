@@ -5,11 +5,13 @@ import {
   createProductSchema,
   updateProductSchema,
   productIdParamSchema,
+  productSlugParamSchema,
   productListQuerySchema,
 } from "../validations/product.schema.js";
 import {
   listProducts,
   getProduct,
+  getProductBySlug,
   createProduct,
   updateProduct,
   deleteProduct,
@@ -18,6 +20,15 @@ import {
 const router = Router();
 
 router.get("/", validate(productListQuerySchema, "query"), asyncHandler(listProducts));
+
+// Registered before /:id so a slug like "custom-mug" is never mistaken for
+// the :id segment (moot here since :id is UUID-validated anyway, but keeps
+// the more specific route first).
+router.get(
+  "/slug/:slug",
+  validate(productSlugParamSchema, "params"),
+  asyncHandler(getProductBySlug),
+);
 
 router.get(
   "/:id",

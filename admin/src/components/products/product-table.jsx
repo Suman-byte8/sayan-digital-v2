@@ -52,6 +52,7 @@ export function ProductTable({ products }) {
             <tr>
               <th className="px-4 py-3">Photo</th>
               <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Catalog</th>
               <th className="px-4 py-3">Category</th>
               <th className="px-4 py-3">Price</th>
               <th className="px-4 py-3">Min. Qty</th>
@@ -84,6 +85,9 @@ export function ProductTable({ products }) {
                     <p className="font-medium text-foreground">{product.name}</p>
                   </Link>
                   <p className="text-xs text-muted-foreground">{product.slug}</p>
+                </td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {product.type === "STATIONERY" ? "Stationery" : "Printing"}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{product.category || "—"}</td>
                 <td className="px-4 py-3 text-foreground">

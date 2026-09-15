@@ -8,10 +8,12 @@ function serializeProduct(product) {
 }
 
 export async function listProducts(req, res) {
-  const { page, limit, category, search } = req.validated.query;
+  const { page, limit, category, search, type, isActive } = req.validated.query;
 
   const where = {
     ...(category ? { category } : {}),
+    ...(type ? { type } : {}),
+    ...(isActive !== undefined ? { isActive } : {}),
     ...(search
       ? { name: { contains: search, mode: "insensitive" } }
       : {}),
@@ -42,6 +44,17 @@ export async function listProducts(req, res) {
 export async function getProduct(req, res) {
   const { id } = req.validated.params;
   const product = await prisma.product.findUnique({ where: { id } });
+
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+  res.json({ success: true, data: serializeProduct(product) });
+}
+
+export async function getProductBySlug(req, res) {
+  const { slug } = req.validated.params;
+  const product = await prisma.product.findUnique({ where: { slug } });
 
   if (!product) {
     throw new ApiError(404, "Product not found");
