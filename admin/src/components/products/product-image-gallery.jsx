@@ -7,14 +7,14 @@ export function ProductImageGallery({ images, name }) {
 
   if (!images || images.length === 0) {
     return (
-      <div className="flex aspect-square w-full max-w-sm items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
+      <div className="flex aspect-square w-full items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
         No photos yet
       </div>
     );
   }
 
   return (
-    <div className="max-w-sm">
+    <div>
       {/* eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset */}
       <img
         src={images[activeIndex]}
