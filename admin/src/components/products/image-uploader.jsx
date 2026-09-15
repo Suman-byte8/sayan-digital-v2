@@ -8,10 +8,15 @@ import { api, ApiRequestError } from "@/lib/api";
 // shows a thumbnail grid of everything uploaded so far (images[0] is the
 // cover/thumbnail used everywhere a single image is needed), with a manual
 // "paste a URL" fallback for images already hosted elsewhere.
+function formatKb(bytes) {
+  return `${Math.max(1, Math.round(bytes / 1024))}KB`;
+}
+
 export function ImageUploader({ images, onChange }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [manualUrl, setManualUrl] = useState("");
+  const [lastCompression, setLastCompression] = useState("");
 
   async function handleFilesSelected(event) {
     const files = Array.from(event.target.files ?? []);
@@ -19,9 +24,19 @@ export function ImageUploader({ images, onChange }) {
 
     setUploading(true);
     setError("");
+    setLastCompression("");
     try {
       const results = await Promise.all(files.map((file) => api.uploadImage(file)));
       onChange([...images, ...results.map((result) => result.data.url)]);
+
+      const totalBefore = results.reduce((sum, r) => sum + (r.data.originalSize ?? 0), 0);
+      const totalAfter = results.reduce((sum, r) => sum + (r.data.compressedSize ?? 0), 0);
+      if (totalBefore > 0) {
+        const savedPct = Math.round((1 - totalAfter / totalBefore) * 100);
+        setLastCompression(
+          `Compressed to WebP: ${formatKb(totalBefore)} → ${formatKb(totalAfter)} (${savedPct}% smaller)`,
+        );
+      }
     } catch (uploadError) {
       setError(
         uploadError instanceof ApiRequestError ? uploadError.message : "Image upload failed.",
@@ -82,6 +97,9 @@ export function ImageUploader({ images, onChange }) {
         className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-foreground hover:file:bg-border"
       />
       {uploading && <p className="text-xs text-muted-foreground">Uploading…</p>}
+      {!uploading && lastCompression && (
+        <p className="text-xs text-muted-foreground">{lastCompression}</p>
+      )}
       {error && <p className="text-xs text-destructive">{error}</p>}
 
       <div className="flex gap-2">
