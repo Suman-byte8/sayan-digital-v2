@@ -2,14 +2,18 @@ import { Icon } from "@/lib/icons";
 import { Reveal } from "@/components/motion/reveal";
 import { cn } from "@/lib/utils";
 
+// Keyed by the actual category text (admin-entered, free text) rather than
+// a fixed taxonomy — falls back to a generic icon for anything not listed
+// here, so a new category the admin adds never breaks this section.
 const CATEGORY_ICONS = {
-  "notebooks-diaries": "BookOpen",
-  "pens-writing": "PenTool",
-  "files-folders": "Layers",
-  "art-craft": "Palette",
-  "office-essentials": "Briefcase",
-  gifting: "Gift",
+  "Notebooks & Diaries": "BookOpen",
+  "Pens & Writing": "PenTool",
+  "Files & Folders": "Layers",
+  "Art & Craft Supplies": "Palette",
+  "Office Essentials": "Briefcase",
+  "Gift Wrap & Cards": "Gift",
 };
+const DEFAULT_CATEGORY_ICON = "Tag";
 
 export function StationeryCategoryShowcase({ products, categories, activeCategory, onSelect }) {
   const tiles = categories.filter((category) => category.slug !== "all");
@@ -50,7 +54,7 @@ export function StationeryCategoryShowcase({ products, categories, activeCategor
                     isActive ? "bg-(--brand) text-white" : "bg-muted text-(--brand)"
                   )}
                 >
-                  <Icon name={CATEGORY_ICONS[category.slug]} size={22} />
+                  <Icon name={CATEGORY_ICONS[category.slug] ?? DEFAULT_CATEGORY_ICON} size={22} />
                 </span>
                 <span className="text-[13px] font-semibold text-foreground">{category.label}</span>
                 <span className="text-[11px] text-muted-foreground">

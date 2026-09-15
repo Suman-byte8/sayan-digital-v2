@@ -4,11 +4,18 @@ const nextConfig = {
   distDir: "build",
   reactCompiler: true,
   images: {
+    // next/image hard-rejects any src whose host isn't listed here. Product
+    // photos uploaded through the admin panel go through Google Drive
+    // (lh3.googleusercontent.com) and are always safe, but the admin form's
+    // "paste an image URL directly" fallback accepts any host — if a future
+    // product uses one not listed here, add it (this is why i.pinimg.com
+    // is here: a real product was created with a pasted Pinterest URL).
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "images.pexels.com" },
       { protocol: "https", hostname: "lh3.googleusercontent.com" },
       { protocol: "https", hostname: "res.cloudinary.com" },
+      { protocol: "https", hostname: "i.pinimg.com" },
     ],
   },
   async headers() {

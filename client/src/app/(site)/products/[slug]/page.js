@@ -2,8 +2,8 @@ import { notFound } from "next/navigation";
 import { CtaSection } from "@/components/sections/cta-section";
 import { ProductDetailView } from "@/components/products/product-detail-view";
 import { RelatedProducts } from "@/components/products/related-products";
-import { PRODUCT_CATALOG } from "@/constants/products-catalog";
-import { STATIONERY_CATALOG } from "@/constants/stationery-catalog";
+import { api, ApiRequestError } from "@/lib/api";
+import { toCardProduct, toCardProducts } from "@/lib/product-view-model";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   buildBreadcrumbJsonLd,
@@ -11,59 +11,64 @@ import {
   buildProductJsonLd,
 } from "@/lib/seo";
 
-// Both catalogs (Sayan Digital printing + Sayan Stationery) share this one
-// detail route/component instead of each getting their own — a slug is
-// looked up across both, and "related products" stays within whichever
-// catalog it was found in.
-const CATALOGS = [PRODUCT_CATALOG, STATIONERY_CATALOG];
-
-function findProduct(slug) {
-  for (const catalog of CATALOGS) {
-    const product = catalog.find((item) => item.key === slug);
-    if (product) return { product, catalog };
+async function fetchProductBySlug(slug) {
+  try {
+    const { data } = await api.getProductBySlug(slug);
+    return data;
+  } catch (error) {
+    if (error instanceof ApiRequestError && error.status === 404) return null;
+    throw error;
   }
-  return null;
 }
 
-export function generateStaticParams() {
-  return CATALOGS.flat().map((product) => ({ slug: product.key }));
+export async function generateStaticParams() {
+  try {
+    const { data } = await api.listProducts({});
+    return data.map((product) => ({ slug: product.slug }));
+  } catch {
+    // Backend unreachable at build time — fall back to on-demand rendering
+    // for every slug instead of failing the whole build.
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  const found = findProduct(slug);
+  const product = await fetchProductBySlug(slug).catch(() => null);
 
-  if (!found) {
+  if (!product) {
     return { title: "Product Not Found — Sayan Digital", robots: { index: false, follow: true } };
   }
 
-  const { product } = found;
+  const card = toCardProduct(product);
 
   return buildMetadata({
     title: `${product.name} — Sayan Digital`,
-    description: product.description,
-    path: `/products/${product.key}`,
-    image: product.image,
+    description: product.description ?? card.description,
+    path: `/products/${product.slug}`,
+    image: card.image,
   });
 }
 
 export default async function ProductDetailPage({ params }) {
   const { slug } = await params;
-  const found = findProduct(slug);
+  const product = await fetchProductBySlug(slug);
 
-  if (!found) notFound();
-  const { product, catalog } = found;
+  if (!product) notFound();
 
-  const relatedProducts = catalog
-    .filter(
-      (item) => item.category === product.category && item.key !== product.key,
-    )
-    .slice(0, 4);
-
-  const isStationery = catalog === STATIONERY_CATALOG;
+  const isStationery = product.type === "STATIONERY";
   const catalogHref = isStationery ? "/stationery" : "/products";
   const catalogLabel = isStationery ? "Sayan Stationery" : "Products";
-  const productPath = `/products/${product.key}`;
+  const productPath = `/products/${product.slug}`;
+  const card = toCardProduct(product);
+
+  const { data: sameCategory } = await api
+    .listProducts({ type: product.type, category: product.category ?? undefined })
+    .catch(() => ({ data: [] }));
+
+  const relatedProducts = toCardProducts(
+    sameCategory.filter((item) => item.slug !== product.slug).slice(0, 4),
+  );
 
   return (
     <>
@@ -74,12 +79,12 @@ export default async function ProductDetailPage({ params }) {
             { name: catalogLabel, path: catalogHref },
             { name: product.name, path: productPath },
           ]),
-          buildProductJsonLd(product, productPath),
+          buildProductJsonLd(card, productPath),
         ]}
       />
       <main className="bg-background pt-24">
         <ProductDetailView
-          product={product}
+          product={card}
           catalogHref={catalogHref}
           catalogLabel={isStationery ? "Stationery" : "Products"}
         />

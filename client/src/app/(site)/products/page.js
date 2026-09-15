@@ -11,7 +11,8 @@ import { ProductCatalogExplorer } from "@/components/products/product-catalog-ex
 import { Reveal } from "@/components/motion/reveal";
 import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
-import { CATEGORIES, PRODUCT_CATALOG } from "@/constants/products-catalog";
+import { api } from "@/lib/api";
+import { toCardProducts, deriveCategories } from "@/lib/product-view-model";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
 
@@ -33,7 +34,11 @@ const TRUST_PILLS = [
   { icon: ShieldCheck, label: "Quality Checked" },
 ];
 
-export default function ProductsPage() {
+export default async function ProductsPage() {
+  const { data } = await api.listProducts({ type: "PRINTING" }).catch(() => ({ data: [] }));
+  const products = toCardProducts(data);
+  const categories = deriveCategories(products, "All Products");
+
   return (
     <>
       <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
@@ -89,10 +94,7 @@ export default function ProductsPage() {
           </div>
         </section>
 
-        <ProductCatalogExplorer
-          products={PRODUCT_CATALOG}
-          categories={CATEGORIES}
-        />
+        <ProductCatalogExplorer products={products} categories={categories} />
 
         <section className="container-premium pb-16">
           <Reveal className="flex flex-col items-center justify-between gap-5 rounded-2xl bg-(--paper-muted) px-8 py-10 text-center sm:flex-row sm:text-left">

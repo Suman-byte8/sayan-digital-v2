@@ -10,8 +10,13 @@ import { CustomizationShowcase } from "@/components/sections/customization-showc
 import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { LocalTrustSection } from "@/components/sections/local-trust-section";
 import { CtaSection } from "@/components/sections/cta-section";
+import { api } from "@/lib/api";
+import { toCardProducts } from "@/lib/product-view-model";
 
-export default function Home() {
+export default async function Home() {
+  const { data } = await api.listProducts({ type: "PRINTING", limit: 8 }).catch(() => ({ data: [] }));
+  const showcaseProducts = toCardProducts(data);
+
   return (
     <>
       {/* #home anchor. Hero is relative + overflow-hidden, fully containing
@@ -33,7 +38,7 @@ export default function Home() {
       <div className="relative z-10 bg-background">
         <TrustHighlights />
         <AboutSection />
-        <ProductCategories />
+        <ProductCategories products={showcaseProducts} />
         <WhyChooseUs />
         <ServicesSection />
         <HowItWorks />

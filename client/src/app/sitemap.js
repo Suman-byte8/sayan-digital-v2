@@ -1,12 +1,11 @@
-import { PRODUCT_CATALOG } from "@/constants/products-catalog";
-import { STATIONERY_CATALOG } from "@/constants/stationery-catalog";
+import { api } from "@/lib/api";
 import { SITE_URL } from "@/lib/seo";
 
 // Next.js App Router convention — this file is compiled into the real
 // /sitemap.xml at build/request time (no separate static file needed).
 // Only real, public, indexable routes: excludes /profile (private account
 // area), /coming-soon (temporary gate page, noindex), and the not-found route.
-export default function sitemap() {
+export default async function sitemap() {
   const staticRoutes = [
     { path: "/", changeFrequency: "weekly", priority: 1 },
     { path: "/about", changeFrequency: "monthly", priority: 0.7 },
@@ -22,13 +21,12 @@ export default function sitemap() {
     priority,
   }));
 
-  const productRoutes = [...PRODUCT_CATALOG, ...STATIONERY_CATALOG].map(
-    (product) => ({
-      url: new URL(`/products/${product.key}`, SITE_URL).toString(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    }),
-  );
+  const { data } = await api.listProducts({}).catch(() => ({ data: [] }));
+  const productRoutes = data.map((product) => ({
+    url: new URL(`/products/${product.slug}`, SITE_URL).toString(),
+    changeFrequency: "monthly",
+    priority: 0.6,
+  }));
 
   return [...staticRoutes, ...productRoutes];
 }

@@ -13,10 +13,8 @@ import { Magnetic } from "@/components/motion/magnetic";
 import { Button } from "@/components/ui/button";
 import { JsonLd } from "@/components/seo/json-ld";
 import { buildBreadcrumbJsonLd, buildMetadata } from "@/lib/seo";
-import {
-  STATIONERY_CATALOG,
-  STATIONERY_CATEGORIES,
-} from "@/constants/stationery-catalog";
+import { api } from "@/lib/api";
+import { toCardProducts, deriveCategories } from "@/lib/product-view-model";
 
 export const metadata = buildMetadata({
   title: "Sayan Stationery — Notebooks, Pens & Art Supplies in Malda",
@@ -36,7 +34,11 @@ const TRUST_PILLS = [
   { icon: Gift, label: "Gift-Ready Packing" },
 ];
 
-export default function StationeryPage() {
+export default async function StationeryPage() {
+  const { data } = await api.listProducts({ type: "STATIONERY" }).catch(() => ({ data: [] }));
+  const products = toCardProducts(data);
+  const categories = deriveCategories(products, "All Stationery");
+
   return (
     <>
       <JsonLd data={buildBreadcrumbJsonLd(BREADCRUMB_ITEMS)} />
@@ -92,10 +94,7 @@ export default function StationeryPage() {
           </div>
         </section>
 
-        <StationeryCatalogSection
-          products={STATIONERY_CATALOG}
-          categories={STATIONERY_CATEGORIES}
-        />
+        <StationeryCatalogSection products={products} categories={categories} />
 
         <section className="container-premium pb-16">
           <Reveal className="flex flex-col items-center justify-between gap-5 rounded-2xl bg-(--paper-muted) px-8 py-10 text-center sm:flex-row sm:text-left">
