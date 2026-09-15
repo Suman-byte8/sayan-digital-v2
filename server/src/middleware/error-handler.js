@@ -15,7 +15,17 @@ export function errorHandler(error, req, res, next) {
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     if (error.code === "P2002") {
-      const field = error.meta?.target?.join?.(", ") ?? "field";
+      // Shape varies by Prisma version/adapter: classic `meta.target`
+      // (array or string) on some, but in Prisma 7's driver-adapter mode
+      // it's nested under meta.driverAdapterError.cause.constraint.index
+      // (a Postgres constraint name like "products_slug_key") instead.
+      const target = error.meta?.target;
+      const constraintName =
+        error.meta?.driverAdapterError?.cause?.constraint?.index ??
+        (typeof target === "string" ? target : undefined);
+      const field = Array.isArray(target)
+        ? target.join(", ")
+        : (constraintName?.match(/products_(\w+)_key/)?.[1] ?? "field");
       return res.status(409).json({
         success: false,
         error: `A product with this ${field} already exists`,
