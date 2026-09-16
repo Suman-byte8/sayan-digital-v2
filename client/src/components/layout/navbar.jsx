@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Menu, ShoppingBag, User, X } from "lucide-react";
+import { Heart, Menu, ShoppingBag, ShoppingCart, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { FadeUp } from "@/components/motion/fade-up";
 import { Magnetic } from "@/components/motion/magnetic";
@@ -11,10 +11,14 @@ import { MobileMenu } from "@/components/layout/mobile-menu";
 import { NAV_LINKS, STATIONERY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
 import { useNavbarSolid } from "@/hooks/use-navbar-solid";
+import { useWishlist } from "@/context/wishlist-context";
+import { useCart } from "@/context/cart-context";
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const scrolled = useNavbarSolid();
+  const { items: wishlistItems } = useWishlist();
+  const { count: cartCount } = useCart();
 
   // The mobile menu panel drops an opaque light background under the nav
   // bar, so the "transparent over hero" white-text treatment must not
@@ -72,6 +76,50 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-3">
+          <FadeUp delay={280} className="hidden lg:block">
+            <Magnetic strength={0.3}>
+              <Link
+                href="/profile?tab=wishlist"
+                data-cursor="hover"
+                aria-label={`Wishlist${wishlistItems.length ? ` (${wishlistItems.length})` : ""}`}
+                className={`relative flex size-9 items-center justify-center rounded-full border transition-all duration-300 ${
+                  solid
+                    ? "border-border text-foreground hover:bg-(--paper-muted) hover:border-(--brand)/40"
+                    : "border-white/30 text-white hover:bg-white/10"
+                }`}
+              >
+                <Heart size={15} />
+                {wishlistItems.length > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex min-w-4.5 items-center justify-center rounded-full bg-(--brand) px-1 text-[10px] font-semibold text-white">
+                    {wishlistItems.length}
+                  </span>
+                )}
+              </Link>
+            </Magnetic>
+          </FadeUp>
+
+          <FadeUp delay={300} className="hidden lg:block">
+            <Magnetic strength={0.3}>
+              <Link
+                href="/cart"
+                data-cursor="hover"
+                aria-label={`Cart${cartCount ? ` (${cartCount})` : ""}`}
+                className={`relative flex size-9 items-center justify-center rounded-full border transition-all duration-300 ${
+                  solid
+                    ? "border-border text-foreground hover:bg-(--paper-muted) hover:border-(--brand)/40"
+                    : "border-white/30 text-white hover:bg-white/10"
+                }`}
+              >
+                <ShoppingCart size={15} />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 flex min-w-4.5 items-center justify-center rounded-full bg-(--brand) px-1 text-[10px] font-semibold text-white">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            </Magnetic>
+          </FadeUp>
+
           <FadeUp delay={320} className="hidden lg:block">
             <Magnetic strength={0.3}>
               <Link

@@ -2,10 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight, Heart } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { useAuth } from "@/context/auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 import { cn } from "@/lib/utils";
 
 const CONTAINER_SPRING = { type: "spring", stiffness: 300, damping: 26, mass: 0.7 };
@@ -54,12 +56,19 @@ export function CatalogProductCard({ product }) {
   } = product;
 
   const isHoverDevice = useMediaQuery("(hover: hover) and (pointer: fine)");
-  const [isSaved, setIsSaved] = useState(false);
+  const router = useRouter();
+  const { status } = useAuth();
+  const { productIds, toggleProduct } = useWishlist();
+  const isSaved = productIds.has(product.id);
   const detailHref = `/products/${product.key}`;
 
   function handleSave(event) {
     event.preventDefault();
-    setIsSaved((saved) => !saved);
+    if (status !== "authenticated") {
+      router.push("/profile");
+      return;
+    }
+    toggleProduct(product.id);
   }
 
   return (

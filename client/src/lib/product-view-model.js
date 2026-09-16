@@ -13,6 +13,7 @@ export function toCardProduct(product) {
   const hasMinQty = Boolean(product.minOrderQty);
 
   return {
+    id: product.id,
     key: product.slug,
     name: product.name,
     description: product.description ?? "",

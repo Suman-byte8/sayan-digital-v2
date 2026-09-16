@@ -4,12 +4,14 @@ import { useState } from "react";
 import Link from "next/link";
 import { Heart, ShoppingBag, Trash2, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useCart } from "@/context/cart-context";
 
 // wishlist entries come from the API as { id, product: {...} } — flatten
 // to the shape this component's cards already display.
 function toDisplayItem(entry) {
   return {
     id: entry.id,
+    productId: entry.product.id,
     name: entry.product.name,
     category: entry.product.category,
     description: entry.product.description,
@@ -20,6 +22,7 @@ function toDisplayItem(entry) {
 }
 
 export function WishlistTab({ wishlist, onRemove }) {
+  const { addItem } = useCart();
   const [addedId, setAddedId] = useState(null);
   const items = wishlist.map(toDisplayItem);
 
@@ -27,8 +30,9 @@ export function WishlistTab({ wishlist, onRemove }) {
     await onRemove(id);
   }
 
-  function handleAddToCart(id) {
-    setAddedId(id);
+  async function handleAddToCart(item) {
+    await addItem(item.productId);
+    setAddedId(item.id);
     setTimeout(() => setAddedId(null), 1800);
   }
 
@@ -119,7 +123,7 @@ export function WishlistTab({ wishlist, onRemove }) {
                   <div className="mt-4 pt-2">
                     <Button
                       size="sm"
-                      onClick={() => handleAddToCart(item.id)}
+                      onClick={() => handleAddToCart(item)}
                       className={`w-full gap-1.5 rounded-full text-xs transition-all ${
                         isAdded
                           ? "bg-emerald-700 hover:bg-emerald-800 text-white"

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -62,7 +63,9 @@ export default function ProfilePage() {
 
         {/* Master Profile Layout */}
         <AuthGate>
-          <ProfileView />
+          <Suspense fallback={null}>
+            <ProfileView />
+          </Suspense>
         </AuthGate>
 
         {/* Bottom Trust Indicators */}

@@ -2,6 +2,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { ProductsProvider } from "@/context/products-context";
 import { AuthProvider } from "@/context/auth-context";
+import { WishlistProvider } from "@/context/wishlist-context";
+import { CartProvider } from "@/context/cart-context";
 import { api } from "@/lib/api";
 
 // Every real page of the site (everything except /coming-soon, which is
@@ -23,14 +25,18 @@ export default async function SiteLayout({ children }) {
 
   return (
     <AuthProvider>
-      <ProductsProvider
-        initialPrinting={printingResult.data}
-        initialStationery={stationeryResult.data}
-      >
-        <Navbar />
-        {children}
-        <Footer />
-      </ProductsProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <ProductsProvider
+            initialPrinting={printingResult.data}
+            initialStationery={stationeryResult.data}
+          >
+            <Navbar />
+            {children}
+            <Footer />
+          </ProductsProvider>
+        </CartProvider>
+      </WishlistProvider>
     </AuthProvider>
   );
 }

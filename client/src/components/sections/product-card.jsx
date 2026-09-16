@@ -2,24 +2,33 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowUpRight, Heart } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { useAuth } from "@/context/auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 import { cn } from "@/lib/utils";
 
 const BADGE_SPRING = { type: "spring", bounce: 0.35, duration: 0.5 };
 
 export function ProductCard({ product, className }) {
   const reduceMotion = useReducedMotion();
-  const [isSaved, setIsSaved] = useState(false);
+  const router = useRouter();
+  const { status } = useAuth();
+  const { productIds, toggleProduct } = useWishlist();
+  const isSaved = productIds.has(product.id);
 
   function handleWishlist(event) {
     event.preventDefault();
-    setIsSaved((saved) => !saved);
+    if (status !== "authenticated") {
+      router.push("/profile");
+      return;
+    }
+    toggleProduct(product.id);
   }
 
   return (
@@ -74,7 +83,6 @@ export function ProductCard({ product, className }) {
           )}
         </motion.div>
 
-        {/* Save-for-later heart — local UI state only, no wishlist backend */}
         <motion.button
           type="button"
           aria-label={

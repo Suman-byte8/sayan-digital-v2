@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 import {
   User,
   Package,
@@ -20,6 +21,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
+import { useWishlist } from "@/context/wishlist-context";
 import { profileApi } from "@/lib/auth-api";
 import { toOrderView, toProofView, memberSinceLabel, loyaltyTier } from "@/lib/profile-view-model";
 import { OrdersTab } from "@/components/profile/tabs/orders-tab";
@@ -57,11 +59,15 @@ const NAV_GROUPS = [
 
 export function ProfileView() {
   const { user, accessToken, logout, updateUser } = useAuth();
-  const [activeTab, setActiveTab] = useState("orders");
+  const { items: wishlist, remove: removeWishlistItem } = useWishlist();
+  // Deep-link support for the navbar's Wishlist icon (/profile?tab=wishlist)
+  // — useSearchParams is SSR-aware (same value on the server render and the
+  // client hydration pass), so this can seed state directly with no effect.
+  const searchParams = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => searchParams.get("tab") || "orders");
   const [orders, setOrders] = useState([]);
   const [proofs, setProofs] = useState([]);
   const [addresses, setAddresses] = useState([]);
-  const [wishlist, setWishlist] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -75,14 +81,12 @@ export function ProfileView() {
       profileApi.listOrders(accessToken),
       profileApi.listProofs(accessToken),
       profileApi.listAddresses(accessToken),
-      profileApi.listWishlist(accessToken),
       profileApi.listPaymentMethods(accessToken),
     ])
-      .then(([ordersRes, proofsRes, addressesRes, wishlistRes, paymentsRes]) => {
+      .then(([ordersRes, proofsRes, addressesRes, paymentsRes]) => {
         setOrders(ordersRes.data);
         setProofs(proofsRes.data);
         setAddresses(addressesRes.data);
-        setWishlist(wishlistRes.data);
         setPaymentMethods(paymentsRes.data);
       })
       .finally(() => setLoading(false));
@@ -128,12 +132,6 @@ export function ProfileView() {
   }
   async function handleSetDefaultAddress(id) {
     await handleUpdateAddress(id, { isDefaultShipping: true });
-  }
-
-  // Wishlist handlers
-  async function handleRemoveWishlistItem(id) {
-    await profileApi.removeWishlistItem(accessToken, id);
-    setWishlist((prev) => prev.filter((item) => item.id !== id));
   }
 
   // Payment method handlers
@@ -472,7 +470,7 @@ export function ProfileView() {
               <ProofsTab proofs={mappedProofs} onApprove={handleApproveProof} />
             )}
             {activeTab === "wishlist" && (
-              <WishlistTab wishlist={wishlist} onRemove={handleRemoveWishlistItem} />
+              <WishlistTab wishlist={wishlist} onRemove={removeWishlistItem} />
             )}
             {activeTab === "personal-info" && (
               <PersonalInfoTab profile={user} onUpdateProfile={(updated) => updateUser(updated)} />

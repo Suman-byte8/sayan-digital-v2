@@ -3,14 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   ChevronRight,
   Heart,
   Home as HomeIcon,
+  Loader2,
+  Minus,
   MessageCircle,
   Palette,
+  Plus,
   ShieldCheck,
+  ShoppingCart,
   Truck,
 } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
@@ -19,6 +24,9 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { BRAND } from "@/constants/brand";
 import { CONTACT_FAQS } from "@/constants/contact-detail";
+import { useAuth } from "@/context/auth-context";
+import { useWishlist } from "@/context/wishlist-context";
+import { useCart } from "@/context/cart-context";
 
 const TRUST_PILLS = [
   { icon: Truck, label: "Pan-Bengal Delivery" },
@@ -57,8 +65,38 @@ function buildWhatsappHref(product) {
 }
 
 export function ProductDetailView({ product, catalogHref = "/products", catalogLabel = "Products" }) {
-  const [isSaved, setIsSaved] = useState(false);
+  const router = useRouter();
+  const { status } = useAuth();
+  const { productIds, toggleProduct } = useWishlist();
+  const { addItem } = useCart();
+  const isSaved = productIds.has(product.id);
   const [activeTab, setActiveTab] = useState("overview");
+  const [quantity, setQuantity] = useState(1);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const [addedToCart, setAddedToCart] = useState(false);
+
+  function handleSave() {
+    if (status !== "authenticated") {
+      router.push("/profile");
+      return;
+    }
+    toggleProduct(product.id);
+  }
+
+  async function handleAddToCart() {
+    if (status !== "authenticated") {
+      router.push("/profile");
+      return;
+    }
+    setAddingToCart(true);
+    try {
+      await addItem(product.id, quantity);
+      setAddedToCart(true);
+      setTimeout(() => setAddedToCart(false), 2000);
+    } finally {
+      setAddingToCart(false);
+    }
+  }
 
   const specs = [
     { label: "Category", value: product.categoryLabel },
@@ -118,7 +156,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
           )}
           <button
             type="button"
-            onClick={() => setIsSaved((saved) => !saved)}
+            onClick={handleSave}
             aria-pressed={isSaved}
             aria-label={
               isSaved ? `Remove ${product.name} from saved ideas` : `Save ${product.name} for later`
@@ -163,6 +201,46 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
             >
               {product.minQty}
             </span>
+          </Reveal>
+
+          <Reveal delay={290} className="mt-6 flex items-center gap-3">
+            <div className="flex items-center rounded-full border border-border">
+              <button
+                type="button"
+                aria-label="Decrease quantity"
+                onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                className="flex size-10 items-center justify-center text-foreground transition-colors hover:text-(--brand)"
+              >
+                <Minus size={14} />
+              </button>
+              <span className="w-8 text-center text-[14px] font-semibold text-foreground">
+                {quantity}
+              </span>
+              <button
+                type="button"
+                aria-label="Increase quantity"
+                onClick={() => setQuantity((q) => q + 1)}
+                className="flex size-10 items-center justify-center text-foreground transition-colors hover:text-(--brand)"
+              >
+                <Plus size={14} />
+              </button>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              data-cursor="hover"
+              onClick={handleAddToCart}
+              disabled={addingToCart}
+              className="h-10 flex-1 gap-2 rounded-full text-[14px]"
+            >
+              {addingToCart ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <ShoppingCart size={16} />
+              )}
+              {addedToCart ? "Added to Cart" : "Add to Cart"}
+            </Button>
           </Reveal>
 
           <Reveal delay={320} className="mt-6 flex flex-col gap-3 sm:flex-row">
