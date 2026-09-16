@@ -55,6 +55,7 @@ model Product {
   updatedAt   DateTime    @updatedAt
 
   wishlistedBy WishlistItem[]
+  cartItems    CartItem[]
   orderItems   OrderItem[]
 
   @@map("products")
@@ -91,6 +92,7 @@ model User {
   sessions       Session[]
   addresses      Address[]
   wishlistItems  WishlistItem[]
+  cartItems      CartItem[]
   orders         Order[]
   paymentMethods PaymentMethod[]
   proofs         Proof[]
@@ -145,6 +147,25 @@ model WishlistItem {
 
   @@unique([userId, productId])
   @@map("wishlist_items")
+}
+
+// A user's shopping cart is just "every CartItem row with their userId" -
+// same one-table-per-user pattern as WishlistItem, no separate Cart header
+// row needed since there's no concept of multiple carts per user. Doesn't
+// reserve/decrement Product.stock - that only happens at real order
+// placement (see Order's own comment - no checkout flow exists yet).
+model CartItem {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  quantity  Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@map("cart_items")
 }
 
 enum OrderStatus {
