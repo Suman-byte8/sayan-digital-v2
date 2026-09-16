@@ -1,5 +1,19 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import { z } from "zod";
+
+// Plain `dotenv/config` only ever reads `.env` — NODE_ENV-based file
+// switching (.env.production, etc.) is a Next.js convention, not a dotenv
+// one, so it has to be done explicitly here. NODE_ENV itself must already
+// be set in the real process environment before this runs (by your shell,
+// or automatically by whatever host you deploy to) — it can't come from
+// inside the file being chosen, that's a chicken-and-egg problem.
+// On a real host (Railway/Render/Fly/etc.) you set env vars in its own
+// dashboard, not by deploying an env file — .env.production is purely a
+// local convenience for running `NODE_ENV=production node src/index.js`
+// against production-like config without touching real env vars. It's
+// gitignored and dotenv silently no-ops if the file isn't present, so this
+// is harmless in an environment where it doesn't exist.
+dotenv.config({ path: process.env.NODE_ENV === "production" ? ".env.production" : ".env" });
 
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
