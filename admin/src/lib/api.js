@@ -81,4 +81,8 @@ export const api = {
   createCategory: (data) => request("/categories", { method: "POST", body: JSON.stringify(data) }),
   deleteCategory: (id) => request(`/categories/${id}`, { method: "DELETE" }),
   searchTaxonomy: (q) => request(withQuery("/categories/taxonomy/search", { q })),
+
+  listUsers: (params = {}) => request(withQuery("/admin/users", params)),
+  getUser: (id) => request(`/admin/users/${id}`),
+  deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" }),
 };

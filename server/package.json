@@ -10,7 +10,8 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
-    "drive:auth": "node scripts/get-google-refresh-token.js"
+    "drive:auth": "node scripts/get-google-refresh-token.js",
+    "seed:users": "node scripts/seed-test-users.js"
   },
   "keywords": [],
   "author": "",

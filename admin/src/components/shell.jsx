@@ -1,6 +1,9 @@
 import Link from "next/link";
 
-const NAV_LINKS = [{ label: "Products", href: "/products" }];
+const NAV_LINKS = [
+  { label: "Products", href: "/products" },
+  { label: "Customers", href: "/customers" },
+];
 
 export function Shell({ children }) {
   return (

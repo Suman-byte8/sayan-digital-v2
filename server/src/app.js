@@ -14,6 +14,7 @@ import wishlistRouter from "./routes/wishlist.routes.js";
 import ordersRouter from "./routes/orders.routes.js";
 import paymentMethodsRouter from "./routes/payment-methods.routes.js";
 import proofsRouter from "./routes/proofs.routes.js";
+import adminUsersRouter from "./routes/admin-users.routes.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
@@ -46,6 +47,9 @@ app.use("/api/wishlist", wishlistRouter);
 app.use("/api/orders", ordersRouter);
 app.use("/api/payment-methods", paymentMethodsRouter);
 app.use("/api/proofs", proofsRouter);
+// Admin panel only — read (+ delete) access to customer accounts. Unauthenticated,
+// same trust model as the rest of the admin-facing endpoints above.
+app.use("/api/admin/users", adminUsersRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
