@@ -13,10 +13,14 @@ export function CustomCursor() {
 
   const x = useMotionValue(-100);
   const y = useMotionValue(-100);
-  const ringX = useSpring(x, { stiffness: 1000, damping: 60, mass: 0.2 });
-  const ringY = useSpring(y, { stiffness: 1000, damping: 60, mass: 0.2 });
-  const dotX = useSpring(x, { stiffness: 1800, damping: 70, mass: 0.1 });
-  const dotY = useSpring(y, { stiffness: 1800, damping: 70, mass: 0.1 });
+  // Both springs were previously overdamped (damping well above critical for
+  // their stiffness/mass) — an overdamped spring approaches its target
+  // *slower*, not smoother, which read as cursor lag. These sit just above
+  // critical damping instead: fast, tight tracking with no bounce/overshoot.
+  const ringX = useSpring(x, { stiffness: 1200, damping: 35, mass: 0.15 });
+  const ringY = useSpring(y, { stiffness: 1200, damping: 35, mass: 0.15 });
+  const dotX = useSpring(x, { stiffness: 2600, damping: 32, mass: 0.08 });
+  const dotY = useSpring(y, { stiffness: 2600, damping: 32, mass: 0.08 });
 
   useEffect(() => {
     if (!finePointer) return;
@@ -57,7 +61,7 @@ export function CustomCursor() {
         className="pointer-events-none fixed top-0 left-0 z-9999 rounded-full bg-white mix-blend-difference"
         style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{ width: isHover ? 0 : 6, height: isHover ? 0 : 6, opacity: isHover ? 0 : 1 }}
-        transition={{ duration: 0.08, ease: "easeOut" }}
+        transition={{ duration: 0.05, ease: "easeOut" }}
       />
       <motion.div
         className="pointer-events-none fixed top-0 left-0 z-9999 rounded-full border border-white mix-blend-difference"
@@ -67,7 +71,7 @@ export function CustomCursor() {
           height: isText ? 40 : isHover ? 64 : 28,
           backgroundColor: isHover ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0)",
         }}
-        transition={{ duration: 0.1, ease: "easeOut" }}
+        transition={{ duration: 0.06, ease: "easeOut" }}
       />
     </>
   );
