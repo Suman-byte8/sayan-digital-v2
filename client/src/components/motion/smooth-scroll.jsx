@@ -13,8 +13,15 @@ export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
+    // `lerp` (continuous per-frame interpolation toward whatever the
+    // current scroll target is) rather than `duration`+easing (a fixed-length
+    // tween replayed from scratch on every wheel input) — duration mode is
+    // what made this feel "stuck": each new scroll input had to reconcile
+    // with the still-animating previous tween instead of just updating the
+    // target, which stutters under normal continuous scrolling. `lerp` is
+    // Lenis's own recommended default and what most smooth-scroll sites use.
     const lenis = new Lenis({
-      duration: 1.1,
+      lerp: 0.1,
       smoothWheel: true,
       touchMultiplier: 1.5,
     });
