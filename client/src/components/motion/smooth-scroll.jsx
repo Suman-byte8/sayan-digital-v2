@@ -21,7 +21,7 @@ export function SmoothScroll() {
     // target, which stutters under normal continuous scrolling. `lerp` is
     // Lenis's own recommended default and what most smooth-scroll sites use.
     const lenis = new Lenis({
-      lerp: 0.1,
+      lerp: 3,
       smoothWheel: true,
       touchMultiplier: 1.5,
     });
@@ -61,7 +61,9 @@ export function SmoothScroll() {
     if (window.location.hash) {
       const target = document.querySelector(window.location.hash);
       if (target) {
-        requestAnimationFrame(() => lenis.scrollTo(target, { immediate: true }));
+        requestAnimationFrame(() =>
+          lenis.scrollTo(target, { immediate: true }),
+        );
       }
     }
 
