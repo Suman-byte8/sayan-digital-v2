@@ -98,6 +98,35 @@ Drive's own "view" page URL. Without all four env vars set, every other
 endpoint still works; only `POST /uploads/image` responds `503` until
 configured.
 
+## Caching (Upstash Redis)
+
+Optional — set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` (from
+your Upstash console → the database → REST API section) in `.env` and the
+read-heavy, public catalog endpoints (`GET /products`, `GET /products/:id`,
+`GET /products/slug/:slug`, `GET /categories`) cache their results in Redis
+instead of hitting Postgres on every request. Without those two vars set,
+the server runs exactly as before — every `cached()` call in
+`src/lib/cache.js` just falls through to the database, same for a Redis
+outage or a free-tier quota being hit mid-request (never fails the request
+over it, just stops caching until Redis is reachable again).
+
+- Product/category **list** queries: 60s TTL, no active invalidation on
+  write — deliberately, since there's no cheap way to know every filter/page
+  combination that might be cached; a short TTL means an edit shows up in a
+  listing within a minute, at the cost of exactly one extra Redis read per
+  list request (no "check a version key" round trip).
+- Single **product lookups** (by id or slug): 300s TTL, actively invalidated
+  the moment that product is updated or deleted (including the *old* slug's
+  key, if the slug itself changed) — exact keys are cheap to invalidate, so
+  there's no reason to wait out the TTL here.
+- **Categories list**: 600s TTL, actively invalidated on create/delete
+  (admin-only, infrequent writes).
+
+Upstash's free tier is a **monthly command budget** (500K commands, ~16.7K/
+day) — every cache GET/SET/DEL counts as one, which is why invalidation is
+deliberately narrow (exact keys only, no `SCAN`-based pattern deletion) and
+why list queries don't pay for an extra per-request version check.
+
 ## Known dev-tooling advisory
 
 `npm audit` reports 4 high-severity issues in `deepmerge-ts`/`mysql2`, both

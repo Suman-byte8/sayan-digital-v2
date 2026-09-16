@@ -22,6 +22,11 @@ const envSchema = z.object({
   // src/lib/auth.js) and issued as an httpOnly cookie, not a JWT.
   JWT_ACCESS_EXPIRES_IN: z.string().default("15m"),
   REFRESH_TOKEN_EXPIRES_DAYS: z.coerce.number().int().positive().default(30),
+
+  // Optional — caches read-heavy catalog queries (see src/lib/cache.js).
+  // Server runs fine without these, just hits Postgres on every request.
+  UPSTASH_REDIS_REST_URL: z.string().optional(),
+  UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
