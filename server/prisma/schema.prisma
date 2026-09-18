@@ -176,9 +176,11 @@ enum OrderStatus {
   CANCELLED
 }
 
-// No checkout/cart flow exists yet (see server/README.md) — this schema
-// and its list endpoint are real and ready, but every user's order list
-// is genuinely empty until that flow is built. Not seeded with demo data.
+// Real checkout flow (POST /api/orders, see orders.controller.js): creates
+// an Order + snapshotted OrderItems from the user's current CartItems, then
+// clears the cart. Payment is Cash on Delivery only for now — Razorpay
+// isn't integrated yet, so paymentMethod is validated server-side to only
+// ever be "COD" until that lands (see createOrderSchema).
 model Order {
   id             String      @id @default(uuid())
   userId         String
@@ -186,6 +188,17 @@ model Order {
   orderNumber    String      @unique
   status         OrderStatus @default(PENDING)
   totalAmount    Decimal     @db.Decimal(10, 2)
+  // Shipping address is snapshotted onto the order itself (same reasoning
+  // as OrderItem snapshotting product data below) rather than a live FK to
+  // Address — editing/deleting a saved address later must never change
+  // what a past order actually shipped to.
+  shippingName         String
+  shippingPhone        String
+  shippingAddressLine1 String
+  shippingAddressLine2 String?
+  shippingCity         String
+  shippingState        String
+  shippingPincode      String
   shippingCarrier String?
   trackingNumber String?
   paymentMethod  String?
