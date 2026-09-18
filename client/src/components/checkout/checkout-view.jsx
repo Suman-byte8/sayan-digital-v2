@@ -342,8 +342,11 @@ export function CheckoutView() {
             <div className="flex items-center gap-3 rounded-2xl border border-(--brand) bg-(--brand)/5 p-4 text-xs">
               <CheckCircle2 size={18} className="shrink-0 text-(--brand)" />
               <div>
-                <p className="font-semibold text-foreground">Cash on Delivery</p>
-                <p className="text-muted-foreground">Pay in cash when your order is delivered.</p>
+                <p className="font-semibold text-foreground">Place Your Order</p>
+                <p className="text-muted-foreground">
+                  Our admin will connect with you shortly after you place your order to confirm
+                  details and delivery — pay cash on delivery.
+                </p>
               </div>
             </div>
             <div className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-border bg-muted/30 p-4 text-xs opacity-60">
