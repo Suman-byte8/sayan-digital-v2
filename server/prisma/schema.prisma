@@ -77,6 +77,10 @@ model User {
   gstin        String?
   avatarUrl    String?
   loyaltyPoints Int     @default(0)
+  // "Member" badge on the customer's profile — deliberately admin-set only,
+  // not auto-derived from loyaltyPoints/order history. No customer-facing
+  // way to change this.
+  isMember     Boolean @default(false)
 
   // Notification preferences — simple per-user booleans rather than a
   // separate table, since it's always exactly one row per user.

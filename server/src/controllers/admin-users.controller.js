@@ -76,6 +76,15 @@ export async function getUserDetail(req, res) {
   });
 }
 
+export async function updateUser(req, res) {
+  const { id } = req.validated.params;
+  const existing = await prisma.user.findUnique({ where: { id } });
+  if (!existing) throw new ApiError(404, "Customer not found");
+
+  const user = await prisma.user.update({ where: { id }, data: req.validated.body });
+  res.json({ success: true, data: serializeUser(user) });
+}
+
 export async function deleteUser(req, res) {
   const { id } = req.validated.params;
 
