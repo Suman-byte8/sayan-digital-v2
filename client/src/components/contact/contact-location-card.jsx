@@ -6,7 +6,7 @@ const LATITUDE = 24.990411543893927;
 const LONGITUDE = 88.14139287491373;
 
 export function ContactLocationCard() {
-  const mapsHref = "https://maps.app.goo.gl/XuevnuHAoCRc6p4f8";
+  const mapsHref = BRAND.mapsLink;
   const whatsappHref = `https://wa.me/${BRAND.phone.replace(/\D/g, "")}`;
 
   return (

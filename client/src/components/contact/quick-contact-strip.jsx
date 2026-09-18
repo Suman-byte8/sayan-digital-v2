@@ -24,7 +24,7 @@ const TONE_STYLES = {
 };
 
 function ctaHref(card) {
-  if (card.key === "phone") return `tel:${BRAND.phone.replace(/\s+/g, "")}`;
+  if (card.key === "phone") return `tel:${BRAND.phoneHref}`;
   if (card.key === "whatsapp") return `https://wa.me/${BRAND.phone.replace(/\D/g, "")}`;
   return `mailto:${BRAND.email}`;
 }

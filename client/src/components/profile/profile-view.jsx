@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
+import { BRAND } from "@/constants/brand";
 import { profileApi } from "@/lib/auth-api";
 import { toOrderView, memberSinceLabel } from "@/lib/profile-view-model";
 import { OrdersTab } from "@/components/profile/tabs/orders-tab";
@@ -422,10 +423,10 @@ export function ProfileView() {
             </p>
             <div className="mt-3">
               <a
-                href="tel:+919832045678"
+                href={`tel:${BRAND.phoneHref}`}
                 className="inline-flex items-center gap-1 font-semibold text-(--brand) hover:underline"
               >
-                Call: +91 98320 45678
+                Call: {BRAND.phone}
               </a>
             </div>
           </div>

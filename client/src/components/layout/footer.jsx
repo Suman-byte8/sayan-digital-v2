@@ -82,12 +82,12 @@ export function Footer() {
             <li className="flex items-start gap-2 text-[13px] text-muted-foreground">
               <Phone size={15} className="mt-0.5 shrink-0" />
               <span className="flex flex-wrap items-center gap-x-1.5">
-                <a href={`tel:${BRAND.phone}`} className="transition-colors hover:text-foreground">
+                <a href={`tel:${BRAND.phoneHref}`} className="transition-colors hover:text-foreground">
                   {BRAND.phone}
                 </a>
                 <span aria-hidden="true">/</span>
                 <a
-                  href={`tel:${BRAND.phoneSecondary}`}
+                  href={`tel:${BRAND.phoneSecondaryHref}`}
                   className="transition-colors hover:text-foreground"
                 >
                   {BRAND.phoneSecondary}
