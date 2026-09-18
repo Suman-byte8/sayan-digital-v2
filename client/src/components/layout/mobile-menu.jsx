@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { Heart, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -105,9 +106,11 @@ export function MobileMenu({ open, onNavigate }) {
               transition={{ duration: 0.3, delay: (NAV_LINKS.length + 1.25) * 0.05, ease: "easeOut" }}
               className="mt-3"
             >
-              <Button className="h-auto w-full justify-center gap-2 rounded-full py-3 text-[13px]">
-                <ShoppingBag size={16} />
-                {BRAND.navCta}
+              <Button asChild className="h-auto w-full justify-center gap-2 rounded-full py-3 text-[13px]">
+                <Link href="/products" onClick={onNavigate}>
+                  <ShoppingBag size={16} />
+                  {BRAND.navCta}
+                </Link>
               </Button>
             </motion.div>
           </div>

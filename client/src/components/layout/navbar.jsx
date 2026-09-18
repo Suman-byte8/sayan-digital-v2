@@ -140,12 +140,15 @@ export function Navbar() {
           <FadeUp delay={340} className="hidden lg:block">
             <Magnetic strength={0.3}>
               <Button
+                asChild
                 data-cursor="hover"
                 variant={solid ? "default" : "solid"}
                 className="h-auto gap-2 rounded-full px-5 py-2 text-[13px]"
               >
-                <ShoppingBag size={15} />
-                {BRAND.navCta}
+                <Link href="/products">
+                  <ShoppingBag size={15} />
+                  {BRAND.navCta}
+                </Link>
               </Button>
             </Magnetic>
           </FadeUp>
