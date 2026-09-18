@@ -45,6 +45,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       className={`${cormorant.variable} ${inter.variable} antialiased`}
+      suppressHydrationWarning
     >
       <body className="flex min-h-dvh flex-col bg-background" suppressHydrationWarning>
         <JsonLd data={[buildLocalBusinessJsonLd(), buildWebsiteJsonLd()]} />
