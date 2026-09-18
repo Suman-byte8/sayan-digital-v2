@@ -74,8 +74,15 @@ export function CheckoutView() {
 
   async function handleSaveAddress(event) {
     event.preventDefault();
-    if (!addressForm.recipientName || !addressForm.phone || !addressForm.addressLine1 || !addressForm.pincode) {
-      setError("Please fill in recipient name, phone, street address and pincode.");
+    if (
+      !addressForm.recipientName ||
+      !addressForm.phone ||
+      !addressForm.addressLine1 ||
+      !addressForm.pincode
+    ) {
+      setError(
+        "Please fill in recipient name, phone, street address and pincode.",
+      );
       return;
     }
     setSavingAddress(true);
@@ -90,7 +97,11 @@ export function CheckoutView() {
       setShowAddressForm(false);
       setAddressForm(EMPTY_ADDRESS_FORM);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : "Failed to save address.");
+      setError(
+        err instanceof ApiRequestError
+          ? err.message
+          : "Failed to save address.",
+      );
     } finally {
       setSavingAddress(false);
     }
@@ -119,7 +130,9 @@ export function CheckoutView() {
       await clearCart();
       setPlacedOrder(data);
     } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : "Failed to place order.");
+      setError(
+        err instanceof ApiRequestError ? err.message : "Failed to place order.",
+      );
     } finally {
       setPlacing(false);
     }
@@ -131,20 +144,33 @@ export function CheckoutView() {
         <div className="flex size-14 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
           <CheckCircle2 size={28} />
         </div>
-        <h2 className="mt-4 font-serif text-2xl text-foreground">Order Placed!</h2>
+        <h2 className="mt-4 font-serif text-2xl text-foreground">
+          Order Placed!
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Order <span className="font-semibold text-foreground">{placedOrder.orderNumber}</span> has
-          been received. We&apos;ll confirm the final delivery charge and timeline with you over
-          WhatsApp or phone shortly. You&apos;ll pay cash on delivery.
+          Order{" "}
+          <span className="font-semibold text-foreground">
+            {placedOrder.orderNumber}
+          </span>{" "}
+          has been received. We&apos;ll confirm the final delivery charge and
+          timeline with you over WhatsApp or phone shortly.
         </p>
         <div className="mt-6 flex w-full flex-col gap-2.5">
           <Button asChild className="h-11 gap-2 rounded-full text-[13px]">
-            <a href={buildOrderWhatsappHref(placedOrder)} target="_blank" rel="noopener noreferrer">
+            <a
+              href={buildOrderWhatsappHref(placedOrder)}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <MessageCircle size={16} />
               Confirm via WhatsApp
             </a>
           </Button>
-          <Button asChild variant="outline" className="h-11 gap-2 rounded-full text-[13px]">
+          <Button
+            asChild
+            variant="outline"
+            className="h-11 gap-2 rounded-full text-[13px]"
+          >
             <Link href="/profile?tab=orders">
               <Package size={16} />
               View My Orders
@@ -161,7 +187,9 @@ export function CheckoutView() {
         <div className="flex size-14 items-center justify-center rounded-full bg-(--paper-muted) text-muted-foreground">
           <ShoppingBag size={24} />
         </div>
-        <h4 className="mt-4 font-serif text-lg text-foreground">Your cart is empty</h4>
+        <h4 className="mt-4 font-serif text-lg text-foreground">
+          Your cart is empty
+        </h4>
         <p className="mt-1 max-w-sm text-xs text-muted-foreground">
           Add products to your cart before checking out.
         </p>
@@ -187,7 +215,10 @@ export function CheckoutView() {
             <p className="text-xs text-muted-foreground">
               {user.email} {user.phone ? `· ${user.phone}` : ""}
             </p>
-            <Link href="/profile" className="mt-1 inline-block text-[11px] text-(--brand) hover:underline">
+            <Link
+              href="/profile"
+              className="mt-1 inline-block text-[11px] text-(--brand) hover:underline"
+            >
               Edit in profile
             </Link>
           </div>
@@ -210,7 +241,9 @@ export function CheckoutView() {
             </div>
 
             {loadingAddresses ? (
-              <p className="mt-3 text-xs text-muted-foreground">Loading addresses…</p>
+              <p className="mt-3 text-xs text-muted-foreground">
+                Loading addresses…
+              </p>
             ) : (
               <div className="mt-3 space-y-2">
                 {addresses.map((address) => (
@@ -225,9 +258,15 @@ export function CheckoutView() {
                     }`}
                   >
                     {selectedAddressId === address.id ? (
-                      <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-(--brand)" />
+                      <CheckCircle2
+                        size={16}
+                        className="mt-0.5 shrink-0 text-(--brand)"
+                      />
                     ) : (
-                      <Circle size={16} className="mt-0.5 shrink-0 text-muted-foreground" />
+                      <Circle
+                        size={16}
+                        className="mt-0.5 shrink-0 text-muted-foreground"
+                      />
                     )}
                     <div>
                       <p className="font-semibold text-foreground">
@@ -235,8 +274,10 @@ export function CheckoutView() {
                       </p>
                       <p className="mt-0.5 text-muted-foreground">
                         {address.addressLine1}
-                        {address.addressLine2 ? `, ${address.addressLine2}` : ""}, {address.city},{" "}
-                        {address.state} — {address.pincode}
+                        {address.addressLine2
+                          ? `, ${address.addressLine2}`
+                          : ""}
+                        , {address.city}, {address.state} — {address.pincode}
                       </p>
                       <p className="text-muted-foreground">{address.phone}</p>
                     </div>
@@ -246,20 +287,30 @@ export function CheckoutView() {
             )}
 
             {showAddressForm && (
-              <form onSubmit={handleSaveAddress} className="mt-4 space-y-3 border-t border-border pt-4 text-xs">
+              <form
+                onSubmit={handleSaveAddress}
+                className="mt-4 space-y-3 border-t border-border pt-4 text-xs"
+              >
                 <div className="grid grid-cols-2 gap-3">
                   <input
                     required
                     placeholder="Recipient name"
                     value={addressForm.recipientName}
-                    onChange={(e) => setAddressForm({ ...addressForm, recipientName: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({
+                        ...addressForm,
+                        recipientName: e.target.value,
+                      })
+                    }
                     className="rounded-lg border border-border bg-background p-2.5 text-foreground placeholder:text-muted-foreground focus:border-(--brand) focus:outline-none"
                   />
                   <input
                     required
                     placeholder="Phone"
                     value={addressForm.phone}
-                    onChange={(e) => setAddressForm({ ...addressForm, phone: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({ ...addressForm, phone: e.target.value })
+                    }
                     className="rounded-lg border border-border bg-background p-2.5 text-foreground placeholder:text-muted-foreground focus:border-(--brand) focus:outline-none"
                   />
                 </div>
@@ -267,13 +318,23 @@ export function CheckoutView() {
                   required
                   placeholder="Street address / house / flat"
                   value={addressForm.addressLine1}
-                  onChange={(e) => setAddressForm({ ...addressForm, addressLine1: e.target.value })}
+                  onChange={(e) =>
+                    setAddressForm({
+                      ...addressForm,
+                      addressLine1: e.target.value,
+                    })
+                  }
                   className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground placeholder:text-muted-foreground focus:border-(--brand) focus:outline-none"
                 />
                 <input
                   placeholder="Landmark / area (optional)"
                   value={addressForm.addressLine2}
-                  onChange={(e) => setAddressForm({ ...addressForm, addressLine2: e.target.value })}
+                  onChange={(e) =>
+                    setAddressForm({
+                      ...addressForm,
+                      addressLine2: e.target.value,
+                    })
+                  }
                   className="w-full rounded-lg border border-border bg-background p-2.5 text-foreground placeholder:text-muted-foreground focus:border-(--brand) focus:outline-none"
                 />
                 <div className="grid grid-cols-3 gap-3">
@@ -281,21 +342,30 @@ export function CheckoutView() {
                     required
                     placeholder="City"
                     value={addressForm.city}
-                    onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({ ...addressForm, city: e.target.value })
+                    }
                     className="rounded-lg border border-border bg-background p-2.5 text-foreground focus:border-(--brand) focus:outline-none"
                   />
                   <input
                     required
                     placeholder="State"
                     value={addressForm.state}
-                    onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({ ...addressForm, state: e.target.value })
+                    }
                     className="rounded-lg border border-border bg-background p-2.5 text-foreground focus:border-(--brand) focus:outline-none"
                   />
                   <input
                     required
                     placeholder="Pincode"
                     value={addressForm.pincode}
-                    onChange={(e) => setAddressForm({ ...addressForm, pincode: e.target.value })}
+                    onChange={(e) =>
+                      setAddressForm({
+                        ...addressForm,
+                        pincode: e.target.value,
+                      })
+                    }
                     className="rounded-lg border border-border bg-background p-2.5 text-foreground focus:border-(--brand) focus:outline-none"
                   />
                 </div>
@@ -311,7 +381,12 @@ export function CheckoutView() {
                       Cancel
                     </Button>
                   )}
-                  <Button type="submit" size="sm" disabled={savingAddress} className="rounded-full text-xs">
+                  <Button
+                    type="submit"
+                    size="sm"
+                    disabled={savingAddress}
+                    className="rounded-full text-xs"
+                  >
                     {savingAddress ? "Saving…" : "Save Address"}
                   </Button>
                 </div>
@@ -326,10 +401,12 @@ export function CheckoutView() {
           <div className="mt-4 flex items-start gap-3 rounded-2xl border border-(--brand) bg-(--brand)/5 p-4 text-xs">
             <Truck size={18} className="mt-0.5 shrink-0 text-(--brand)" />
             <div>
-              <p className="font-semibold text-foreground">Pan-Bengal Delivery</p>
+              <p className="font-semibold text-foreground">
+                Pan-Bengal Delivery
+              </p>
               <p className="mt-1 text-muted-foreground">
-                Delivered via India Post or courier partners. Delivery charges (if any) are
-                confirmed with you after your order is placed.
+                Delivered via India Post or courier partners. Delivery charges
+                (if any) are confirmed with you after your order is placed.
               </p>
             </div>
           </div>
@@ -342,18 +419,24 @@ export function CheckoutView() {
             <div className="flex items-center gap-3 rounded-2xl border border-(--brand) bg-(--brand)/5 p-4 text-xs">
               <CheckCircle2 size={18} className="shrink-0 text-(--brand)" />
               <div>
-                <p className="font-semibold text-foreground">Place Your Order</p>
+                <p className="font-semibold text-foreground">
+                  Place Your Order
+                </p>
                 <p className="text-muted-foreground">
-                  Our admin will connect with you shortly after you place your order to confirm
-                  details and delivery — pay cash on delivery.
+                  Our admin will connect with you shortly after you place your
+                  order to confirm details and delivery.
                 </p>
               </div>
             </div>
             <div className="flex cursor-not-allowed items-center gap-3 rounded-2xl border border-border bg-muted/30 p-4 text-xs opacity-60">
               <Circle size={18} className="shrink-0 text-muted-foreground" />
               <div className="flex-1">
-                <p className="font-semibold text-foreground">Pay Online (Razorpay)</p>
-                <p className="text-muted-foreground">Cards, UPI &amp; netbanking.</p>
+                <p className="font-semibold text-foreground">
+                  Pay Online (Razorpay)
+                </p>
+                <p className="text-muted-foreground">
+                  Cards, UPI &amp; netbanking.
+                </p>
               </div>
               <span className="flex items-center gap-1 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
                 <Sparkles size={10} />
@@ -366,19 +449,31 @@ export function CheckoutView() {
 
       {/* Shopping Bag summary */}
       <div className="h-fit space-y-4 rounded-2xl border border-border bg-card p-5 shadow-sm">
-        <h3 className="font-serif text-lg text-foreground">Shopping Bag ({items.length})</h3>
+        <h3 className="font-serif text-lg text-foreground">
+          Shopping Bag ({items.length})
+        </h3>
 
         <div className="space-y-3">
           {items.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted/30">
                 {item.product.images?.[0] && (
-                  <Image src={item.product.images[0]} alt={item.product.name} fill sizes="56px" className="object-cover" />
+                  <Image
+                    src={item.product.images[0]}
+                    alt={item.product.name}
+                    fill
+                    sizes="56px"
+                    className="object-cover"
+                  />
                 )}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-medium text-foreground">{item.product.name}</p>
-                <p className="text-[11px] text-muted-foreground">Qty: {item.quantity}</p>
+                <p className="truncate text-xs font-medium text-foreground">
+                  {item.product.name}
+                </p>
+                <p className="text-[11px] text-muted-foreground">
+                  Qty: {item.quantity}
+                </p>
               </div>
               <span className="text-xs font-semibold text-foreground">
                 {currencyFormatter.format(item.product.price * item.quantity)}
@@ -390,11 +485,15 @@ export function CheckoutView() {
         <div className="space-y-1.5 border-t border-border pt-4 text-sm">
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Subtotal</span>
-            <span className="font-medium text-foreground">{currencyFormatter.format(subtotal)}</span>
+            <span className="font-medium text-foreground">
+              {currencyFormatter.format(subtotal)}
+            </span>
           </div>
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Delivery</span>
-            <span className="text-xs text-muted-foreground">Confirmed after order</span>
+            <span className="text-xs text-muted-foreground">
+              Confirmed after order
+            </span>
           </div>
         </div>
 
@@ -406,7 +505,9 @@ export function CheckoutView() {
         </div>
 
         {error && (
-          <p className="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">{error}</p>
+          <p className="rounded-lg bg-destructive/10 px-3 py-2 text-xs text-destructive">
+            {error}
+          </p>
         )}
 
         <Button
