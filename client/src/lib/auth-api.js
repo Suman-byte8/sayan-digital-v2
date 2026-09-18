@@ -97,6 +97,7 @@ export const profileApi = {
   removeWishlistItem: (token, id) => request(`/wishlist/${id}`, { method: "DELETE", token }),
 
   listOrders: (token) => request("/orders", { token }),
+  createOrder: (token, data) => request("/orders", { method: "POST", body: JSON.stringify(data), token }),
 
   listCart: (token) => request("/cart", { token }),
   addCartItem: (token, productId, quantity = 1) =>
