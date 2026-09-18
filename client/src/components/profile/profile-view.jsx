@@ -23,7 +23,7 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
 import { profileApi } from "@/lib/auth-api";
-import { toOrderView, memberSinceLabel, loyaltyTier } from "@/lib/profile-view-model";
+import { toOrderView, memberSinceLabel } from "@/lib/profile-view-model";
 import { OrdersTab } from "@/components/profile/tabs/orders-tab";
 import { AddressesTab } from "@/components/profile/tabs/addresses-tab";
 import { PersonalInfoTab } from "@/components/profile/tabs/personal-info-tab";
@@ -87,7 +87,6 @@ export function ProfileView() {
   const activeOrdersCount = mappedOrders.filter(
     (o) => o.status === "in-production" || o.status === "shipped"
   ).length;
-  const { tier } = loyaltyTier(user.loyaltyPoints);
   const avatarInitials = user.name
     .split(" ")
     .map((part) => part[0])
@@ -95,7 +94,6 @@ export function ProfileView() {
     .slice(0, 2)
     .toUpperCase();
   const memberSince = memberSinceLabel(user.createdAt);
-  const pointsValueRupees = Math.floor(user.loyaltyPoints / 10);
 
   async function handleSignOut() {
     if (confirm("Are you sure you want to sign out of your account?")) {
@@ -210,10 +208,15 @@ export function ProfileView() {
                 <h1 className="font-serif text-2xl font-normal text-foreground sm:text-3xl">
                   {user.name}
                 </h1>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-500/10 px-3 py-0.5 text-xs font-semibold text-amber-800 dark:text-amber-400">
-                  <Sparkles size={12} />
-                  {tier}
-                </span>
+                {/* Admin-set only — see the "Membership" control on the
+                    admin panel's customer detail page. No customer-facing
+                    way to earn/change this. */}
+                {user.isMember && (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300 bg-amber-500/10 px-3 py-0.5 text-xs font-semibold text-amber-800 dark:text-amber-400">
+                    <Sparkles size={12} />
+                    Member
+                  </span>
+                )}
               </div>
 
               <p className="mt-1 text-xs text-muted-foreground">
@@ -230,23 +233,16 @@ export function ProfileView() {
 
           {/* Quick Stats Ribbon */}
           <div className="flex flex-wrap items-center gap-3">
-            {/* Loyalty Coins Card */}
-            <div className="flex items-center gap-3 rounded-2xl border border-amber-200/80 bg-amber-50/60 px-4 py-3 shadow-sm">
-              <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500 text-white shadow-xs">
+            {/* Loyalty Coins Card — disabled for now */}
+            <div className="flex items-center gap-3 rounded-2xl border border-border bg-muted/30 px-4 py-3 opacity-60">
+              <div className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                 <Coins size={18} />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-serif text-lg font-semibold text-amber-950">
-                    {user.loyaltyPoints.toLocaleString("en-IN")}
-                  </span>
-                  <span className="text-[11px] font-medium text-amber-800">Coins</span>
+                  <span className="font-serif text-lg font-semibold text-muted-foreground">Coins</span>
                 </div>
-                <p className="text-[11px] text-amber-900/80">
-                  {pointsValueRupees > 0
-                    ? `Save ₹${pointsValueRupees} on your next order`
-                    : "Earn coins with every completed order"}
-                </p>
+                <p className="text-[11px] text-muted-foreground">Coming soon</p>
               </div>
             </div>
 

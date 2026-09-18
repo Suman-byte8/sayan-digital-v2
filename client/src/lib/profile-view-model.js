@@ -76,12 +76,3 @@ export function memberSinceLabel(createdAt) {
     new Date(createdAt),
   );
 }
-
-// Simple, honest tier derivation from real loyaltyPoints (default 0 for
-// every new signup) — replaces the old mockup's hardcoded "Craft Club VIP"
-// shown identically to every user regardless of any actual activity.
-export function loyaltyTier(points) {
-  if (points >= 2000) return { tier: "Gold Circle", tierColor: "gold" };
-  if (points >= 500) return { tier: "Silver Circle", tierColor: "silver" };
-  return { tier: "Member", tierColor: "default" };
-}

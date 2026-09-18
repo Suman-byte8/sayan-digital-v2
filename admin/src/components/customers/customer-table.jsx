@@ -84,6 +84,11 @@ export function CustomerTable({ customers }) {
                       </div>
                     )}
                     <span className="font-medium text-foreground hover:underline">{customer.name}</span>
+                    {customer.isMember && (
+                      <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+                        Member
+                      </span>
+                    )}
                   </Link>
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">

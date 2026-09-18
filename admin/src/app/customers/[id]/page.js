@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Mail, Phone, Building2, FileText, Coins } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { MembershipToggle } from "@/components/customers/membership-toggle";
 
 export const dynamic = "force-dynamic";
 
@@ -128,6 +129,7 @@ export default async function CustomerDetailPage({ params }) {
               {customer.loyaltyPoints.toLocaleString("en-IN")} pts
             </p>
           </div>
+          <MembershipToggle id={customer.id} isMember={customer.isMember} />
         </div>
       </div>
 
