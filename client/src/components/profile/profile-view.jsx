@@ -23,21 +23,20 @@ import {
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
 import { profileApi } from "@/lib/auth-api";
-import { toOrderView, toProofView, memberSinceLabel, loyaltyTier } from "@/lib/profile-view-model";
+import { toOrderView, memberSinceLabel, loyaltyTier } from "@/lib/profile-view-model";
 import { OrdersTab } from "@/components/profile/tabs/orders-tab";
-import { ProofsTab } from "@/components/profile/tabs/proofs-tab";
 import { AddressesTab } from "@/components/profile/tabs/addresses-tab";
 import { PersonalInfoTab } from "@/components/profile/tabs/personal-info-tab";
 import { WishlistTab } from "@/components/profile/tabs/wishlist-tab";
-import { PaymentsTab } from "@/components/profile/tabs/payments-tab";
 import { NotificationsTab } from "@/components/profile/tabs/notifications-tab";
+import { ComingSoonNotice } from "@/components/profile/tabs/coming-soon-notice";
 
 const NAV_GROUPS = [
   {
     title: "Orders & Studio",
     items: [
       { id: "orders", label: "Orders & History", icon: Package, badgeKey: "activeOrders" },
-      { id: "proofs", label: "Print Proof Approvals", icon: FileCheck, badgeKey: "pendingProofs" },
+      { id: "proofs", label: "Print Proof Approvals", icon: FileCheck, comingSoon: true },
     ],
   },
   {
@@ -51,7 +50,7 @@ const NAV_GROUPS = [
     items: [
       { id: "personal-info", label: "Personal Details", icon: User },
       { id: "addresses", label: "Delivery Addresses", icon: MapPin },
-      { id: "payments", label: "Payment & GSTIN", icon: CreditCard },
+      { id: "payments", label: "Payment & GSTIN", icon: CreditCard, comingSoon: true },
       { id: "notifications", label: "Notifications & Alerts", icon: Bell },
     ],
   },
@@ -66,9 +65,7 @@ export function ProfileView() {
   const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState(() => searchParams.get("tab") || "orders");
   const [orders, setOrders] = useState([]);
-  const [proofs, setProofs] = useState([]);
   const [addresses, setAddresses] = useState([]);
-  const [paymentMethods, setPaymentMethods] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [avatarError, setAvatarError] = useState("");
@@ -77,28 +74,19 @@ export function ProfileView() {
   useEffect(() => {
     if (!accessToken) return;
 
-    Promise.all([
-      profileApi.listOrders(accessToken),
-      profileApi.listProofs(accessToken),
-      profileApi.listAddresses(accessToken),
-      profileApi.listPaymentMethods(accessToken),
-    ])
-      .then(([ordersRes, proofsRes, addressesRes, paymentsRes]) => {
+    Promise.all([profileApi.listOrders(accessToken), profileApi.listAddresses(accessToken)])
+      .then(([ordersRes, addressesRes]) => {
         setOrders(ordersRes.data);
-        setProofs(proofsRes.data);
         setAddresses(addressesRes.data);
-        setPaymentMethods(paymentsRes.data);
       })
       .finally(() => setLoading(false));
   }, [accessToken]);
 
   const mappedOrders = orders.map(toOrderView);
-  const mappedProofs = proofs.map(toProofView);
 
   const activeOrdersCount = mappedOrders.filter(
     (o) => o.status === "in-production" || o.status === "shipped"
   ).length;
-  const pendingProofsCount = mappedProofs.filter((p) => p.status === "pending").length;
   const { tier } = loyaltyTier(user.loyaltyPoints);
   const avatarInitials = user.name
     .split(" ")
@@ -132,30 +120,6 @@ export function ProfileView() {
   }
   async function handleSetDefaultAddress(id) {
     await handleUpdateAddress(id, { isDefaultShipping: true });
-  }
-
-  // Payment method handlers
-  async function handleAddPaymentMethod(data) {
-    const { data: created } = await profileApi.createPaymentMethod(accessToken, data);
-    setPaymentMethods((prev) =>
-      [created, ...prev].map((m) => (data.isPrimary && m.id !== created.id ? { ...m, isPrimary: false } : m)),
-    );
-  }
-  async function handleRemovePaymentMethod(id) {
-    await profileApi.deletePaymentMethod(accessToken, id);
-    setPaymentMethods((prev) => prev.filter((m) => m.id !== id));
-  }
-  async function handleSetPrimaryPaymentMethod(id) {
-    await profileApi.setPrimaryPaymentMethod(accessToken, id);
-    setPaymentMethods((prev) => prev.map((m) => ({ ...m, isPrimary: m.id === id })));
-  }
-
-  // Proof handlers
-  async function handleApproveProof(id) {
-    await profileApi.approveProof(accessToken, id);
-    setProofs((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, status: "APPROVED", approvedAt: new Date().toISOString() } : p)),
-    );
   }
 
   // Avatar handler — the file is compressed to WebP and stored in Drive
@@ -319,8 +283,6 @@ export function ProfileView() {
           const badgeCount =
             item.id === "orders"
               ? activeOrdersCount
-              : item.id === "proofs"
-              ? pendingProofsCount
               : item.id === "wishlist"
               ? wishlist.length
               : null;
@@ -338,14 +300,25 @@ export function ProfileView() {
             >
               <Icon size={14} />
               <span>{item.label}</span>
-              {badgeCount !== null && badgeCount > 0 && (
+              {item.comingSoon ? (
                 <span
                   className={`rounded-full px-1.5 py-0.2 text-[10px] font-semibold ${
-                    isActive ? "bg-white/20 text-white" : "bg-(--brand)/10 text-(--brand)"
+                    isActive ? "bg-white/20 text-white" : "bg-amber-500/10 text-amber-700"
                   }`}
                 >
-                  {badgeCount}
+                  Soon
                 </span>
+              ) : (
+                badgeCount !== null &&
+                badgeCount > 0 && (
+                  <span
+                    className={`rounded-full px-1.5 py-0.2 text-[10px] font-semibold ${
+                      isActive ? "bg-white/20 text-white" : "bg-(--brand)/10 text-(--brand)"
+                    }`}
+                  >
+                    {badgeCount}
+                  </span>
+                )
               )}
             </button>
           );
@@ -370,8 +343,6 @@ export function ProfileView() {
                       const badgeCount =
                         item.id === "orders"
                           ? activeOrdersCount
-                          : item.id === "proofs"
-                          ? pendingProofsCount
                           : item.id === "wishlist"
                           ? wishlist.length
                           : null;
@@ -399,14 +370,18 @@ export function ProfileView() {
                             <span>{item.label}</span>
                           </div>
 
-                          {badgeCount !== null && badgeCount > 0 ? (
+                          {item.comingSoon ? (
                             <span
                               className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                                isActive
-                                  ? "bg-white/20 text-white"
-                                  : item.id === "proofs"
-                                  ? "bg-amber-500 text-white animate-pulse"
-                                  : "bg-(--brand)/10 text-(--brand)"
+                                isActive ? "bg-white/20 text-white" : "bg-amber-500/10 text-amber-700"
+                              }`}
+                            >
+                              Soon
+                            </span>
+                          ) : badgeCount !== null && badgeCount > 0 ? (
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                                isActive ? "bg-white/20 text-white" : "bg-(--brand)/10 text-(--brand)"
                               }`}
                             >
                               {badgeCount}
@@ -467,7 +442,11 @@ export function ProfileView() {
               <OrdersTab orders={mappedOrders} onSelectTab={(tab) => setActiveTab(tab)} />
             )}
             {activeTab === "proofs" && (
-              <ProofsTab proofs={mappedProofs} onApprove={handleApproveProof} />
+              <ComingSoonNotice
+                icon={FileCheck}
+                title="Print Proof Approvals — Coming Soon"
+                description="Digital proof review and approval for your custom print orders is on its way. We'll notify you here once it's live."
+              />
             )}
             {activeTab === "wishlist" && (
               <WishlistTab wishlist={wishlist} onRemove={removeWishlistItem} />
@@ -485,11 +464,10 @@ export function ProfileView() {
               />
             )}
             {activeTab === "payments" && (
-              <PaymentsTab
-                paymentMethods={paymentMethods}
-                onAdd={handleAddPaymentMethod}
-                onRemove={handleRemovePaymentMethod}
-                onSetPrimary={handleSetPrimaryPaymentMethod}
+              <ComingSoonNotice
+                icon={CreditCard}
+                title="Payment & GSTIN — Coming Soon"
+                description="Saved payment references and GSTIN details are on their way. We'll notify you here once it's live."
               />
             )}
             {activeTab === "notifications" && (
