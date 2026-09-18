@@ -183,28 +183,45 @@ export function CartView() {
           <span className="font-semibold text-foreground">{currencyFormatter.format(subtotal)}</span>
         </div>
         <p className="text-[11px] text-muted-foreground">
-          Final pricing, delivery charges and GST (if applicable) are confirmed with you directly
-          before production — no online payment is taken here.
+          Delivery charges are confirmed with you after your order is placed — pay cash on
+          delivery, no online payment yet.
         </p>
 
         <div className="flex flex-col gap-2 pt-2">
           <Button asChild data-cursor="hover" className="h-11 w-full gap-2 rounded-full text-[13px]">
-            <a href={buildCartWhatsappHref(items)} target="_blank" rel="noopener noreferrer">
-              <MessageCircle size={16} />
-              Order via WhatsApp
-            </a>
+            <Link href="/checkout">
+              <ShoppingCart size={16} />
+              Proceed to Checkout
+            </Link>
           </Button>
-          <Button
-            asChild
-            variant="outline"
-            data-cursor="hover"
-            className="h-11 w-full gap-2 rounded-full text-[13px]"
-          >
-            <a href={buildCartMailto(items, subtotal)}>
-              <Mail size={16} />
-              Email Order Summary
-            </a>
-          </Button>
+
+          <p className="pt-1 text-center text-[11px] text-muted-foreground">
+            Or ask us directly —
+          </p>
+          <div className="flex gap-2">
+            <Button
+              asChild
+              variant="outline"
+              data-cursor="hover"
+              className="h-10 flex-1 gap-1.5 rounded-full text-[12px]"
+            >
+              <a href={buildCartWhatsappHref(items)} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={14} />
+                WhatsApp
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              data-cursor="hover"
+              className="h-10 flex-1 gap-1.5 rounded-full text-[12px]"
+            >
+              <a href={buildCartMailto(items, subtotal)}>
+                <Mail size={14} />
+                Email
+              </a>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

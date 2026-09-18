@@ -61,7 +61,9 @@ export function CartProvider({ children }) {
     setRawItems([]);
   }, [accessToken]);
 
-  const count = useMemo(() => items.reduce((sum, item) => sum + item.quantity, 0), [items]);
+  // Distinct products in the cart, not the summed quantity — e.g. adding
+  // one product 3 times is still "1" here, not "3".
+  const count = items.length;
   const subtotal = useMemo(
     () => items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
     [items],
