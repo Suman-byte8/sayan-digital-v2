@@ -85,4 +85,9 @@ export const api = {
   listUsers: (params = {}) => request(withQuery("/admin/users", params)),
   getUser: (id) => request(`/admin/users/${id}`),
   deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" }),
+
+  listOrders: (params = {}) => request(withQuery("/admin/orders", params)),
+  getOrder: (id) => request(`/admin/orders/${id}`),
+  updateOrder: (id, data) =>
+    request(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
 };

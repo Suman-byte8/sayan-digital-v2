@@ -15,6 +15,7 @@ import {
   Copy,
   Check,
   FileCheck,
+  XCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -140,6 +141,8 @@ export function OrdersTab({ orders, onSelectTab }) {
             const isDelivered = order.status === "delivered";
             const isShipped = order.status === "shipped";
             const isInProduction = order.status === "in-production";
+            const isPending = order.status === "pending";
+            const isCancelled = order.status === "cancelled";
 
             return (
               <div
@@ -161,6 +164,18 @@ export function OrdersTab({ orders, onSelectTab }) {
 
                   {/* Status Badge */}
                   <div className="flex items-center gap-2">
+                    {isPending && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/10 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-400">
+                        <Clock size={12} />
+                        Order Received
+                      </span>
+                    )}
+                    {isCancelled && (
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1 text-[11px] font-medium text-red-700 dark:text-red-400">
+                        <XCircle size={12} />
+                        Cancelled
+                      </span>
+                    )}
                     {isInProduction && (
                       <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
                         <Clock size={12} className="animate-spin" />
@@ -257,8 +272,14 @@ export function OrdersTab({ orders, onSelectTab }) {
                     <span className="font-serif text-lg font-semibold text-foreground">
                       ₹{order.totalAmount.toLocaleString("en-IN")}
                     </span>
-                    <span className="text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                      Paid
+                    <span
+                      className={`text-[11px] px-2 py-0.5 rounded-full border ${
+                        order.isPaid
+                          ? "text-emerald-700 bg-emerald-50 border-emerald-200"
+                          : "text-muted-foreground bg-muted border-border"
+                      }`}
+                    >
+                      {order.isPaid ? "Paid" : order.paymentMethod === "COD" ? "Pay on Delivery" : "Unpaid"}
                     </span>
                   </div>
 
