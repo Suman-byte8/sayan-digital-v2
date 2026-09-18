@@ -45,20 +45,6 @@ const ORDERING_NOTES = CONTACT_FAQS.filter(
   (faq) => faq.question.includes("send my design") || faq.question.includes("turnaround")
 );
 
-function buildInquiryMailto(product) {
-  const subject = `Order Inquiry — ${product.name}`;
-  const lines = [
-    `I'm interested in ordering: ${product.name}`,
-    `Category: ${product.categoryLabel}`,
-    "Quantity needed: ",
-    "",
-    "Please confirm availability, pricing and (if applicable) a digital proof before production.",
-  ];
-  return `mailto:${BRAND.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
-    lines.join("\n")
-  )}`;
-}
-
 function buildWhatsappHref(product) {
   const text = `Hi Sayan Digital, I'd like to order: ${product.name}`;
   return `https://wa.me/${BRAND.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
@@ -74,6 +60,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
   const [quantity, setQuantity] = useState(1);
   const [addingToCart, setAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
+  const [buyingNow, setBuyingNow] = useState(false);
 
   function handleSave() {
     if (status !== "authenticated") {
@@ -95,6 +82,20 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
       setTimeout(() => setAddedToCart(false), 2000);
     } finally {
       setAddingToCart(false);
+    }
+  }
+
+  async function handleBuyNow() {
+    if (status !== "authenticated") {
+      router.push("/profile");
+      return;
+    }
+    setBuyingNow(true);
+    try {
+      await addItem(product.id, quantity);
+      router.push("/checkout");
+    } finally {
+      setBuyingNow(false);
     }
   }
 
@@ -245,11 +246,15 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
 
           <Reveal delay={320} className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Magnetic strength={0.25} className="flex-1">
-              <Button asChild data-cursor="hover" className="h-12 w-full gap-2 rounded-full text-[14px]">
-                <a href={buildInquiryMailto(product)}>
-                  Enquire Now
-                  <ArrowRight size={16} />
-                </a>
+              <Button
+                type="button"
+                data-cursor="hover"
+                onClick={handleBuyNow}
+                disabled={buyingNow}
+                className="h-12 w-full gap-2 rounded-full text-[14px]"
+              >
+                {buyingNow ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
+                Buy Now
               </Button>
             </Magnetic>
             <Button asChild variant="outline" data-cursor="hover" className="h-12 gap-2 rounded-full text-[14px]">

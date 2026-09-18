@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowRight, Heart } from "lucide-react";
+import { Eye, Heart } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
@@ -171,13 +171,15 @@ export function CatalogProductCard({ product }) {
               devices get it inside the reveal panel instead, so it isn't
               shown twice. */}
           {!isHoverDevice && (
-            <Link
-              href="/contact"
+            <button
+              type="button"
+              onClick={handleSave}
+              aria-pressed={isSaved}
               className="flex w-full items-center justify-center gap-2 rounded-lg bg-(--brand) py-2.5 text-[13px] font-medium text-white transition-colors duration-200"
             >
-              Enquire Now
-              <ArrowRight size={15} />
-            </Link>
+              <Heart size={15} className={isSaved ? "fill-white" : ""} />
+              {isSaved ? "Wishlisted" : "Wishlist"}
+            </button>
           )}
         </div>
       </div>
@@ -211,15 +213,18 @@ export function CatalogProductCard({ product }) {
                 href={detailHref}
                 className="flex w-full items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-[13px] font-medium text-foreground transition-colors duration-150 hover:bg-muted"
               >
-                View Details
+                <Eye size={15} />
+                View
               </Link>
-              <Link
-                href="/contact"
+              <button
+                type="button"
+                onClick={handleSave}
+                aria-pressed={isSaved}
                 className="flex w-full items-center justify-center gap-2 rounded-lg bg-(--brand) py-2.5 text-[13px] font-medium text-white transition-transform duration-150 active:scale-[0.97]"
               >
-                Enquire Now
-                <ArrowRight size={15} />
-              </Link>
+                <Heart size={15} className={isSaved ? "fill-white" : ""} />
+                {isSaved ? "Wishlisted" : "Wishlist"}
+              </button>
             </motion.div>
           </div>
         </motion.div>
