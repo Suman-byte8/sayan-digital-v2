@@ -73,7 +73,7 @@ export function ProductForm({ mode, productId, initialData }) {
       sku: v.sku ?? "",
       price: v.price != null ? String(v.price) : "",
       stock: String(v.stock ?? 0),
-      image: v.image ?? null,
+      images: v.images ?? [],
       isActive: v.isActive,
     })),
   );
@@ -152,7 +152,7 @@ export function ProductForm({ mode, productId, initialData }) {
         sku: "",
         price: "",
         stock: "0",
-        image: null,
+        images: [],
         isActive: true,
       })),
     ]);
@@ -193,7 +193,7 @@ export function ProductForm({ mode, productId, initialData }) {
         sku: v.sku.trim() || null,
         price: v.price !== "" ? Number(v.price) : null,
         stock: Number(v.stock) || 0,
-        image: v.image || null,
+        images: v.images,
         isActive: v.isActive,
       })),
     };
@@ -476,7 +476,7 @@ export function ProductForm({ mode, productId, initialData }) {
                   <th className="px-2 py-2">SKU</th>
                   <th className="px-2 py-2">Price</th>
                   <th className="px-2 py-2">Stock</th>
-                  <th className="px-2 py-2">Image</th>
+                  <th className="px-2 py-2">Images</th>
                   <th className="px-2 py-2">Active</th>
                   <th className="px-2 py-2" />
                 </tr>
@@ -520,8 +520,8 @@ export function ProductForm({ mode, productId, initialData }) {
                     </td>
                     <td className="px-2 py-2">
                       <VariantImagePicker
-                        image={variant.image}
-                        onChange={(image) => handleVariantFieldChange(index, "image", image)}
+                        images={variant.images}
+                        onChange={(images) => handleVariantFieldChange(index, "images", images)}
                       />
                     </td>
                     <td className="px-2 py-2">

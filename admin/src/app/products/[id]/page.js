@@ -118,6 +118,7 @@ export default async function ProductDetailPage({ params }) {
                 <table className="w-full text-left text-sm">
                   <thead className="border-b border-border bg-muted/50 text-xs font-medium tracking-wide text-muted-foreground uppercase">
                     <tr>
+                      <th className="px-3 py-2">Photo</th>
                       <th className="px-3 py-2">Combination</th>
                       <th className="px-3 py-2">Price</th>
                       <th className="px-3 py-2">Stock</th>
@@ -127,6 +128,18 @@ export default async function ProductDetailPage({ params }) {
                   <tbody className="divide-y divide-border">
                     {product.variants.map((variant) => (
                       <tr key={variant.id}>
+                        <td className="px-3 py-2">
+                          {variant.images?.[0] ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL
+                            <img
+                              src={variant.images[0]}
+                              alt=""
+                              className="size-9 rounded-md border border-border object-cover"
+                            />
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
                         <td className="px-3 py-2 text-foreground">
                           {Object.entries(variant.selection)
                             .map(([name, value]) => `${name}: ${value}`)

@@ -74,6 +74,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
   const [addedToCart, setAddedToCart] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
   const [selection, setSelection] = useState({});
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
 
   const resolvedVariant =
     product.hasVariants && product.variantOptions.every((opt) => selection[opt.name])
@@ -83,8 +84,21 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
       : null;
   const needsSelection = product.hasVariants && !resolvedVariant;
   const displayPrice = resolvedVariant?.price ?? product.price;
-  const displayImage = resolvedVariant?.image || product.image;
+  // The selected variant's own photos take over the gallery when it has
+  // any (e.g. the heart-shaped mug actually looks different) — falls back
+  // to the product's own set otherwise, never leaves the gallery empty.
+  const galleryImages =
+    resolvedVariant?.images?.length > 0 ? resolvedVariant.images : product.images;
+  const safeImageIndex = Math.min(activeImageIndex, galleryImages.length - 1);
+  const displayImage = galleryImages[safeImageIndex];
   const outOfStock = resolvedVariant && resolvedVariant.stock <= 0;
+
+  function handleSelectOption(optionName, value) {
+    setSelection((prev) => ({ ...prev, [optionName]: value }));
+    // The gallery source may be about to change (a different variant, or
+    // back to the base product) - start from its first photo either way.
+    setActiveImageIndex(0);
+  }
 
   function handleSave() {
     if (status !== "authenticated") {
@@ -154,6 +168,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
       </nav>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
+        <div>
         <Reveal className="relative aspect-square overflow-hidden rounded-3xl border border-border bg-card shadow-premium">
           <Image
             src={displayImage}
@@ -194,6 +209,27 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
             <Heart size={18} className={isSaved ? "fill-red-500 text-red-500" : ""} />
           </button>
         </Reveal>
+
+        {galleryImages.length > 1 && (
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {galleryImages.map((url, index) => (
+              <button
+                key={`${url}-${index}`}
+                type="button"
+                data-cursor="hover"
+                onClick={() => setActiveImageIndex(index)}
+                aria-label={`Show photo ${index + 1}`}
+                className={cn(
+                  "relative size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors",
+                  index === safeImageIndex ? "border-(--brand)" : "border-transparent hover:border-border"
+                )}
+              >
+                <Image src={url} alt="" fill sizes="64px" className="object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+        </div>
 
         <div>
           <Reveal delay={80}>
@@ -249,7 +285,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
                           type="button"
                           disabled={!available}
                           data-cursor="hover"
-                          onClick={() => setSelection((prev) => ({ ...prev, [option.name]: value }))}
+                          onClick={() => handleSelectOption(option.name, value)}
                           className={cn(
                             "rounded-full border px-4 py-2 text-[13px] font-medium transition-colors",
                             isSelected

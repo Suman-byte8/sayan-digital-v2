@@ -108,9 +108,9 @@ export function CartView() {
               href={`/products/${item.product.slug}`}
               className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted/30"
             >
-              {(item.variant?.image || item.product.images?.[0]) && (
+              {(item.variant?.images?.[0] || item.product.images?.[0]) && (
                 <Image
-                  src={item.variant?.image || item.product.images[0]}
+                  src={item.variant?.images?.[0] || item.product.images[0]}
                   alt={item.product.name}
                   fill
                   sizes="80px"

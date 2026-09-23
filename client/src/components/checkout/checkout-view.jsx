@@ -457,9 +457,9 @@ export function CheckoutView() {
           {items.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted/30">
-                {(item.variant?.image || item.product.images?.[0]) && (
+                {(item.variant?.images?.[0] || item.product.images?.[0]) && (
                   <Image
-                    src={item.variant?.image || item.product.images[0]}
+                    src={item.variant?.images?.[0] || item.product.images[0]}
                     alt={item.product.name}
                     fill
                     sizes="56px"
