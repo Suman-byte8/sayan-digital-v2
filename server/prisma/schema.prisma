@@ -103,7 +103,10 @@ model ProductVariant {
   // more/less than the base (e.g. a bigger frame).
   price        Decimal? @db.Decimal(10, 2)
   stock        Int      @default(0)
-  image        String?
+  // Falls back to Product.images on the client when empty — set these when
+  // this specific combo genuinely looks different (e.g. a heart-shaped mug
+  // vs. the plain white one), not required for combos that don't.
+  images       String[] @default([])
   isActive     Boolean  @default(true)
   position     Int      @default(0)
   createdAt    DateTime @default(now())

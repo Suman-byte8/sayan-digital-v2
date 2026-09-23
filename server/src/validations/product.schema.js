@@ -48,7 +48,7 @@ const productBaseSchema = {
         sku: z.string().trim().max(64).optional().nullable(),
         price: z.coerce.number().positive().optional().nullable(),
         stock: z.coerce.number().int().nonnegative().default(0),
-        image: z.string().trim().url().optional().nullable(),
+        images: z.array(z.string().trim().url("Each image must be a valid URL")).default([]),
         isActive: z.boolean().default(true),
       }),
     )

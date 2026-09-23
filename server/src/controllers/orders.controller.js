@@ -66,7 +66,7 @@ export async function createOrder(req, res) {
             variantId: item.variantId,
             variantLabel: item.variant ? formatVariantLabel(item.variant.selection) : null,
             name: item.product.name,
-            image: item.variant?.image ?? item.product.images?.[0] ?? null,
+            image: item.variant?.images?.[0] ?? item.product.images?.[0] ?? null,
             quantity: item.quantity,
             price: unitPrice(item),
           })),
