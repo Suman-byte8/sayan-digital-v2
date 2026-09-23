@@ -398,8 +398,10 @@ export function ProductForm({ mode, productId, initialData }) {
         </div>
         <p className="mb-3 text-xs text-muted-foreground">
           Optional — for products that come in different sizes/types/etc, each with its own
-          price and stock (e.g. mug type, frame size + thickness). Leave empty for a plain
-          product.
+          price, stock and photos (e.g. mug type, frame size + thickness). Leave empty for a
+          plain product. <strong className="font-medium text-foreground">Name the option, add
+          its values below, then click &ldquo;Generate variants&rdquo;</strong> — that&rsquo;s
+          where price, stock and images for each combination show up.
         </p>
 
         {variantOptions.length > 0 && (
@@ -459,11 +461,17 @@ export function ProductForm({ mode, productId, initialData }) {
             <button
               type="button"
               onClick={handleGenerateVariants}
-              className="flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+              disabled={!variantOptions.some((o) => o.name.trim() && o.values.length > 0)}
+              title="Add an option name and at least one value first"
+              className="flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Wand2 size={13} />
               Generate variants from options above
             </button>
+            <p className="mt-1.5 text-[11px] text-muted-foreground">
+              This creates the rows below where you set each combination&rsquo;s price, stock
+              and photos — safe to click again after adding more values.
+            </p>
           </div>
         )}
 
