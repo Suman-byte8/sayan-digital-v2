@@ -52,6 +52,10 @@ export async function addCartItem(req, res) {
   if (variantId) {
     variant = product.variants.find((v) => v.id === variantId);
     if (!variant) throw new ApiError(404, "Selected variant not found.");
+    // Unlike Product.stock (where 0 conventionally means "untracked,
+    // made-to-order" for this business), variant stock is real inventory
+    // the user explicitly wants enforced — 0 genuinely means sold out.
+    if (variant.stock <= 0) throw new ApiError(400, "This option is currently out of stock.");
   }
 
   // Always variantId when one is chosen, else the product itself — see the
@@ -86,6 +90,10 @@ export async function updateCartItem(req, res) {
     include: { product: true, variant: true },
   });
   if (!existing) throw new ApiError(404, "Cart item not found");
+
+  if (existing.variant && existing.variant.stock <= 0) {
+    throw new ApiError(400, "This option is out of stock — remove it from your cart.");
+  }
 
   const stockLimit = existing.variant ? existing.variant.stock : existing.product.stock;
   const cappedQuantity = stockLimit > 0 ? Math.min(quantity, stockLimit) : quantity;

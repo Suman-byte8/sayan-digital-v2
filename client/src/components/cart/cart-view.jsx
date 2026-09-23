@@ -14,13 +14,21 @@ const currencyFormatter = new Intl.NumberFormat("en-IN", {
   maximumFractionDigits: 0,
 });
 
+function unitPriceOf(item) {
+  return item.variant?.price ?? item.product.price;
+}
+
+function lineLabel(item) {
+  return item.variantLabel ? `${item.product.name} (${item.variantLabel})` : item.product.name;
+}
+
 // No payment gateway exists yet (see server/README.md) — the real ordering
 // flow for this business is WhatsApp/email, same as the single-product
 // enquiry buttons on the PDP. This just summarizes the whole cart into one.
 function buildCartWhatsappHref(items) {
   const lines = [
     "Hi Sayan Digital, I'd like to order:",
-    ...items.map((item) => `- ${item.product.name} x${item.quantity}`),
+    ...items.map((item) => `- ${lineLabel(item)} x${item.quantity}`),
   ];
   return `https://wa.me/${BRAND.phone.replace(/\D/g, "")}?text=${encodeURIComponent(lines.join("\n"))}`;
 }
@@ -30,7 +38,7 @@ function buildCartMailto(items, subtotal) {
   const lines = [
     "I'm interested in ordering:",
     "",
-    ...items.map((item) => `${item.product.name} — Qty: ${item.quantity} — ₹${item.product.price} each`),
+    ...items.map((item) => `${lineLabel(item)} — Qty: ${item.quantity} — ₹${unitPriceOf(item)} each`),
     "",
     `Estimated subtotal: ₹${subtotal}`,
     "",
@@ -100,9 +108,9 @@ export function CartView() {
               href={`/products/${item.product.slug}`}
               className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted/30"
             >
-              {item.product.images?.[0] && (
+              {(item.variant?.image || item.product.images?.[0]) && (
                 <Image
-                  src={item.product.images[0]}
+                  src={item.variant?.image || item.product.images[0]}
                   alt={item.product.name}
                   fill
                   sizes="80px"
@@ -120,8 +128,11 @@ export function CartView() {
                   >
                     {item.product.name}
                   </Link>
+                  {item.variantLabel && (
+                    <p className="mt-0.5 text-xs text-muted-foreground">{item.variantLabel}</p>
+                  )}
                   <p className="mt-0.5 text-xs text-muted-foreground">
-                    {currencyFormatter.format(item.product.price)} / {item.product.unit || "pc"}
+                    {currencyFormatter.format(unitPriceOf(item))} / {item.product.unit || "pc"}
                   </p>
                 </div>
                 <button
@@ -160,7 +171,7 @@ export function CartView() {
                   </button>
                 </div>
                 <span className="font-serif text-sm font-semibold text-foreground">
-                  {currencyFormatter.format(item.product.price * item.quantity)}
+                  {currencyFormatter.format(unitPriceOf(item) * item.quantity)}
                 </span>
               </div>
             </div>

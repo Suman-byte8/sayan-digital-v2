@@ -11,6 +11,9 @@ const FALLBACK_IMAGE = "/assets/sayan_digital_logo.png";
 export function toCardProduct(product) {
   const unit = product.unit || "pc";
   const hasMinQty = Boolean(product.minOrderQty);
+  // Client only ever needs sellable variants — an inactive one shouldn't
+  // be selectable even if it's still in the admin's matrix.
+  const variants = (product.variants ?? []).filter((v) => v.isActive);
 
   return {
     id: product.id,
@@ -29,6 +32,9 @@ export function toCardProduct(product) {
     // Every Sayan Digital product is personalization-friendly by nature of
     // the business — used only by the homepage teaser's "Customizable" tag.
     customizable: true,
+    variantOptions: product.variantOptions ?? [],
+    variants,
+    hasVariants: variants.length > 0,
   };
 }
 

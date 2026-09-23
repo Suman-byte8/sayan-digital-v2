@@ -40,6 +40,7 @@ export function toOrderView(order) {
     items: order.items.map((item) => ({
       id: item.id,
       name: item.name,
+      variantLabel: item.variantLabel,
       customization: item.customization,
       qty: item.quantity,
       price: item.price,

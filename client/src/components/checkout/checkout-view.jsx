@@ -457,9 +457,9 @@ export function CheckoutView() {
           {items.map((item) => (
             <div key={item.id} className="flex items-center gap-3">
               <div className="relative size-14 shrink-0 overflow-hidden rounded-lg bg-muted/30">
-                {item.product.images?.[0] && (
+                {(item.variant?.image || item.product.images?.[0]) && (
                   <Image
-                    src={item.product.images[0]}
+                    src={item.variant?.image || item.product.images[0]}
                     alt={item.product.name}
                     fill
                     sizes="56px"
@@ -471,12 +471,15 @@ export function CheckoutView() {
                 <p className="truncate text-xs font-medium text-foreground">
                   {item.product.name}
                 </p>
+                {item.variantLabel && (
+                  <p className="truncate text-[11px] text-muted-foreground">{item.variantLabel}</p>
+                )}
                 <p className="text-[11px] text-muted-foreground">
                   Qty: {item.quantity}
                 </p>
               </div>
               <span className="text-xs font-semibold text-foreground">
-                {currencyFormatter.format(item.product.price * item.quantity)}
+                {currencyFormatter.format((item.variant?.price ?? item.product.price) * item.quantity)}
               </span>
             </div>
           ))}

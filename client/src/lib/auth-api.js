@@ -100,8 +100,12 @@ export const profileApi = {
   createOrder: (token, data) => request("/orders", { method: "POST", body: JSON.stringify(data), token }),
 
   listCart: (token) => request("/cart", { token }),
-  addCartItem: (token, productId, quantity = 1) =>
-    request("/cart", { method: "POST", body: JSON.stringify({ productId, quantity }), token }),
+  addCartItem: (token, productId, quantity = 1, variantId) =>
+    request("/cart", {
+      method: "POST",
+      body: JSON.stringify({ productId, quantity, ...(variantId ? { variantId } : {}) }),
+      token,
+    }),
   updateCartItem: (token, id, quantity) =>
     request(`/cart/${id}`, { method: "PATCH", body: JSON.stringify({ quantity }), token }),
   removeCartItem: (token, id) => request(`/cart/${id}`, { method: "DELETE", token }),
