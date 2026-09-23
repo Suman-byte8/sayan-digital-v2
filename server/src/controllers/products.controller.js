@@ -1,11 +1,28 @@
 import { prisma } from "../lib/prisma.js";
 import { ApiError } from "../utils/api-error.js";
 import { cached, invalidate } from "../lib/cache.js";
+import { computeSelectionKey, validateVariantPayload } from "../lib/product-variants.js";
 
-// Prisma returns `price` as a Decimal instance; convert to a plain number
-// for a predictable JSON shape for API consumers.
+const VARIANT_INCLUDE = {
+  variantOptions: { orderBy: { position: "asc" } },
+  variants: { orderBy: { position: "asc" } },
+};
+
+// Prisma returns `price`/variant `price` as Decimal instances; convert to
+// plain numbers for a predictable JSON shape. Every existing non-variant
+// product gets variantOptions: [] / variants: [] here rather than the
+// fields being absent, so nothing consuming this response needs to guard
+// against them being undefined.
 function serializeProduct(product) {
-  return { ...product, price: Number(product.price) };
+  return {
+    ...product,
+    price: Number(product.price),
+    variantOptions: product.variantOptions ?? [],
+    variants: (product.variants ?? []).map((v) => ({
+      ...v,
+      price: v.price != null ? Number(v.price) : null,
+    })),
+  };
 }
 
 // List queries have many possible filter/page combinations, so rather than
@@ -44,6 +61,7 @@ export async function listProducts(req, res) {
         orderBy: { createdAt: "desc" },
         skip: (page - 1) * limit,
         take: limit,
+        include: VARIANT_INCLUDE,
       }),
       prisma.product.count({ where }),
     ]);
@@ -67,7 +85,7 @@ export async function getProduct(req, res) {
   const { id } = req.validated.params;
 
   const product = await cached(`product:id:${id}`, PRODUCT_TTL_SECONDS, async () => {
-    const found = await prisma.product.findUnique({ where: { id } });
+    const found = await prisma.product.findUnique({ where: { id }, include: VARIANT_INCLUDE });
     return found ? serializeProduct(found) : null;
   });
 
@@ -82,7 +100,7 @@ export async function getProductBySlug(req, res) {
   const { slug } = req.validated.params;
 
   const product = await cached(`product:slug:${slug}`, PRODUCT_TTL_SECONDS, async () => {
-    const found = await prisma.product.findUnique({ where: { slug } });
+    const found = await prisma.product.findUnique({ where: { slug }, include: VARIANT_INCLUDE });
     return found ? serializeProduct(found) : null;
   });
 
@@ -94,20 +112,74 @@ export async function getProductBySlug(req, res) {
 }
 
 export async function createProduct(req, res) {
-  const product = await prisma.product.create({ data: req.validated.body });
+  const { variantOptions, variants, ...productFields } = req.validated.body;
+  validateVariantPayload(variantOptions, variants);
+
+  const product = await prisma.product.create({
+    data: {
+      ...productFields,
+      ...(variantOptions
+        ? { variantOptions: { create: variantOptions.map((opt, i) => ({ ...opt, position: i })) } }
+        : {}),
+      ...(variants
+        ? {
+            variants: {
+              create: variants.map(({ id: _id, selection, ...rest }, i) => ({
+                ...rest,
+                selection,
+                selectionKey: computeSelectionKey(selection),
+                position: i,
+              })),
+            },
+          }
+        : {}),
+    },
+    include: VARIANT_INCLUDE,
+  });
   res.status(201).json({ success: true, data: serializeProduct(product) });
 }
 
 export async function updateProduct(req, res) {
   const { id } = req.validated.params;
+  const { variantOptions, variants, ...productFields } = req.validated.body;
 
   // Needed to invalidate the OLD slug's cache key too, if slug is changing.
   const existing = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
   if (!existing) throw new ApiError(404, "Product not found");
 
-  const product = await prisma.product.update({
-    where: { id },
-    data: req.validated.body,
+  validateVariantPayload(variantOptions, variants);
+
+  const product = await prisma.$transaction(async (tx) => {
+    if (variantOptions) {
+      // Nothing else FKs to these rows, so a full replace is safe.
+      await tx.productVariantOption.deleteMany({ where: { productId: id } });
+      await tx.productVariantOption.createMany({
+        data: variantOptions.map((opt, i) => ({ ...opt, productId: id, position: i })),
+      });
+    }
+
+    if (variants) {
+      // Reconcile by id instead of delete-and-recreate: a customer's cart
+      // may hold a live CartItem pointing at a variant that isn't changing
+      // in this save, and recreating it under a new id would cascade-delete
+      // that cart line just because the admin edited a different row.
+      const incomingIds = variants.filter((v) => v.id).map((v) => v.id);
+
+      await tx.productVariant.deleteMany({
+        where: { productId: id, id: { notIn: incomingIds.length > 0 ? incomingIds : ["__none__"] } },
+      });
+
+      for (const [i, { id: variantId, selection, ...rest }] of variants.entries()) {
+        const data = { ...rest, selection, selectionKey: computeSelectionKey(selection), position: i };
+        if (variantId) {
+          await tx.productVariant.update({ where: { id: variantId }, data });
+        } else {
+          await tx.productVariant.create({ data: { ...data, productId: id } });
+        }
+      }
+    }
+
+    return tx.product.update({ where: { id }, data: productFields, include: VARIANT_INCLUDE });
   });
 
   await invalidate(`product:id:${id}`, `product:slug:${existing.slug}`, `product:slug:${product.slug}`);

@@ -1,6 +1,7 @@
 import crypto from "node:crypto";
 import { prisma } from "../lib/prisma.js";
 import { ApiError } from "../utils/api-error.js";
+import { formatVariantLabel } from "../lib/product-variants.js";
 
 function serializeOrder(order) {
   return {
@@ -35,14 +36,15 @@ function generateOrderNumber() {
 export async function createOrder(req, res) {
   const cartItems = await prisma.cartItem.findMany({
     where: { userId: req.userId },
-    include: { product: true },
+    include: { product: true, variant: true },
   });
   if (cartItems.length === 0) throw new ApiError(400, "Your cart is empty.");
 
-  const totalAmount = cartItems.reduce(
-    (sum, item) => sum + Number(item.product.price) * item.quantity,
-    0,
-  );
+  function unitPrice(item) {
+    return item.variant?.price != null ? Number(item.variant.price) : Number(item.product.price);
+  }
+
+  const totalAmount = cartItems.reduce((sum, item) => sum + unitPrice(item) * item.quantity, 0);
 
   const order = await prisma.$transaction(async (tx) => {
     const created = await tx.order.create({
@@ -61,10 +63,12 @@ export async function createOrder(req, res) {
         items: {
           create: cartItems.map((item) => ({
             productId: item.productId,
+            variantId: item.variantId,
+            variantLabel: item.variant ? formatVariantLabel(item.variant.selection) : null,
             name: item.product.name,
-            image: item.product.images?.[0] ?? null,
+            image: item.variant?.image ?? item.product.images?.[0] ?? null,
             quantity: item.quantity,
-            price: item.product.price,
+            price: unitPrice(item),
           })),
         },
       },
