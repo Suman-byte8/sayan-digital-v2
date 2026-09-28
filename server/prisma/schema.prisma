@@ -57,8 +57,66 @@ model Product {
   wishlistedBy WishlistItem[]
   cartItems    CartItem[]
   orderItems   OrderItem[]
+  variantOptions ProductVariantOption[]
+  variants       ProductVariant[]
 
   @@map("products")
+}
+
+// Per-product variant axis, e.g. "Size" with values ["4x6","8x12",...] or
+// "Type" with values ["White Mug","Heart Shape Mug",...]. Not every product
+// has any of these — most don't. Plain string[] rather than a separate
+// values table: nothing needs to query/rename a value independent of the
+// option it belongs to, so a join table would just be extra normalization
+// with no payoff at this catalog's scale.
+model ProductVariantOption {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name      String
+  position  Int      @default(0)
+  values    String[] @default([])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([productId, name])
+  @@map("product_variant_options")
+}
+
+// One actual sellable combination, e.g. {"Size":"8x12","Thickness":"1 inch"}
+// — deliberately NOT every combination of every option's values (frames
+// don't support every thickness at every size), so these are explicit rows
+// the admin curates, not an auto-generated cartesian product at read time.
+// `selection` is keyed by option NAME, not a live FK to a value row — same
+// snapshot reasoning as OrderItem below: renaming/reordering an option
+// later must never reinterpret an existing variant's identity.
+model ProductVariant {
+  id           String   @id @default(uuid())
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  selection    Json
+  // Sorted "name:value|name:value" derived from `selection` — JSON columns
+  // can't back a unique index directly, this can (see product-variants.js).
+  selectionKey String
+  sku          String?  @unique
+  // null = falls back to Product.price; set when this specific combo costs
+  // more/less than the base (e.g. a bigger frame).
+  price        Decimal? @db.Decimal(10, 2)
+  stock        Int      @default(0)
+  // Falls back to Product.images on the client when empty — set these when
+  // this specific combo genuinely looks different (e.g. a heart-shaped mug
+  // vs. the plain white one), not required for combos that don't.
+  images       String[] @default([])
+  isActive     Boolean  @default(true)
+  position     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@unique([productId, selectionKey])
+  @@map("product_variants")
 }
 
 // ---------------------------------------------------------------------
@@ -156,19 +214,29 @@ model WishlistItem {
 // A user's shopping cart is just "every CartItem row with their userId" -
 // same one-table-per-user pattern as WishlistItem, no separate Cart header
 // row needed since there's no concept of multiple carts per user. Doesn't
-// reserve/decrement Product.stock - that only happens at real order
-// placement (see Order's own comment - no checkout flow exists yet).
+// reserve/decrement Product.stock or ProductVariant.stock - only caps the
+// requested quantity against it (see cart.controller.js).
 model CartItem {
-  id        String   @id @default(uuid())
+  id        String          @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User            @relation(fields: [userId], references: [id], onDelete: Cascade)
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  product   Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId String?
+  variant   ProductVariant? @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  // Always `variantId ?? productId`, set only by cart.controller.js. Exists
+  // because Postgres treats NULL != NULL in unique indexes - a plain
+  // (userId, productId, variantId) constraint would let every non-variant
+  // "Add to Cart" click (variantId always NULL) create a duplicate row
+  // instead of incrementing. This collapses to plain per-product uniqueness
+  // when there's no variant, while still separating each distinct variant
+  // into its own cart line.
+  variantKey String
+  quantity   Int             @default(1)
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
 
-  @@unique([userId, productId])
+  @@unique([userId, productId, variantKey])
   @@map("cart_items")
 }
 
@@ -260,6 +328,12 @@ model OrderItem {
   order         Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
   productId     String?
   product       Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  variantId     String?
+  variant       ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  // Frozen at order time, e.g. "Size: 8x12, Thickness: 1 inch" - same
+  // snapshot reasoning as name/image/price above, survives the variant
+  // being edited or deleted later.
+  variantLabel  String?
   name          String
   customization String?
   image         String?

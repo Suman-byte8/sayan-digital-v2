@@ -109,6 +109,65 @@ export default async function ProductDetailPage({ params }) {
             </div>
           )}
 
+          {product.variants?.length > 0 && (
+            <div className="mt-6">
+              <h2 className="text-sm font-semibold text-foreground">
+                Variants ({product.variants.length})
+              </h2>
+              <div className="mt-2 overflow-x-auto rounded-lg border border-border">
+                <table className="w-full text-left text-sm">
+                  <thead className="border-b border-border bg-muted/50 text-xs font-medium tracking-wide text-muted-foreground uppercase">
+                    <tr>
+                      <th className="px-3 py-2">Photo</th>
+                      <th className="px-3 py-2">Combination</th>
+                      <th className="px-3 py-2">Price</th>
+                      <th className="px-3 py-2">Stock</th>
+                      <th className="px-3 py-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {product.variants.map((variant) => (
+                      <tr key={variant.id}>
+                        <td className="px-3 py-2">
+                          {variant.images?.[0] ? (
+                            // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL
+                            <img
+                              src={variant.images[0]}
+                              alt=""
+                              className="size-9 rounded-md border border-border object-cover"
+                            />
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
+                        </td>
+                        <td className="px-3 py-2 text-foreground">
+                          {Object.entries(variant.selection)
+                            .map(([name, value]) => `${name}: ${value}`)
+                            .join(", ")}
+                        </td>
+                        <td className="px-3 py-2 text-foreground">
+                          {variant.price != null ? currencyFormatter.format(variant.price) : "Base price"}
+                        </td>
+                        <td className="px-3 py-2 text-foreground">{variant.stock}</td>
+                        <td className="px-3 py-2">
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
+                              variant.isActive
+                                ? "bg-green-100 text-green-700"
+                                : "bg-muted text-muted-foreground"
+                            }`}
+                          >
+                            {variant.isActive ? "Active" : "Inactive"}
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
           <div className="mt-6 flex flex-col gap-1 text-xs text-muted-foreground">
             <p>Created: {dateFormatter.format(new Date(product.createdAt))}</p>
             <p>Last updated: {dateFormatter.format(new Date(product.updatedAt))}</p>

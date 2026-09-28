@@ -31,8 +31,8 @@ export function CartProvider({ children }) {
   const items = useMemo(() => (status === "authenticated" ? rawItems : []), [status, rawItems]);
 
   const addItem = useCallback(
-    async (productId, quantity = 1) => {
-      const { data } = await profileApi.addCartItem(accessToken, productId, quantity);
+    async (productId, quantity = 1, variantId) => {
+      const { data } = await profileApi.addCartItem(accessToken, productId, quantity, variantId);
       setRawItems((prev) => [data, ...prev.filter((item) => item.id !== data.id)]);
       return data;
     },
@@ -65,7 +65,11 @@ export function CartProvider({ children }) {
   // one product 3 times is still "1" here, not "3".
   const count = items.length;
   const subtotal = useMemo(
-    () => items.reduce((sum, item) => sum + item.product.price * item.quantity, 0),
+    () =>
+      items.reduce(
+        (sum, item) => sum + (item.variant?.price ?? item.product.price) * item.quantity,
+        0,
+      ),
     [items],
   );
 

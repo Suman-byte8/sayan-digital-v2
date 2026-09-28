@@ -248,6 +248,9 @@ export function OrdersTab({ orders, onSelectTab }) {
 
                       <div className="min-w-0 flex-1">
                         <h4 className="truncate text-sm font-medium text-foreground">{item.name}</h4>
+                        {item.variantLabel && (
+                          <p className="mt-0.5 text-xs text-muted-foreground">{item.variantLabel}</p>
+                        )}
                         <p className="mt-0.5 text-xs text-muted-foreground">{item.customization}</p>
                         <div className="mt-1 flex items-center gap-3 text-xs">
                           <span className="text-muted-foreground">Qty: {item.qty}</span>

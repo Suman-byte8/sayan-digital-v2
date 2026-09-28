@@ -27,6 +27,32 @@ const productBaseSchema = {
   minOrderQty: z.coerce.number().int().positive().optional().nullable(),
   stock: z.coerce.number().int().nonnegative().default(0),
   isActive: z.boolean().default(true),
+  // Per-product variant axes (e.g. "Size", "Thickness") and the specific
+  // sellable combinations of them — see server/src/lib/product-variants.js
+  // for the cross-validation this only partially covers (Zod can't check
+  // that a variant's selection actually matches the declared options).
+  variantOptions: z
+    .array(
+      z.object({
+        name: z.string().trim().min(1).max(60),
+        values: z.array(z.string().trim().min(1).max(80)).min(1),
+      }),
+    )
+    .max(4)
+    .optional(),
+  variants: z
+    .array(
+      z.object({
+        id: z.string().uuid().optional(),
+        selection: z.record(z.string(), z.string()),
+        sku: z.string().trim().max(64).optional().nullable(),
+        price: z.coerce.number().positive().optional().nullable(),
+        stock: z.coerce.number().int().nonnegative().default(0),
+        images: z.array(z.string().trim().url("Each image must be a valid URL")).default([]),
+        isActive: z.boolean().default(true),
+      }),
+    )
+    .optional(),
 };
 
 export const createProductSchema = z.object(productBaseSchema);

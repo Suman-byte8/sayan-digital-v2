@@ -11,6 +11,9 @@ const FALLBACK_IMAGE = "/assets/sayan_digital_logo.png";
 export function toCardProduct(product) {
   const unit = product.unit || "pc";
   const hasMinQty = Boolean(product.minOrderQty);
+  // Client only ever needs sellable variants — an inactive one shouldn't
+  // be selectable even if it's still in the admin's matrix.
+  const variants = (product.variants ?? []).filter((v) => v.isActive);
 
   return {
     id: product.id,
@@ -26,9 +29,15 @@ export function toCardProduct(product) {
     minQty: hasMinQty ? `Min: ${product.minOrderQty} ${unit}` : `Min: 1 ${unit}`,
     minQtyTone: hasMinQty && product.minOrderQty > 1 ? "strong" : "plain",
     image: product.images?.[0] || FALLBACK_IMAGE,
+    // Full gallery — cards only ever use the single `image` above, the PDP
+    // uses this for its thumbnail strip.
+    images: product.images?.length > 0 ? product.images : [FALLBACK_IMAGE],
     // Every Sayan Digital product is personalization-friendly by nature of
     // the business — used only by the homepage teaser's "Customizable" tag.
     customizable: true,
+    variantOptions: product.variantOptions ?? [],
+    variants,
+    hasVariants: variants.length > 0,
   };
 }
 

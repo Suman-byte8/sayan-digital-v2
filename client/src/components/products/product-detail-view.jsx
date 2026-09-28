@@ -50,6 +50,18 @@ function buildWhatsappHref(product) {
   return `https://wa.me/${BRAND.phone.replace(/\D/g, "")}?text=${encodeURIComponent(text)}`;
 }
 
+// A value is pickable if some active variant has it for this option AND
+// matches every OTHER option already selected — e.g. once "Size: 12x18" is
+// picked, a "Thickness" that no 12x18 variant actually comes in renders
+// disabled instead of silently letting the customer build an invalid combo.
+function isValueAvailable(variants, selection, optionName, value) {
+  return variants.some(
+    (v) =>
+      v.selection[optionName] === value &&
+      Object.entries(selection).every(([name, val]) => name === optionName || v.selection[name] === val),
+  );
+}
+
 export function ProductDetailView({ product, catalogHref = "/products", catalogLabel = "Products" }) {
   const router = useRouter();
   const { status } = useAuth();
@@ -61,6 +73,32 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
   const [addingToCart, setAddingToCart] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [buyingNow, setBuyingNow] = useState(false);
+  const [selection, setSelection] = useState({});
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  const resolvedVariant =
+    product.hasVariants && product.variantOptions.every((opt) => selection[opt.name])
+      ? product.variants.find((v) =>
+          product.variantOptions.every((opt) => v.selection[opt.name] === selection[opt.name]),
+        )
+      : null;
+  const needsSelection = product.hasVariants && !resolvedVariant;
+  const displayPrice = resolvedVariant?.price ?? product.price;
+  // The selected variant's own photos take over the gallery when it has
+  // any (e.g. the heart-shaped mug actually looks different) — falls back
+  // to the product's own set otherwise, never leaves the gallery empty.
+  const galleryImages =
+    resolvedVariant?.images?.length > 0 ? resolvedVariant.images : product.images;
+  const safeImageIndex = Math.min(activeImageIndex, galleryImages.length - 1);
+  const displayImage = galleryImages[safeImageIndex];
+  const outOfStock = resolvedVariant && resolvedVariant.stock <= 0;
+
+  function handleSelectOption(optionName, value) {
+    setSelection((prev) => ({ ...prev, [optionName]: value }));
+    // The gallery source may be about to change (a different variant, or
+    // back to the base product) - start from its first photo either way.
+    setActiveImageIndex(0);
+  }
 
   function handleSave() {
     if (status !== "authenticated") {
@@ -75,9 +113,10 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
       router.push("/profile");
       return;
     }
+    if (needsSelection || outOfStock) return;
     setAddingToCart(true);
     try {
-      await addItem(product.id, quantity);
+      await addItem(product.id, quantity, resolvedVariant?.id);
       setAddedToCart(true);
       setTimeout(() => setAddedToCart(false), 2000);
     } finally {
@@ -90,9 +129,10 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
       router.push("/profile");
       return;
     }
+    if (needsSelection || outOfStock) return;
     setBuyingNow(true);
     try {
-      await addItem(product.id, quantity);
+      await addItem(product.id, quantity, resolvedVariant?.id);
       router.push("/checkout");
     } finally {
       setBuyingNow(false);
@@ -128,9 +168,10 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
       </nav>
 
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-14">
+        <div>
         <Reveal className="relative aspect-square overflow-hidden rounded-3xl border border-border bg-card shadow-premium">
           <Image
-            src={product.image}
+            src={displayImage}
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 45vw, 90vw"
@@ -169,6 +210,27 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
           </button>
         </Reveal>
 
+        {galleryImages.length > 1 && (
+          <div className="mt-3 flex flex-wrap gap-2.5">
+            {galleryImages.map((url, index) => (
+              <button
+                key={`${url}-${index}`}
+                type="button"
+                data-cursor="hover"
+                onClick={() => setActiveImageIndex(index)}
+                aria-label={`Show photo ${index + 1}`}
+                className={cn(
+                  "relative size-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors",
+                  index === safeImageIndex ? "border-(--brand)" : "border-transparent hover:border-border"
+                )}
+              >
+                <Image src={url} alt="" fill sizes="64px" className="object-cover" />
+              </button>
+            ))}
+          </div>
+        )}
+        </div>
+
         <div>
           <Reveal delay={80}>
             <p className="eyebrow-label">{product.categoryLabel}</p>
@@ -184,9 +246,11 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
 
           <Reveal delay={260} className="mt-6 flex items-baseline gap-3 border-y border-border py-5">
             <div>
-              <span className="block text-[11px] text-muted-foreground">Starting at</span>
+              <span className="block text-[11px] text-muted-foreground">
+                {product.hasVariants ? "Starting at" : "Price"}
+              </span>
               <span className="text-3xl font-bold text-(--brand)">
-                ₹{product.price}
+                ₹{displayPrice}
                 <span className="ml-1.5 text-sm font-normal text-muted-foreground">
                   / {product.unit}
                 </span>
@@ -203,6 +267,53 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
               {product.minQty}
             </span>
           </Reveal>
+
+          {product.hasVariants && (
+            <Reveal delay={275} className="mt-6 space-y-4">
+              {product.variantOptions.map((option) => (
+                <div key={option.name}>
+                  <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                    {option.name}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {option.values.map((value) => {
+                      const available = isValueAvailable(product.variants, selection, option.name, value);
+                      const isSelected = selection[option.name] === value;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          disabled={!available}
+                          data-cursor="hover"
+                          onClick={() => handleSelectOption(option.name, value)}
+                          className={cn(
+                            "rounded-full border px-4 py-2 text-[13px] font-medium transition-colors",
+                            isSelected
+                              ? "border-(--brand) bg-(--brand) text-white"
+                              : available
+                              ? "border-border text-foreground hover:border-(--brand)"
+                              : "cursor-not-allowed border-border text-muted-foreground/40 line-through"
+                          )}
+                        >
+                          {value}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+              {needsSelection && (
+                <p className="text-xs text-muted-foreground">
+                  Select options above to see price and availability.
+                </p>
+              )}
+              {outOfStock && (
+                <p className="text-xs font-medium text-destructive">
+                  This combination is currently out of stock.
+                </p>
+              )}
+            </Reveal>
+          )}
 
           <Reveal delay={290} className="mt-6 flex items-center gap-3">
             <div className="flex items-center rounded-full border border-border">
@@ -232,7 +343,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
               variant="outline"
               data-cursor="hover"
               onClick={handleAddToCart}
-              disabled={addingToCart}
+              disabled={addingToCart || needsSelection || outOfStock}
               className="h-10 flex-1 gap-2 rounded-full text-[14px]"
             >
               {addingToCart ? (
@@ -250,7 +361,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
                 type="button"
                 data-cursor="hover"
                 onClick={handleBuyNow}
-                disabled={buyingNow}
+                disabled={buyingNow || needsSelection || outOfStock}
                 className="h-12 w-full gap-2 rounded-full text-[14px]"
               >
                 {buyingNow ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
