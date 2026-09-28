@@ -92,4 +92,11 @@ export const api = {
   getOrder: (id) => request(`/admin/orders/${id}`),
   updateOrder: (id, data) =>
     request(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+
+  listTasks: (params = {}) => request(withQuery("/admin/tasks", params)),
+  getTask: (id) => request(`/admin/tasks/${id}`),
+  createTask: (data) => request("/admin/tasks", { method: "POST", body: JSON.stringify(data) }),
+  updateTask: (id, data) =>
+    request(`/admin/tasks/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteTask: (id) => request(`/admin/tasks/${id}`, { method: "DELETE" }),
 };
