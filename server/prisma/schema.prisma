@@ -213,8 +213,42 @@ model Order {
   updatedAt      DateTime    @updatedAt
 
   items OrderItem[]
+  tasks Task[]
 
   @@map("orders")
+}
+
+enum TaskStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// Internal-only work tracking — never exposed to customers. One task is
+// auto-created per placed order (see orders.controller.js's createOrder),
+// but admins can also add ad-hoc tasks unrelated to any order (hence
+// orderId being optional). Assignees are plain names, not a link to the
+// customer-facing User table — there's no staff/employee account system,
+// this is just "who's doing it" as free text.
+model Task {
+  id              String     @id @default(uuid())
+  title           String
+  description     String?
+  status          TaskStatus @default(PENDING)
+  // Whether this task involves collecting/handling a payment - a plain
+  // yes/no the admin sets, not derived from Order.isPaid (a task can need
+  // payment attention even after the order itself is marked paid, e.g. a
+  // balance top-up), though auto-created tasks default from it.
+  requiresPayment Boolean    @default(false)
+  assignees       String[]   @default([])
+  dueDate         DateTime?
+  orderId         String?
+  order           Order?     @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  @@map("tasks")
 }
 
 // A snapshot of the product at order time (name/price/image) — standard

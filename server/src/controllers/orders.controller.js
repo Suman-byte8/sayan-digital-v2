@@ -73,6 +73,23 @@ export async function createOrder(req, res) {
 
     await tx.cartItem.deleteMany({ where: { userId: req.userId } });
 
+    // Every new order needs someone internally to actually produce/ship
+    // it — auto-create the tracking task rather than relying on staff to
+    // notice the order appeared. Unassigned by default; the admin picks
+    // who's on it from the Tasks page. requiresPayment starts true since
+    // every order is COD and isPaid starts false (see Order's own comment).
+    const itemSummary = created.items
+      .map((item) => `${item.quantity}x ${item.name}`)
+      .join(", ");
+    await tx.task.create({
+      data: {
+        title: `Fulfill order ${created.orderNumber}`,
+        description: `${itemSummary} — ship to ${created.shippingName}, ${created.shippingCity}.`,
+        requiresPayment: !created.isPaid,
+        orderId: created.id,
+      },
+    });
+
     return created;
   });
 
