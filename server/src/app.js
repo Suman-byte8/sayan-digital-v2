@@ -17,6 +17,7 @@ import paymentMethodsRouter from "./routes/payment-methods.routes.js";
 import proofsRouter from "./routes/proofs.routes.js";
 import adminUsersRouter from "./routes/admin-users.routes.js";
 import adminOrdersRouter from "./routes/admin-orders.routes.js";
+import adminTasksRouter from "./routes/admin-tasks.routes.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
@@ -54,6 +55,7 @@ app.use("/api/proofs", proofsRouter);
 // same trust model as the rest of the admin-facing endpoints above.
 app.use("/api/admin/users", adminUsersRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
+app.use("/api/admin/tasks", adminTasksRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
