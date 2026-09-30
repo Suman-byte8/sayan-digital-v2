@@ -9,6 +9,7 @@ import {
   buildMetadata,
   buildWebsiteJsonLd,
 } from "@/lib/seo";
+import { Providers } from "./providers";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -54,7 +55,7 @@ export default function RootLayout({ children }) {
         <JsonLd data={[buildLocalBusinessJsonLd(), buildWebsiteJsonLd()]} />
         <SmoothScroll />
         <CustomCursor />
-        {children}
+        <Providers>{children}</Providers>
       </body>
       <GoogleAnalytics gaId="G-QQC8VCXRBG" />
     </html>
