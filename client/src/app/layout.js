@@ -26,6 +26,9 @@ const inter = Inter({
 
 export const metadata = {
   metadataBase: new URL(SITE_URL),
+  // Google Search Console domain-ownership verification (renders the
+  // <meta name="google-site-verification"> tag).
+  verification: { google: "cGacXX8RcdXVUP3YcU8OyImZH5HAnyX1p9bURJPLr0w" },
   ...buildMetadata({
     title: "Sayan Digital | Custom Printing & Personalized Gifts in Malda",
     description:

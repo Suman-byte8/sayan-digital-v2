@@ -4,7 +4,14 @@ import { NextResponse } from "next/server";
 // through ("visit anyway"), which sets this cookie client-side.
 const ACCESS_COOKIE = "sd_preview_access";
 
+// The gate is OFF by default so the site (home page, privacy policy) is
+// publicly reachable - required for Google OAuth brand verification and
+// for search engines. Set SITE_GATE_ENABLED=true to bring it back.
 export function proxy(request) {
+  if (process.env.SITE_GATE_ENABLED !== "true") {
+    return NextResponse.next();
+  }
+
   const hasAccess = request.cookies.get(ACCESS_COOKIE)?.value === "true";
   if (hasAccess) {
     return NextResponse.next();

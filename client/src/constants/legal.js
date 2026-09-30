@@ -1,10 +1,9 @@
 import { BRAND } from "@/constants/brand";
 
-// Content for /privacy-policy and /terms-of-service. Scoped to what the
-// site actually does today (product catalog + phone/WhatsApp/email/contact
-// -form inquiries, Google Analytics) — not a real online checkout/payment
-// flow yet, so the copy doesn't claim one. Update alongside any future
-// checkout/accounts/payment feature.
+// Content for /privacy-policy and /terms-of-service. The privacy policy
+// covers accounts, orders, uploads and the Google Drive API use (needed for
+// Google OAuth brand verification) - keep it in sync with any new data the
+// site collects, e.g. when online payments (Razorpay) are added.
 export const LEGAL_LAST_UPDATED = "September 2026";
 
 const CONTACT_SECTION = {
@@ -18,61 +17,81 @@ export const PRIVACY_POLICY_SECTIONS = [
   {
     heading: "Overview",
     body: [
-      "This Privacy Policy explains how Sayan Digital (\"we\", \"us\", \"our\"), a customized printing and personalization studio based in Malda, West Bengal, India, handles information in connection with this website.",
-      "We are a small, locally-run business — this policy is written in plain terms rather than dense legal boilerplate, and covers exactly what the site does today.",
+      "This Privacy Policy explains how Sayan Digital (\"we\", \"us\", \"our\"), a customized printing and personalization studio based in Malda, West Bengal, India, collects, uses, stores and shares information when you use our website at sayandigital.in (the \"Service\").",
+      "The Service lets you browse our printing products and stationery, create an account, save favourites, place orders and track them. By using the Service you agree to the practices described here.",
     ],
   },
   {
     heading: "Information we collect",
     body: [
-      "Information you provide directly: if you reach out via our contact form, phone, WhatsApp, or email, we receive whatever you choose to share — typically your name, contact details, and the nature of your enquiry. Our contact form opens your own email app to send that message directly to us; we don't run a server-side database that stores form submissions, but we do keep the resulting emails in our inbox to respond to you.",
-      "Information collected automatically: we use Google Analytics to understand how visitors use this site (pages viewed, general location/device information inferred from your IP address and browser, and similar usage data), via cookies and similar technologies. This helps us understand what's useful and improve the site.",
+      "Account information: when you register we collect your name, email address and a password. Your password is never stored in readable form — only a one-way cryptographic hash. You can optionally add a phone number, business name, GST number and a profile picture.",
+      "Order and delivery information: saved addresses (name, phone, street address, city, state, PIN code), the items in your cart, wishlist and orders, order totals, the payment method you choose (for example cash on delivery), and order status. We do not collect or store payment card numbers.",
+      "Files you upload: a profile picture, or design/artwork files you provide for printing.",
+      "Enquiries: whatever you share when you contact us by phone, WhatsApp, email or our contact form (typically your name, contact details and the nature of your enquiry).",
+      "Automatic information: we use Google Analytics to understand how the site is used (pages viewed, approximate location, device and browser information inferred from your IP address, via cookies and similar technologies). Our servers may also log technical data such as IP address and request time for security and troubleshooting.",
     ],
   },
   {
     heading: "How we use your information",
     body: [
-      "To respond to enquiries, quote requests, and customer support questions.",
-      "To understand overall site usage and improve our pages, products, and services.",
-      "To comply with legal obligations where applicable.",
+      "To create and secure your account and keep you signed in.",
+      "To process, fulfil, deliver and support your orders, and to contact you about them.",
+      "To respond to enquiries and quote requests.",
+      "To understand overall site usage and improve our pages, products and services.",
+      "To prevent fraud and abuse, and to comply with legal obligations.",
     ],
   },
   {
-    heading: "Cookies and analytics",
+    heading: "Google user data and Google APIs",
     body: [
-      "Google Analytics sets cookies in your browser to distinguish visitors and measure site usage. You can control or delete cookies through your browser settings, or opt out of Google Analytics tracking using Google's own browser opt-out tools. Blocking cookies won't affect your ability to browse the site or contact us.",
+      "Sayan Digital does not ask visitors or customers to sign in with Google and does not access any visitor's or customer's Google account or personal Google data.",
+      "Our server uses the Google Drive API, with the limited https://www.googleapis.com/auth/drive.file scope, authorized once by the business owner for the business's own Google account. It is used solely to store and serve images uploaded through the Service (product photos uploaded by our staff, and profile pictures or artwork uploaded by customers) in a dedicated Drive folder owned by Sayan Digital. The scope only permits access to files our app itself creates; it cannot see or read any other file in any Drive.",
+      "Sayan Digital's use and transfer of information received from Google APIs will adhere to the Google API Services User Data Policy, including the Limited Use requirements. We do not use this data for advertising, do not sell it, do not transfer it to third parties except as needed to provide the Service or comply with law, and do not allow humans to read it except with your consent, for security purposes, or to comply with law.",
+    ],
+  },
+  {
+    heading: "Cookies, local storage and analytics",
+    body: [
+      "We use cookies and browser storage to keep you signed in, remember your cart and preferences, and (via Google Analytics) measure site usage. You can control or delete cookies in your browser settings, or opt out of Google Analytics using Google's browser opt-out tools. Blocking cookies may stop sign-in and the cart from working, but you can still browse the site and contact us.",
     ],
   },
   {
     heading: "Sharing your information",
     body: [
       "We do not sell your personal information.",
-      "We share limited usage data with Google, as our analytics provider, under their own privacy terms.",
-      "We may disclose information if required to do so by law, or to protect our rights, safety, or property.",
+      "We share information only with service providers that help us run the Service, under their own terms: cloud hosting and database providers that store our data, Google (Analytics, and Drive for image storage as described above), and delivery partners who need your name, phone number and address to deliver your order.",
+      "We may disclose information if required by law, or to protect our rights, safety or property.",
+    ],
+  },
+  {
+    heading: "Data retention and deletion",
+    body: [
+      "We keep account information for as long as your account is active, and order records for as long as needed for accounting, tax and legal purposes. Uploaded images are kept until you replace or delete them or ask us to.",
+      "You can ask us to delete your account and associated personal data at any time by emailing us; we will do so except for records we must legally retain.",
     ],
   },
   {
     heading: "Data security",
     body: [
-      "We take reasonable steps to protect information we hold, but no method of transmission or storage is completely secure. Please avoid sending highly sensitive information (such as payment card details) over email or our contact form.",
+      "We use reasonable safeguards, including encrypted connections (HTTPS), hashed passwords and access controls. No method of transmission or storage is completely secure, so we cannot guarantee absolute security. Please do not send payment card details over email or our contact form.",
     ],
   },
   {
     heading: "Your rights",
     body: [
-      "Under India's Digital Personal Data Protection Act, 2023, and applicable law, you may have the right to access, correct, or request deletion of personal information we hold about you (for example, past email correspondence). To make a request, contact us using the details below.",
+      "Under India's Digital Personal Data Protection Act, 2023, and other applicable law, you may have the right to access, correct or request deletion of the personal information we hold about you, and to withdraw consent. You can edit most details in your profile; for anything else, contact us using the details below.",
     ],
   },
   {
     heading: "Children's privacy",
     body: [
-      "This site is intended for general audiences and is not directed at children. We do not knowingly collect personal information from children.",
+      "The Service is intended for general audiences and is not directed at children. We do not knowingly collect personal information from children.",
     ],
   },
   {
     heading: "Changes to this policy",
     body: [
-      `We may update this policy as our site and services evolve — for example, if we introduce online ordering or accounts in the future. The "last updated" date below will reflect the most recent revision.`,
+      "We may update this policy as the Service evolves. The \"last updated\" date on this page reflects the most recent revision, and material changes will be noted on the site.",
     ],
   },
   CONTACT_SECTION,
