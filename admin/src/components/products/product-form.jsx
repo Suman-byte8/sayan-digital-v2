@@ -7,6 +7,7 @@ import { Plus, Save, Tags, Trash2, Wand2, X } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { ImageUploader } from "@/components/products/image-uploader";
 import { VariantImagePicker } from "@/components/products/variant-image-picker";
+import { EMPTY_SEO, SEO_TEXT_FIELDS, SeoSettings } from "@/components/products/seo-settings";
 
 const MAX_VARIANT_OPTIONS = 4;
 
@@ -49,11 +50,17 @@ const EMPTY_PRODUCT = {
   minOrderQty: "",
   stock: "0",
   isActive: true,
+  ...EMPTY_SEO,
 };
 
 export function ProductForm({ mode, productId, initialData }) {
   const router = useRouter();
-  const [values, setValues] = useState({ ...EMPTY_PRODUCT, ...initialData });
+  const [values, setValues] = useState({
+    ...EMPTY_PRODUCT,
+    ...initialData,
+    // API returns null for unset SEO fields; inputs need strings.
+    ...Object.fromEntries(SEO_TEXT_FIELDS.map((f) => [f, initialData?.[f] ?? ""])),
+  });
   const [slugTouched, setSlugTouched] = useState(mode === "edit");
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
@@ -184,6 +191,8 @@ export function ProductForm({ mode, productId, initialData }) {
       minOrderQty: values.minOrderQty ? Number(values.minOrderQty) : null,
       stock: Number(values.stock),
       isActive: values.isActive,
+      ...Object.fromEntries(SEO_TEXT_FIELDS.map((f) => [f, (values[f] ?? "").trim() || null])),
+      structuredDataEnabled: values.structuredDataEnabled,
       variantOptions: variantOptions
         .filter((o) => o.name.trim() && o.values.length > 0)
         .map((o) => ({ name: o.name.trim(), values: o.values })),
@@ -557,6 +566,8 @@ export function ProductForm({ mode, productId, initialData }) {
           </div>
         )}
       </div>
+
+      <SeoSettings values={values} errors={errors} onChange={handleChange} mode={mode} />
 
       <label className="flex items-center gap-2 text-sm text-foreground">
         <input

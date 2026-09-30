@@ -51,6 +51,23 @@ model Product {
   minOrderQty Int?
   stock       Int         @default(0)
   isActive    Boolean     @default(true)
+
+  // --- SEO (all optional; the storefront falls back to name/description/
+  // first image when blank — see client/src/lib/seo.js resolveProductSeo).
+  // No meta_keywords column on purpose: search engines ignore it.
+  seoTitle            String?  @db.VarChar(120)
+  metaDescription     String?  @db.VarChar(320)
+  imageAltText        String?  @db.VarChar(200)
+  canonicalUrl        String?  @db.VarChar(500)
+  ogTitle             String?  @db.VarChar(120)
+  ogDescription       String?  @db.VarChar(320)
+  ogImage             String?  @db.VarChar(500)
+  twitterTitle        String?  @db.VarChar(120)
+  twitterDescription  String?  @db.VarChar(320)
+  twitterImage        String?  @db.VarChar(500)
+  // Lets the admin switch off Product JSON-LD for a specific product.
+  structuredDataEnabled Boolean @default(true)
+
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 

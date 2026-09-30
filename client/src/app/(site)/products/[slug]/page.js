@@ -7,8 +7,8 @@ import { toCardProduct, toCardProducts } from "@/lib/product-view-model";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
   buildBreadcrumbJsonLd,
-  buildMetadata,
   buildProductJsonLd,
+  buildProductMetadata,
 } from "@/lib/seo";
 
 async function fetchProductBySlug(slug) {
@@ -40,14 +40,7 @@ export async function generateMetadata({ params }) {
     return { title: "Product Not Found — Sayan Digital", robots: { index: false, follow: true } };
   }
 
-  const card = toCardProduct(product);
-
-  return buildMetadata({
-    title: `${product.name} — Sayan Digital`,
-    description: product.description ?? card.description,
-    path: `/products/${product.slug}`,
-    image: card.image,
-  });
+  return buildProductMetadata(product, `/products/${product.slug}`);
 }
 
 export default async function ProductDetailPage({ params }) {
@@ -72,6 +65,8 @@ export default async function ProductDetailPage({ params }) {
 
   return (
     <>
+      {/* React hoists this into <head>; Next's Metadata API can't express og:type=product. */}
+      <meta property="og:type" content="product" />
       <JsonLd
         data={[
           buildBreadcrumbJsonLd([
@@ -79,7 +74,9 @@ export default async function ProductDetailPage({ params }) {
             { name: catalogLabel, path: catalogHref },
             { name: product.name, path: productPath },
           ]),
-          buildProductJsonLd(card, productPath),
+          ...(product.structuredDataEnabled === false
+            ? []
+            : [buildProductJsonLd(product, productPath)]),
         ]}
       />
       <main className="bg-background pt-24">

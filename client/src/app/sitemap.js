@@ -21,9 +21,20 @@ export default async function sitemap() {
     priority,
   }));
 
-  const { data } = await api.listProducts({}).catch(() => ({ data: [] }));
-  const productRoutes = data.map((product) => ({
+  // The list endpoint caps at 100 per page, so walk every page — otherwise
+  // product #101+ would silently never reach the sitemap. listProducts
+  // already asks for active products only (drafts/hidden are excluded).
+  const products = [];
+  for (let page = 1, totalPages = 1; page <= totalPages; page++) {
+    const result = await api.listProducts({ page }).catch(() => null);
+    if (!result) break;
+    products.push(...result.data);
+    totalPages = result.pagination?.totalPages ?? 1;
+  }
+
+  const productRoutes = products.map((product) => ({
     url: new URL(`/products/${product.slug}`, SITE_URL).toString(),
+    lastModified: product.updatedAt,
     changeFrequency: "monthly",
     priority: 0.6,
   }));

@@ -53,6 +53,7 @@ export function CatalogProductCard({ product }) {
     minQty,
     minQtyTone = "plain",
     image,
+    imageAlt = name,
   } = product;
 
   const isHoverDevice = useMediaQuery("(hover: hover) and (pointer: fine)");
@@ -84,7 +85,7 @@ export function CatalogProductCard({ product }) {
         <Link href={detailHref} className="block aspect-square" data-cursor="hover">
           <Image
             src={image}
-            alt={name}
+            alt={imageAlt}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
             className="object-cover transition-transform duration-500 group-hover:scale-110"
