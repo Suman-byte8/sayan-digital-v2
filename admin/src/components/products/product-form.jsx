@@ -228,13 +228,16 @@ export function ProductForm({ mode, productId, initialData }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-xl space-y-5">
+    <form onSubmit={handleSubmit} className="max-w-6xl space-y-5">
       {submitError && (
         <p className="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive">
           {submitError}
         </p>
       )}
 
+      <div className="grid gap-6 lg:grid-cols-2 lg:items-start">
+      <div className="min-w-0 space-y-5">
+      <div className="grid gap-4 sm:grid-cols-2">
       <Field label="Name" error={errors.name?.[0]}>
         <input
           required
@@ -256,9 +259,11 @@ export function ProductForm({ mode, productId, initialData }) {
         />
       </Field>
 
+      </div>
+
       <Field label="Description" error={errors.description?.[0]}>
         <textarea
-          rows={4}
+          rows={3}
           value={values.description ?? ""}
           onChange={(e) => handleChange("description", e.target.value)}
           className="input"
@@ -567,8 +572,6 @@ export function ProductForm({ mode, productId, initialData }) {
         )}
       </div>
 
-      <SeoSettings values={values} errors={errors} onChange={handleChange} mode={mode} />
-
       <label className="flex items-center gap-2 text-sm text-foreground">
         <input
           type="checkbox"
@@ -578,6 +581,12 @@ export function ProductForm({ mode, productId, initialData }) {
         />
         Active (visible in the storefront)
       </label>
+      </div>
+
+      <div className="min-w-0 lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-y-auto">
+        <SeoSettings values={values} errors={errors} onChange={handleChange} mode={mode} />
+      </div>
+      </div>
 
       <div className="flex items-center gap-3 pt-2">
         <button

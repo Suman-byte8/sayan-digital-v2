@@ -37,6 +37,23 @@ function getDriveClient() {
 // it publicly viewable by link, and returns a directly embeddable image URL.
 export async function uploadImageToDrive({ buffer, filename, mimeType }) {
   const drive = getDriveClient();
+  try {
+    return await doUpload(drive, { buffer, filename, mimeType });
+  } catch (error) {
+    // Google rejects a revoked/expired refresh token with `invalid_grant`
+    // (e.g. OAuth app in "Testing" mode expires tokens after 7 days).
+    if (error?.message === "invalid_grant" || error?.response?.data?.error === "invalid_grant") {
+      driveClient = null;
+      throw new ApiError(
+        503,
+        "Google Drive access has expired. Run `npm run drive:auth` in server/ and update GOOGLE_OAUTH_REFRESH_TOKEN in server/.env, then restart the server.",
+      );
+    }
+    throw error;
+  }
+}
+
+async function doUpload(drive, { buffer, filename, mimeType }) {
 
   const { data: file } = await drive.files.create({
     requestBody: {
