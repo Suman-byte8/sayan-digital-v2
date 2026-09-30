@@ -16,7 +16,7 @@ export function ProductImageGallery({ images, name }) {
   return (
     <div>
       {/* eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset */}
-      <img
+      <img referrerPolicy="no-referrer"
         src={images[activeIndex]}
         alt={name}
         className="aspect-square w-full rounded-lg border border-border object-cover"
@@ -33,7 +33,7 @@ export function ProductImageGallery({ images, name }) {
               }`}
             >
               {/* eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset */}
-              <img src={url} alt={`${name} photo ${index + 1}`} className="size-16 object-cover" />
+              <img referrerPolicy="no-referrer" src={url} alt={`${name} photo ${index + 1}`} className="size-16 object-cover" />
             </button>
           ))}
         </div>

@@ -73,7 +73,7 @@ export function CustomerTable({ customers }) {
                   <Link href={`/customers/${customer.id}`} className="flex items-center gap-3">
                     {customer.avatarUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL
-                      <img
+                      <img referrerPolicy="no-referrer"
                         src={customer.avatarUrl}
                         alt={customer.name}
                         className="size-9 rounded-full border border-border object-cover"

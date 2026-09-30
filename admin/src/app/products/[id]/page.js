@@ -131,7 +131,7 @@ export default async function ProductDetailPage({ params }) {
                         <td className="px-3 py-2">
                           {variant.images?.[0] ? (
                             // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL
-                            <img
+                            <img referrerPolicy="no-referrer"
                               src={variant.images[0]}
                               alt=""
                               className="size-9 rounded-md border border-border object-cover"

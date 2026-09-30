@@ -69,7 +69,7 @@ export function ProductTable({ products }) {
                   <Link href={`/products/${product.id}`}>
                     {product.images?.[0] ? (
                       // eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset
-                      <img
+                      <img referrerPolicy="no-referrer"
                         src={product.images[0]}
                         alt={product.name}
                         className="size-12 rounded-md border border-border object-cover"

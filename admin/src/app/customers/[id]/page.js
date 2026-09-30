@@ -79,7 +79,7 @@ export default async function CustomerDetailPage({ params }) {
         <div className="flex items-center gap-4">
           {customer.avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL
-            <img
+            <img referrerPolicy="no-referrer"
               src={customer.avatarUrl}
               alt={customer.name}
               className="size-16 rounded-full border border-border object-cover"
@@ -210,7 +210,7 @@ export default async function CustomerDetailPage({ params }) {
               >
                 {item.product?.images?.[0] ? (
                   // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/external URL
-                  <img
+                  <img referrerPolicy="no-referrer"
                     src={item.product.images[0]}
                     alt={item.product.name}
                     className="size-10 shrink-0 rounded-md border border-border object-cover"
