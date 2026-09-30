@@ -1,6 +1,7 @@
 import { HeroSection } from "@/components/home/hero-section";
 import { MarqueeStrip } from "@/components/sections/marquee-strip";
 import { TrustHighlights } from "@/components/sections/trust-highlights";
+import { SitePurposeSection } from "@/components/sections/site-purpose-section";
 import { AboutSection } from "@/components/sections/about-section";
 import { ProductCategories } from "@/components/sections/product-categories";
 import { WhyChooseUs } from "@/components/sections/why-choose-us";
@@ -45,6 +46,7 @@ export default async function Home() {
         <CustomizationShowcase />
         <TestimonialsSection />
         <LocalTrustSection />
+        <SitePurposeSection />
         <CtaSection />
       </div>
     </>
