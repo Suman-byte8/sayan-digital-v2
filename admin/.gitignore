@@ -13,8 +13,9 @@
 # testing
 /coverage
 
-# next.js
+# next.js (build output renamed to /dist via next.config.mjs's distDir)
 /.next/
+/dist/
 /out/
 
 # production
