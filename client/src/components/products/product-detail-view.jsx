@@ -172,7 +172,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
         <Reveal className="relative aspect-square overflow-hidden rounded-3xl border border-border bg-card shadow-premium">
           <Image
             src={displayImage}
-            alt={product.name}
+            alt={product.imageAlt ?? product.name}
             fill
             sizes="(min-width: 1024px) 45vw, 90vw"
             className="object-cover"

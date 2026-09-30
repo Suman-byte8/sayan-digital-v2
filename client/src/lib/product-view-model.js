@@ -29,6 +29,9 @@ export function toCardProduct(product) {
     minQty: hasMinQty ? `Min: ${product.minOrderQty} ${unit}` : `Min: 1 ${unit}`,
     minQtyTone: hasMinQty && product.minOrderQty > 1 ? "strong" : "plain",
     image: product.images?.[0] || FALLBACK_IMAGE,
+    // Admin-written alt text describing the actual photo; falls back to the
+    // product name (never keyword-stuffed).
+    imageAlt: product.imageAltText?.trim() || `${product.name} - Sayan Digital`,
     // Full gallery — cards only ever use the single `image` above, the PDP
     // uses this for its thumbnail strip.
     images: product.images?.length > 0 ? product.images : [FALLBACK_IMAGE],

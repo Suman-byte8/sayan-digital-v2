@@ -4,6 +4,28 @@ const slugPattern = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const PRODUCT_TYPES = ["PRINTING", "STATIONERY"];
 
+// SEO text is only ever rendered as escaped text/attributes, but tags in a
+// title/description are never legitimate, so reject them up front. Blank
+// strings become null so "cleared in the admin" == "use the fallback".
+const noHtml = (value) => !/[<>]/.test(value);
+const seoText = (max) =>
+  z
+    .string()
+    .trim()
+    .max(max, `Must be at most ${max} characters`)
+    .refine(noHtml, "Must not contain < or > characters")
+    .transform((value) => value || null)
+    .optional()
+    .nullable();
+const seoUrl = z
+  .string()
+  .trim()
+  .max(500)
+  .refine((value) => value === "" || /^https?:\/\/\S+$/i.test(value), "Must be a full http(s) URL")
+  .transform((value) => value || null)
+  .optional()
+  .nullable();
+
 const productBaseSchema = {
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(200),
   slug: z
@@ -27,6 +49,20 @@ const productBaseSchema = {
   minOrderQty: z.coerce.number().int().positive().optional().nullable(),
   stock: z.coerce.number().int().nonnegative().default(0),
   isActive: z.boolean().default(true),
+  // SEO metadata — every field optional; blank falls back on the storefront.
+  // Limits are generous (well past the ~60/~160 char display guidance) so
+  // legitimate copy is never rejected; the admin form shows the soft guidance.
+  seoTitle: seoText(120),
+  metaDescription: seoText(320),
+  imageAltText: seoText(200),
+  canonicalUrl: seoUrl,
+  ogTitle: seoText(120),
+  ogDescription: seoText(320),
+  ogImage: seoUrl,
+  twitterTitle: seoText(120),
+  twitterDescription: seoText(320),
+  twitterImage: seoUrl,
+  structuredDataEnabled: z.boolean().default(true),
   // Per-product variant axes (e.g. "Size", "Thickness") and the specific
   // sellable combinations of them â€” see server/src/lib/product-variants.js
   // for the cross-validation this only partially covers (Zod can't check

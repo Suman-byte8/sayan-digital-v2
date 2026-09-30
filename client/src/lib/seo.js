@@ -130,24 +130,128 @@ export function buildWebsiteJsonLd() {
   };
 }
 
-// Only used on product detail pages, where a specific real product (name,
-// description, image, price) is actually on the page — never on category/
-// listing pages, so this never represents generic stationery items as if
-// they were individually reviewed/priced products with invented data.
+// ---------------------------------------------------------------------
+// Product SEO — resolves per-product admin fields with sensible fallbacks
+// (blank/whitespace-only counts as missing), then builds Next.js Metadata
+// and schema.org JSON-LD from the ONE resolved object so the <head> tags
+// and structured data can never disagree.
+// ---------------------------------------------------------------------
+const clean = (value) => (typeof value === "string" ? value.trim() : "");
+const firstFilled = (...values) => values.map(clean).find(Boolean) ?? "";
+
+// Plain-text excerpt for a meta description: strips any tags, collapses
+// whitespace, cuts at a word boundary.
+function excerpt(text, max = 160) {
+  const plain = clean(text).replace(/<[^>]*>/g, " ").replace(/\s+/g, " ").trim();
+  if (plain.length <= max) return plain;
+  return `${plain.slice(0, max - 1).replace(/\s+\S*$/, "")}…`;
+}
+
+export function resolveProductSeo(product, path) {
+  const name = clean(product.name);
+  const title = firstFilled(product.seoTitle, `${name} | ${SITE_NAME}`);
+  const description = firstFilled(
+    product.metaDescription,
+    excerpt(product.description),
+    `Buy ${name} online from ${SITE_NAME}, ${BRAND.location}.`,
+  );
+  const primaryImage = firstFilled(product.images?.[0], DEFAULT_OG_IMAGE);
+  const ogTitle = firstFilled(product.ogTitle, product.seoTitle, name);
+  const ogDescription = firstFilled(product.ogDescription, description);
+  const ogImage = absoluteUrl(firstFilled(product.ogImage, primaryImage));
+
+  return {
+    title,
+    description,
+    canonical: firstFilled(product.canonicalUrl, absoluteUrl(path)),
+    imageAlt: firstFilled(product.imageAltText, `${name} - ${SITE_NAME}`),
+    ogTitle,
+    ogDescription,
+    ogImage,
+    twitterTitle: firstFilled(product.twitterTitle, ogTitle),
+    twitterDescription: firstFilled(product.twitterDescription, ogDescription),
+    twitterImage: absoluteUrl(firstFilled(product.twitterImage, ogImage)),
+  };
+}
+
+/**
+ * Next.js Metadata for a product detail page. Inactive (draft/hidden)
+ * products are served but marked noindex so they can't be indexed.
+ */
+export function buildProductMetadata(product, path) {
+  const seo = resolveProductSeo(product, path);
+  const indexable = product.isActive !== false;
+
+  return {
+    title: seo.title,
+    description: seo.description,
+    alternates: { canonical: seo.canonical },
+    robots: indexable
+      ? { index: true, follow: true, googleBot: { index: true, follow: true } }
+      : { index: false, follow: true },
+    openGraph: {
+      title: seo.ogTitle,
+      description: seo.ogDescription,
+      url: seo.canonical,
+      siteName: SITE_NAME,
+      images: [{ url: seo.ogImage, alt: seo.imageAlt }],
+      locale: "en_IN",
+      // og:type "product" isn't accepted by Next's Metadata API — the page
+      // component emits that one tag itself (see products/[slug]/page.js).
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: seo.twitterTitle,
+      description: seo.twitterDescription,
+      images: [seo.twitterImage],
+    },
+  };
+}
+
+// schema.org Product from REAL data only: no brand (not stored), no
+// ratings/reviews (none exist), sku only when exactly one sellable variant
+// carries one. Offer price/availability come from price + stock; products
+// with variants priced differently become an AggregateOffer range.
 export function buildProductJsonLd(product, path) {
+  const seo = resolveProductSeo(product, path);
+  const url = absoluteUrl(path);
+  const variants = (product.variants ?? []).filter((v) => v.isActive);
+
+  const prices = variants.length
+    ? variants.map((v) => v.price ?? product.price)
+    : [product.price];
+  const inStock = variants.length
+    ? variants.some((v) => v.stock > 0)
+    : product.stock > 0;
+  const availability = `https://schema.org/${inStock ? "InStock" : "OutOfStock"}`;
+  const low = Math.min(...prices);
+  const high = Math.max(...prices);
+
+  const offers =
+    low === high
+      ? { "@type": "Offer", url, priceCurrency: "INR", price: low, availability }
+      : {
+          "@type": "AggregateOffer",
+          url,
+          priceCurrency: "INR",
+          lowPrice: low,
+          highPrice: high,
+          offerCount: prices.length,
+          availability,
+        };
+
+  const skus = variants.map((v) => clean(v.sku)).filter(Boolean);
+  const images = (product.images ?? []).map((src) => absoluteUrl(src));
+
   return {
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description,
-    image: absoluteUrl(product.image),
-    category: product.categoryLabel,
-    url: absoluteUrl(path),
-    offers: {
-      "@type": "Offer",
-      url: absoluteUrl(path),
-      priceCurrency: "INR",
-      price: product.price,
-    },
+    description: seo.description,
+    image: images.length ? images : [absoluteUrl(DEFAULT_OG_IMAGE)],
+    ...(variants.length === 1 && skus.length === 1 ? { sku: skus[0] } : {}),
+    ...(clean(product.category) ? { category: clean(product.category) } : {}),
+    url,
+    offers,
   };
 }
