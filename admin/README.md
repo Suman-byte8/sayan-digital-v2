@@ -27,9 +27,29 @@ own, it's a UI over that REST API.
 `noindex, nofollow` is set site-wide (`src/app/layout.js` metadata) since
 this is an internal tool, not meant to be publicly discoverable.
 
+## Password-gating with .htaccess (Apache hosting only)
+
+`.htaccess` in this folder adds an HTTP Basic Auth prompt (browser login
+popup) in front of the whole app. It only takes effect if this app is
+actually served through Apache with `AllowOverride` enabled — traditional
+cPanel/shared hosting, or a VPS where Apache reverse-proxies to the Next.js
+process. Hosts like Vercel/Railway/Render/Netlify don't run Apache and will
+silently ignore the file.
+
+To set it up on an Apache host:
+
+1. From `admin/`, run `npm run htpasswd -- <username>` and enter a password
+   at the prompt (input is hidden, nothing is sent anywhere). This writes/
+   updates `.htpasswd` with a bcrypt hash in Apache's expected `$2y$` format.
+2. Edit `.htaccess`'s `AuthUserFile` line to the **absolute filesystem path**
+   to `.htpasswd` on the actual server (Apache needs a real OS path, not a
+   URL), e.g. `/home/youruser/public_html/admin/.htpasswd`.
+3. `.htpasswd` is gitignored — it holds a real (hashed) credential, so it's
+   generated per-deployment, the same way `.env` is never committed.
+
 ## Known follow-up (not implemented yet)
 
-No authentication/login — anyone who can reach this app's URL can edit the
-catalog. Fine for local-only use during development; add auth (e.g. a simple
-password gate or a real auth provider) before deploying this anywhere
-publicly reachable.
+No in-app authentication/login — the `.htaccess` Basic Auth above is a
+stopgap that only works on Apache hosting. Add real auth (e.g. a login page
+backed by the `server/` API, or a proper auth provider) before relying on
+this anywhere that isn't behind Apache.

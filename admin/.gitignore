@@ -35,6 +35,9 @@ yarn-error.log*
 .env
 .env*.local
 
+# .htaccess Basic Auth credentials (real, if hashed, password - see scripts/generate-htpasswd.js)
+.htpasswd
+
 # vercel
 .vercel
 

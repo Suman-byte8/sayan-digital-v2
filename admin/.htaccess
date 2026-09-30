@@ -1,0 +1,22 @@
+# Password-gates the admin panel with a browser login prompt (HTTP Basic
+# Auth) — a stopgap until the app has real in-app authentication of its
+# own (see README.md's "Known follow-up").
+#
+# IMPORTANT: this only does anything if this app is actually served
+# through Apache with AllowOverride enabled for this directory - e.g.
+# traditional cPanel/shared hosting, or a VPS where Apache reverse-proxies
+# to the Next.js process. Hosts like Vercel, Railway, Render or Netlify
+# don't run Apache at all and will silently ignore this file entirely.
+#
+# Setup:
+#   1. Run `npm run htpasswd -- <username>` here (from admin/) and follow the
+#      prompt to create/update .htpasswd with a real, hashed password (see
+#      README.md).
+#   2. Replace AuthUserFile below with the ABSOLUTE filesystem path to that
+#      .htpasswd on your actual server (Apache needs a real OS path here,
+#      not a URL/relative path) - e.g. /home/youruser/public_html/admin/.htpasswd.
+
+AuthType Basic
+AuthName "Sayan Digital Admin"
+AuthUserFile /REPLACE/WITH/ABSOLUTE/PATH/TO/admin/.htpasswd
+Require valid-user

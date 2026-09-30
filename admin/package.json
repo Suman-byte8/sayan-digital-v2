@@ -6,7 +6,8 @@
     "dev": "next dev -p 3002",
     "build": "next build",
     "start": "next start -p 3002",
-    "lint": "eslint"
+    "lint": "eslint",
+    "htpasswd": "node scripts/generate-htpasswd.mjs"
   },
   "dependencies": {
     "lucide-react": "^1.46.0",
@@ -17,6 +18,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "babel-plugin-react-compiler": "1.0.0",
+    "bcryptjs": "^3.0.3",
     "eslint": "^9",
     "eslint-config-next": "16.3.4",
     "tailwindcss": "^4"
