@@ -78,7 +78,7 @@ export default async function OrderDetailPage({ params }) {
                 <div key={item.id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
                   {item.image ? (
                     // eslint-disable-next-line @next/next/no-img-element -- arbitrary product image URL
-                    <img
+                    <img referrerPolicy="no-referrer"
                       src={item.image}
                       alt={item.name}
                       className="size-12 rounded-md border border-border object-cover"

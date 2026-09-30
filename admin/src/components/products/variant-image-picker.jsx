@@ -48,7 +48,7 @@ export function VariantImagePicker({ images, onChange }) {
         {images.map((url, index) => (
           <div key={index} className="group relative">
             {/* eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL */}
-            <img src={url} alt="Variant" className="size-10 rounded-md border border-border object-cover" />
+            <img referrerPolicy="no-referrer" src={url} alt="Variant" className="size-10 rounded-md border border-border object-cover" />
             <button
               type="button"
               onClick={() => handleRemove(index)}

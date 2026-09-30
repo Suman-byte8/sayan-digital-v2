@@ -65,7 +65,7 @@ export function ImageUploader({ images, onChange }) {
           {images.map((url, index) => (
             <div key={index} className="group relative">
               {/* eslint-disable-next-line @next/next/no-img-element -- previewing an arbitrary uploaded/external URL, not a static local asset */}
-              <img
+              <img referrerPolicy="no-referrer"
                 src={url}
                 alt={`Product photo ${index + 1}`}
                 className="size-20 rounded-md border border-border object-cover"
