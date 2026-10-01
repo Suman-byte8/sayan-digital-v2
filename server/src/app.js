@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import morgan from "morgan";
 import { env } from "./config/env.js";
+import { prisma } from "./lib/prisma.js";
 import productsRouter from "./routes/products.routes.js";
 import uploadsRouter from "./routes/uploads.routes.js";
 import categoriesRouter from "./routes/categories.routes.js";
@@ -38,6 +39,19 @@ app.use(morgan(env.NODE_ENV === "development" ? "dev" : "combined"));
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", environment: env.NODE_ENV });
+});
+
+// Point an external uptime monitor (e.g. UptimeRobot, every 5-10 min) at this:
+// the request keeps a sleeping host awake AND runs SELECT 1 so the database
+// stays awake too. 503 when the DB is unreachable so the monitor can alert.
+app.get("/health/db", async (req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: "ok", db: "up" });
+  } catch (error) {
+    console.error(`[health] db check failed: ${error.message}`);
+    res.status(503).json({ status: "error", db: "down" });
+  }
 });
 
 app.use("/api/products", productsRouter);
