@@ -2,9 +2,9 @@
 
 import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { ExternalLink, MessageCircle, Pencil, Trash2 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 import { formatDate, formatMoney, todayYmd, whatsappLink } from "@/lib/invoice-format";
 
 const STATUS_STYLES = {
@@ -15,7 +15,6 @@ const STATUS_STYLES = {
 const STATUS_LABELS = { PAID: "Paid", PARTIAL: "Partly paid", UNPAID: "Unpaid" };
 
 export function InvoiceTable({ invoices }) {
-  const router = useRouter();
   const [, startTransition] = useTransition();
   // Row disappears the moment delete is confirmed; reappears with an error
   // if the request fails.
@@ -30,7 +29,7 @@ export function InvoiceTable({ invoices }) {
       removeInvoice(invoice.id);
       try {
         await api.deleteInvoice(invoice.id);
-        router.refresh();
+        await refreshAdminData();
       } catch (err) {
         setError(err instanceof ApiRequestError ? err.message : "Failed to delete invoice.");
       }

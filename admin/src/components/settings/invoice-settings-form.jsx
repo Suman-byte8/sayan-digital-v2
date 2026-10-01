@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { CheckCircle2, Loader2, Save, Trash2, Upload } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 
 function Section({ title, description, children }) {
   return (
@@ -37,7 +37,6 @@ function Check({ checked, onChange, children }) {
 }
 
 export function InvoiceSettingsForm({ initial }) {
-  const router = useRouter();
   const [values, setValues] = useState(initial);
   const [saving, startSaving] = useTransition();
   const [uploading, setUploading] = useState(false);
@@ -95,7 +94,8 @@ export function InvoiceSettingsForm({ initial }) {
         });
         setValues(data);
         setSaved(true);
-        router.refresh();
+        // New invoices read these settings; clear any cached /invoices/new.
+        await refreshAdminData();
       } catch (err) {
         if (err instanceof ApiRequestError) {
           setError(err.message);

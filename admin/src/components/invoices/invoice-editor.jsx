@@ -15,6 +15,7 @@ import {
   UploadCloud,
 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 import { calcInvoice } from "@/lib/invoice-calc";
 import { addDaysYmd, formatMoney, invoiceFileName, whatsappLink } from "@/lib/invoice-format";
 import { EMPTY_ITEM, toPayload } from "@/lib/invoice-state";
@@ -173,8 +174,13 @@ export function InvoiceEditor({ initial, invoiceId }) {
     const { data } = savedId ? await api.updateInvoice(savedId, payload) : await api.createInvoice(payload);
     if (!savedId) {
       setSavedId(data.id);
-      // Move to the invoice's own URL without remounting the editor.
+      // Clear the client router cache (so the list shows this invoice) while
+      // still on /invoices/new, THEN move to the invoice's own URL - doing it
+      // after the URL change would remount the editor and lose typing.
+      await refreshAdminData();
       window.history.replaceState(null, "", `/invoices/${data.id}`);
+    } else {
+      refreshAdminData(); // not awaited: local state is already right
     }
     setSavedSnapshot(snapshotOf(inv));
     return data.id;
@@ -220,6 +226,7 @@ export function InvoiceEditor({ initial, invoiceId }) {
     const blob = await renderInvoicePdf(sheetRef.current);
     const { data } = await api.uploadInvoicePdf(id, blob, fileName);
     setInv((prev) => ({ ...prev, driveUrl: data.driveUrl }));
+    refreshAdminData(); // list shows the PDF / Share links; not awaited
     return data.driveUrl;
   }
 
