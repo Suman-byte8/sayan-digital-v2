@@ -9,6 +9,7 @@ import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
 import { cn } from "@/lib/utils";
+import { truncateWords } from "@/lib/text";
 
 const CONTAINER_SPRING = { type: "spring", stiffness: 300, damping: 26, mass: 0.7 };
 const OVERLAY_SPRING = {
@@ -143,7 +144,7 @@ export function CatalogProductCard({ product }) {
               isHoverDevice ? "line-clamp-2" : "line-clamp-3"
             )}
           >
-            {description}
+            {truncateWords(description, 18)}
           </p>
         </div>
 
@@ -193,7 +194,9 @@ export function CatalogProductCard({ product }) {
           <div className="flex flex-col gap-4 p-5">
             <motion.div variants={itemVariants}>
               <h4 className="mb-1.5 text-[13px] font-semibold text-foreground">Product Details</h4>
-              <p className="text-[13px] leading-relaxed text-muted-foreground">{description}</p>
+              <p className="line-clamp-5 text-[13px] leading-relaxed text-muted-foreground">
+                {truncateWords(description, 30)}
+              </p>
             </motion.div>
 
             <motion.div variants={itemVariants} className="grid grid-cols-2 gap-2.5 text-center text-[11px]">

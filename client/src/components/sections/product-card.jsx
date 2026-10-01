@@ -12,6 +12,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
 import { useAuth } from "@/context/auth-context";
 import { useWishlist } from "@/context/wishlist-context";
 import { cn } from "@/lib/utils";
+import { truncateWords } from "@/lib/text";
 
 const BADGE_SPRING = { type: "spring", bounce: 0.35, duration: 0.5 };
 
@@ -102,8 +103,8 @@ export function ProductCard({ product, className }) {
 
       <div className="flex flex-1 flex-col gap-1.5 p-5">
         <h3 className="text-[15px] font-semibold text-foreground">{product.name}</h3>
-        <p className="text-[13px] leading-relaxed text-muted-foreground">
-          {product.description}
+        <p className="line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
+          {truncateWords(product.description, 16)}
         </p>
 
         <div className="mt-auto pt-3">
