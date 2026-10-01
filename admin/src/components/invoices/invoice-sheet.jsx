@@ -72,7 +72,7 @@ export function InvoiceSheet({ inv, calc, actions, sheetRef }) {
   return (
     <div
       ref={sheetRef}
-      className={`${montserrat.className} relative bg-white text-[#14142b]`}
+      className={`${montserrat.className} relative flex flex-col bg-white text-[#14142b]`}
       style={{ width: SHEET_WIDTH, minHeight: 1123, padding: "44px 40px 36px" }}
     >
       {calc.status === "PAID" && (
@@ -334,7 +334,9 @@ export function InvoiceSheet({ inv, calc, actions, sheetRef }) {
         </div>
       </div>
 
-      <div className="mt-9">
+      {/* Thank-you line + footer stay pinned to the bottom of the page,
+          however short the item list is. */}
+      <div className="mt-auto pt-9">
         <Field
           value={inv.thankYou}
           onChange={(v) => set("thankYou", v)}
