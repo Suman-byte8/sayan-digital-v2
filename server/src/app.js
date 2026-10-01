@@ -19,6 +19,7 @@ import proofsRouter from "./routes/proofs.routes.js";
 import adminUsersRouter from "./routes/admin-users.routes.js";
 import adminOrdersRouter from "./routes/admin-orders.routes.js";
 import adminTasksRouter from "./routes/admin-tasks.routes.js";
+import adminInvoicesRouter from "./routes/admin-invoices.routes.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
@@ -70,6 +71,7 @@ app.use("/api/proofs", proofsRouter);
 app.use("/api/admin/users", adminUsersRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin/tasks", adminTasksRouter);
+app.use("/api/admin/invoices", adminInvoicesRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
