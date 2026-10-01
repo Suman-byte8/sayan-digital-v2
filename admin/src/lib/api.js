@@ -61,6 +61,30 @@ async function uploadImage(file) {
   return body;
 }
 
+// Multipart (not JSON), so it can't go through request() - that forces a
+// JSON content-type, which would break the multipart boundary.
+async function uploadInvoicePdf(id, blob, filename) {
+  const formData = new FormData();
+  formData.append("file", blob, filename);
+  formData.append("filename", filename);
+
+  let response;
+  try {
+    response = await fetch(`${API_URL}/admin/invoices/${id}/pdf`, { method: "POST", body: formData });
+  } catch {
+    throw new ApiRequestError(
+      `Could not reach the API at ${API_URL}. Is the backend server running?`,
+      0,
+    );
+  }
+
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new ApiRequestError(body?.error ?? `Upload failed with status ${response.status}`, response.status);
+  }
+  return body;
+}
+
 function withQuery(path, params = {}) {
   const query = new URLSearchParams(
     Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== "")),
@@ -92,6 +116,15 @@ export const api = {
   getOrder: (id) => request(`/admin/orders/${id}`),
   updateOrder: (id, data) =>
     request(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+
+  listInvoices: (params = {}) => request(withQuery("/admin/invoices", params)),
+  getInvoiceDefaults: () => request("/admin/invoices/defaults"),
+  getInvoice: (id) => request(`/admin/invoices/${id}`),
+  createInvoice: (data) => request("/admin/invoices", { method: "POST", body: JSON.stringify(data) }),
+  updateInvoice: (id, data) =>
+    request(`/admin/invoices/${id}`, { method: "PUT", body: JSON.stringify(data) }),
+  deleteInvoice: (id) => request(`/admin/invoices/${id}`, { method: "DELETE" }),
+  uploadInvoicePdf,
 
   listTasks: (params = {}) => request(withQuery("/admin/tasks", params)),
   getTask: (id) => request(`/admin/tasks/${id}`),
