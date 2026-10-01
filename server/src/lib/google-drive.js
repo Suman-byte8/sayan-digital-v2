@@ -33,15 +33,14 @@ function getDriveClient() {
   return driveClient;
 }
 
-// Uploads a file buffer into the shared GOOGLE_DRIVE_FOLDER_ID folder, makes
-// it publicly viewable by link, and returns a directly embeddable image URL.
-export async function uploadImageToDrive({ buffer, filename, mimeType }) {
+// Runs a Drive call, translating Google's revoked/expired-token error into
+// an actionable message (OAuth apps in "Testing" mode expire tokens after
+// 7 days).
+async function withDrive(fn) {
   const drive = getDriveClient();
   try {
-    return await doUpload(drive, { buffer, filename, mimeType });
+    return await fn(drive);
   } catch (error) {
-    // Google rejects a revoked/expired refresh token with `invalid_grant`
-    // (e.g. OAuth app in "Testing" mode expires tokens after 7 days).
     if (error?.message === "invalid_grant" || error?.response?.data?.error === "invalid_grant") {
       driveClient = null;
       throw new ApiError(
@@ -53,8 +52,9 @@ export async function uploadImageToDrive({ buffer, filename, mimeType }) {
   }
 }
 
-async function doUpload(drive, { buffer, filename, mimeType }) {
-
+// Uploads a buffer into the shared GOOGLE_DRIVE_FOLDER_ID folder and makes
+// it viewable by anyone with the link. Returns the new file's id.
+async function createPublicFile(drive, { buffer, filename, mimeType }) {
   const { data: file } = await drive.files.create({
     requestBody: {
       name: filename,
@@ -72,15 +72,26 @@ async function doUpload(drive, { buffer, filename, mimeType }) {
     requestBody: { role: "reader", type: "anyone" },
   });
 
+  return file.id;
+}
+
+export async function uploadImageToDrive({ buffer, filename, mimeType }) {
+  const fileId = await withDrive((drive) => createPublicFile(drive, { buffer, filename, mimeType }));
   return {
-    fileId: file.id,
+    fileId,
     // Directly embeddable in an <img>/next/image src, unlike the
     // drive.google.com "view" page URL.
-    url: `https://lh3.googleusercontent.com/d/${file.id}`,
+    url: `https://lh3.googleusercontent.com/d/${fileId}`,
   };
 }
 
+// For documents (e.g. invoice PDFs): returns the Drive "view" page link,
+// which is what you share, not an embeddable image URL.
+export async function uploadFileToDrive({ buffer, filename, mimeType }) {
+  const fileId = await withDrive((drive) => createPublicFile(drive, { buffer, filename, mimeType }));
+  return { fileId, url: `https://drive.google.com/file/d/${fileId}/view` };
+}
+
 export async function deleteImageFromDrive(fileId) {
-  const drive = getDriveClient();
-  await drive.files.delete({ fileId });
+  await withDrive((drive) => drive.files.delete({ fileId }));
 }

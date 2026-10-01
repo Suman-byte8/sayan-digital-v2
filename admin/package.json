@@ -10,6 +10,8 @@
     "htpasswd": "node scripts/generate-htpasswd.mjs"
   },
   "dependencies": {
+    "html2canvas-pro": "^2.5.0",
+    "jspdf": "^4.2.1",
     "lucide-react": "^1.46.0",
     "next": "16.3.4",
     "react": "19.2.8",

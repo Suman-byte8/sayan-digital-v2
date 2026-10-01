@@ -409,3 +409,74 @@ model Proof {
 
   @@map("proofs")
 }
+
+// ---------------------------------------------------------------------
+// Invoices (admin panel only) — a standalone billing document, not tied
+// to the storefront's Order table: shops invoice walk-in/phone customers
+// who never used the site. `items`, `business` and `paymentInfo` are JSON
+// snapshots so editing business details later never rewrites an invoice
+// that was already issued. Money columns are derived server-side from
+// items + GST/discount settings (see src/lib/invoice-calc.js) so list
+// views can sort/filter on them without re-parsing JSON.
+// ---------------------------------------------------------------------
+model Invoice {
+  id            String   @id @default(uuid())
+  invoiceNumber String   @unique
+  status        String   @default("UNPAID") // UNPAID | PARTIAL | PAID (derived from amountPaid vs total)
+
+  clientName    String
+  clientPhone   String?
+  clientEmail   String?
+  clientAddress String?
+  clientGstin   String?
+
+  issueDate DateTime  @db.Date
+  dueDate   DateTime? @db.Date
+
+  // [{ description, details, hsn, unitPrice, qty, gstRate }]
+  items Json
+
+  gstEnabled       Boolean @default(false)
+  gstMode          String  @default("INTRA") // INTRA (CGST+SGST) | INTER (IGST)
+  gstRate          Decimal @default(18) @db.Decimal(5, 2)
+  pricesIncludeGst Boolean @default(false)
+  discountType     String  @default("PERCENT") // PERCENT | FLAT
+  discountValue    Decimal @default(0) @db.Decimal(12, 2)
+  roundOff         Boolean @default(true)
+
+  subtotal       Decimal @db.Decimal(12, 2)
+  discountAmount Decimal @default(0) @db.Decimal(12, 2)
+  taxAmount      Decimal @default(0) @db.Decimal(12, 2)
+  total          Decimal @db.Decimal(12, 2)
+  amountPaid     Decimal @default(0) @db.Decimal(12, 2)
+  balanceDue     Decimal @db.Decimal(12, 2)
+
+  business    Json
+  paymentInfo Json
+  notes       String?
+  terms       String?
+  thankYou    String?
+  accentColor String  @default("#4a3f94")
+
+  // Set when the PDF has been saved to Google Drive (re-saving replaces it).
+  driveFileId String?
+  driveUrl    String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([createdAt])
+  @@index([status])
+  @@map("invoices")
+}
+
+// Key-value store for admin-editable settings (currently just "invoice":
+// business details, payment info and defaults used to pre-fill new
+// invoices). One JSON row per key so new settings need no migration.
+model AdminSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_settings")
+}

@@ -3,8 +3,10 @@ import Link from "next/link";
 const NAV_LINKS = [
   { label: "Products", href: "/products" },
   { label: "Orders", href: "/orders" },
+  { label: "Invoices", href: "/invoices" },
   { label: "Customers", href: "/customers" },
   { label: "Tasks", href: "/tasks" },
+  { label: "Settings", href: "/settings" },
 ];
 
 export function Shell({ children }) {
