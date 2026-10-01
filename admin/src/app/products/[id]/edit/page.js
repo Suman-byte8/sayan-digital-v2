@@ -1,5 +1,6 @@
-import { notFound } from "next/navigation";
-import { api, ApiRequestError } from "@/lib/api";
+import { notFound, unstable_rethrow } from "next/navigation";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { ProductForm } from "@/components/products/product-form";
 
 export const dynamic = "force-dynamic";
@@ -16,6 +17,7 @@ export default async function EditProductPage({ params }) {
     const result = await api.getProduct(id);
     product = result.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (error instanceof ApiRequestError && error.status === 404) {
       notFound();
     }

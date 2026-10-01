@@ -1,167 +1,56 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/api";
+// API client for CLIENT components. Every call goes to the same-origin
+// /proxy route (app/proxy/[...path]/route.js), which reads the httpOnly
+// session cookie and forwards the request to the real API with the admin's
+// token - so the token is never exposed to page JavaScript, and no CORS
+// setup is needed. Server components use lib/api-server.js instead.
+import { ApiRequestError, buildApi, parseResponse } from "@/lib/api-core";
 
-export class ApiRequestError extends Error {
-  constructor(message, status, details) {
-    super(message);
-    this.status = status;
-    this.details = details;
+export { ApiRequestError };
+
+const BASE = "/proxy";
+
+// A 401 means the session ended (expired, or the password was changed
+// elsewhere): go to the login page instead of leaving a broken screen.
+function handleUnauthorized(error) {
+  if (error instanceof ApiRequestError && error.status === 401 && typeof window !== "undefined") {
+    // Deliberate full reload: drops every cached page and in-memory state.
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+    window.location.href = "/login?reason=session";
   }
+  throw error;
 }
 
-async function request(path, options = {}) {
+async function send(path, init, fallbackMessage) {
   let response;
-
   try {
-    response = await fetch(`${API_URL}${path}`, {
-      ...options,
-      headers: { "Content-Type": "application/json", ...options.headers },
-      cache: "no-store",
-    });
+    response = await fetch(`${BASE}${path}`, { ...init, cache: "no-store" });
   } catch {
-    throw new ApiRequestError(
-      `Could not reach the API at ${API_URL}. Is the backend server running?`,
-      0,
-    );
+    throw new ApiRequestError("Could not reach the server. Check your connection and try again.", 0);
   }
-
-  const isJson = response.headers.get("content-type")?.includes("application/json");
-  const body = isJson ? await response.json().catch(() => null) : null;
-
-  if (!response.ok) {
-    throw new ApiRequestError(
-      body?.error ?? `Request failed with status ${response.status}`,
-      response.status,
-      body?.details,
-    );
+  try {
+    return await parseResponse(response, fallbackMessage);
+  } catch (error) {
+    return handleUnauthorized(error);
   }
-
-  return body;
 }
 
-async function uploadImage(file) {
+function request(path, options = {}) {
+  return send(path, { ...options, headers: { "Content-Type": "application/json", ...options.headers } });
+}
+
+// Multipart bodies must NOT get a JSON content-type (it would break the
+// multipart boundary), so they skip request().
+function uploadImage(file) {
   const formData = new FormData();
   formData.append("file", file);
-
-  let response;
-  try {
-    response = await fetch(`${API_URL}/uploads/image`, { method: "POST", body: formData });
-  } catch {
-    throw new ApiRequestError(
-      `Could not reach the API at ${API_URL}. Is the backend server running?`,
-      0,
-    );
-  }
-
-  const body = await response.json().catch(() => null);
-
-  if (!response.ok) {
-    throw new ApiRequestError(body?.error ?? `Upload failed with status ${response.status}`, response.status);
-  }
-
-  return body;
+  return send("/uploads/image", { method: "POST", body: formData }, "Upload failed");
 }
 
-// Multipart (not JSON), so it can't go through request() - that forces a
-// JSON content-type, which would break the multipart boundary.
-async function uploadInvoicePdf(id, blob, filename) {
+function uploadInvoicePdf(id, blob, filename) {
   const formData = new FormData();
   formData.append("file", blob, filename);
   formData.append("filename", filename);
-
-  let response;
-  try {
-    response = await fetch(`${API_URL}/admin/invoices/${id}/pdf`, { method: "POST", body: formData });
-  } catch {
-    throw new ApiRequestError(
-      `Could not reach the API at ${API_URL}. Is the backend server running?`,
-      0,
-    );
-  }
-
-  const body = await response.json().catch(() => null);
-  if (!response.ok) {
-    throw new ApiRequestError(body?.error ?? `Upload failed with status ${response.status}`, response.status);
-  }
-  return body;
+  return send(`/admin/invoices/${id}/pdf`, { method: "POST", body: formData }, "Upload failed");
 }
 
-function withQuery(path, params = {}) {
-  const query = new URLSearchParams(
-    Object.fromEntries(Object.entries(params).filter(([, v]) => v != null && v !== "")),
-  ).toString();
-  return `${path}${query ? `?${query}` : ""}`;
-}
-
-// Browser-only memo for rarely-changing GETs (category list, taxonomy
-// search): repeat calls within the TTL resolve instantly and concurrent
-// calls share one in-flight request. Skipped on the server on purpose -
-// this module is also imported by server components, where a module-level
-// Map would be shared across every request.
-const memoStore = new Map();
-function memo(key, ttlMs, fn) {
-  if (typeof window === "undefined") return fn();
-  const hit = memoStore.get(key);
-  if (hit && Date.now() < hit.expires) return hit.promise;
-  const promise = fn().catch((error) => {
-    memoStore.delete(key); // never cache a failure
-    throw error;
-  });
-  memoStore.set(key, { promise, expires: Date.now() + ttlMs });
-  return promise;
-}
-function clearMemo(prefix) {
-  for (const key of memoStore.keys()) if (key.startsWith(prefix)) memoStore.delete(key);
-}
-
-export const api = {
-  uploadImage,
-  listProducts: (params = {}) => request(withQuery("/products", params)),
-  getProduct: (id) => request(`/products/${id}`),
-  createProduct: (data) => request("/products", { method: "POST", body: JSON.stringify(data) }),
-  updateProduct: (id, data) =>
-    request(`/products/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteProduct: (id) => request(`/products/${id}`, { method: "DELETE" }),
-
-  listCategories: () => memo("categories", 5 * 60_000, () => request("/categories")),
-  createCategory: (data) =>
-    request("/categories", { method: "POST", body: JSON.stringify(data) }).finally(() =>
-      clearMemo("categories"),
-    ),
-  deleteCategory: (id) =>
-    request(`/categories/${id}`, { method: "DELETE" }).finally(() => clearMemo("categories")),
-  searchTaxonomy: (q) =>
-    memo(`taxonomy:${q.toLowerCase()}`, 10 * 60_000, () =>
-      request(withQuery("/categories/taxonomy/search", { q })),
-    ),
-
-  listUsers: (params = {}) => request(withQuery("/admin/users", params)),
-  getUser: (id) => request(`/admin/users/${id}`),
-  updateUser: (id, data) =>
-    request(`/admin/users/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-  deleteUser: (id) => request(`/admin/users/${id}`, { method: "DELETE" }),
-
-  listOrders: (params = {}) => request(withQuery("/admin/orders", params)),
-  getOrder: (id) => request(`/admin/orders/${id}`),
-  updateOrder: (id, data) =>
-    request(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-
-  listInvoices: (params = {}) => request(withQuery("/admin/invoices", params)),
-  getInvoiceDefaults: () => request("/admin/invoices/defaults"),
-  getInvoice: (id) => request(`/admin/invoices/${id}`),
-  createInvoice: (data) => request("/admin/invoices", { method: "POST", body: JSON.stringify(data) }),
-  updateInvoice: (id, data) =>
-    request(`/admin/invoices/${id}`, { method: "PUT", body: JSON.stringify(data) }),
-  deleteInvoice: (id) => request(`/admin/invoices/${id}`, { method: "DELETE" }),
-  uploadInvoicePdf,
-
-  getInvoiceSettings: () => request("/admin/settings/invoice"),
-  updateInvoiceSettings: (data) =>
-    request("/admin/settings/invoice", { method: "PUT", body: JSON.stringify(data) }),
-
-  listTasks: (params = {}) => request(withQuery("/admin/tasks", params)),
-  getTask: (id) => request(`/admin/tasks/${id}`),
-  createTask: (data) => request("/admin/tasks", { method: "POST", body: JSON.stringify(data) }),
-  updateTask: (id, data) =>
-    request(`/admin/tasks/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-  deleteTask: (id) => request(`/admin/tasks/${id}`, { method: "DELETE" }),
-};
+export const api = buildApi({ request, uploadImage, uploadInvoicePdf });

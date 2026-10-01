@@ -1,6 +1,8 @@
+import { unstable_rethrow } from "next/navigation";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { OrderTable } from "@/components/orders/order-table";
 
 export const dynamic = "force-dynamic";
@@ -31,6 +33,7 @@ export default async function OrdersPage({ searchParams }) {
     orders = result.data;
     pagination = result.pagination;
   } catch (error) {
+    unstable_rethrow(error);
     loadError = error instanceof ApiRequestError ? error.message : "Failed to load orders.";
   }
 

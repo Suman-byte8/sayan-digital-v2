@@ -1,6 +1,8 @@
+import { unstable_rethrow } from "next/navigation";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { TaskBoard } from "@/components/tasks/task-board";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +29,7 @@ export default async function TasksPage({ searchParams }) {
     const result = await api.listTasks({ limit: 100, status, search });
     tasks = result.data;
   } catch (error) {
+    unstable_rethrow(error);
     loadError = error instanceof ApiRequestError ? error.message : "Failed to load tasks.";
   }
 

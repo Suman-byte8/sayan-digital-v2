@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { blankInvoice } from "@/lib/invoice-state";
 import { InvoiceEditor } from "@/components/invoices/invoice-editor";
 
