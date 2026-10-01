@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 import { TaskFormModal } from "@/components/tasks/task-form-modal";
 
 const STATUS_STYLES = {
@@ -27,16 +28,23 @@ export function TaskBoard({ initialTasks }) {
       return exists ? prev.map((t) => (t.id === saved.id ? saved : t)) : [saved, ...prev];
     });
     setModalTask(undefined);
+    // Local state is already correct; this just clears the stale client
+    // cache so revisiting the page shows the change. Not awaited on purpose.
+    refreshAdminData();
   }
 
   async function handleDelete(task) {
     if (!confirm(`Delete task "${task.title}"? This cannot be undone.`)) return;
     setDeletingId(task.id);
     setError("");
+    // Optimistic: drop the row now, put it back if the request fails.
+    const previous = tasks;
+    setTasks((prev) => prev.filter((t) => t.id !== task.id));
     try {
       await api.deleteTask(task.id);
-      setTasks((prev) => prev.filter((t) => t.id !== task.id));
+      refreshAdminData();
     } catch (err) {
+      setTasks(previous);
       setError(err instanceof ApiRequestError ? err.message : "Failed to delete task.");
     } finally {
       setDeletingId(null);

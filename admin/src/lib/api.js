@@ -68,6 +68,27 @@ function withQuery(path, params = {}) {
   return `${path}${query ? `?${query}` : ""}`;
 }
 
+// Browser-only memo for rarely-changing GETs (category list, taxonomy
+// search): repeat calls within the TTL resolve instantly and concurrent
+// calls share one in-flight request. Skipped on the server on purpose -
+// this module is also imported by server components, where a module-level
+// Map would be shared across every request.
+const memoStore = new Map();
+function memo(key, ttlMs, fn) {
+  if (typeof window === "undefined") return fn();
+  const hit = memoStore.get(key);
+  if (hit && Date.now() < hit.expires) return hit.promise;
+  const promise = fn().catch((error) => {
+    memoStore.delete(key); // never cache a failure
+    throw error;
+  });
+  memoStore.set(key, { promise, expires: Date.now() + ttlMs });
+  return promise;
+}
+function clearMemo(prefix) {
+  for (const key of memoStore.keys()) if (key.startsWith(prefix)) memoStore.delete(key);
+}
+
 export const api = {
   uploadImage,
   listProducts: (params = {}) => request(withQuery("/products", params)),
@@ -77,10 +98,17 @@ export const api = {
     request(`/products/${id}`, { method: "PUT", body: JSON.stringify(data) }),
   deleteProduct: (id) => request(`/products/${id}`, { method: "DELETE" }),
 
-  listCategories: () => request("/categories"),
-  createCategory: (data) => request("/categories", { method: "POST", body: JSON.stringify(data) }),
-  deleteCategory: (id) => request(`/categories/${id}`, { method: "DELETE" }),
-  searchTaxonomy: (q) => request(withQuery("/categories/taxonomy/search", { q })),
+  listCategories: () => memo("categories", 5 * 60_000, () => request("/categories")),
+  createCategory: (data) =>
+    request("/categories", { method: "POST", body: JSON.stringify(data) }).finally(() =>
+      clearMemo("categories"),
+    ),
+  deleteCategory: (id) =>
+    request(`/categories/${id}`, { method: "DELETE" }).finally(() => clearMemo("categories")),
+  searchTaxonomy: (q) =>
+    memo(`taxonomy:${q.toLowerCase()}`, 10 * 60_000, () =>
+      request(withQuery("/categories/taxonomy/search", { q })),
+    ),
 
   listUsers: (params = {}) => request(withQuery("/admin/users", params)),
   getUser: (id) => request(`/admin/users/${id}`),

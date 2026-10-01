@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
 import { Save } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 
 const STATUS_OPTIONS = ["PENDING", "IN_PRODUCTION", "SHIPPED", "DELIVERED", "CANCELLED"];
 
@@ -12,37 +12,36 @@ function toDateInputValue(iso) {
 }
 
 export function OrderStatusForm({ order }) {
-  const router = useRouter();
   const [status, setStatus] = useState(order.status);
   const [shippingCarrier, setShippingCarrier] = useState(order.shippingCarrier ?? "");
   const [trackingNumber, setTrackingNumber] = useState(order.trackingNumber ?? "");
   const [estimatedDelivery, setEstimatedDelivery] = useState(toDateInputValue(order.estimatedDelivery));
   const [isPaid, setIsPaid] = useState(order.isPaid);
-  const [saving, setSaving] = useState(false);
+  const [saving, startTransition] = useTransition();
   const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
-    setSaving(true);
     setError("");
     setSaved(false);
-    try {
-      await api.updateOrder(order.id, {
-        status,
-        shippingCarrier: shippingCarrier.trim() || null,
-        trackingNumber: trackingNumber.trim() || null,
-        estimatedDelivery: estimatedDelivery || null,
-        isPaid,
-      });
-      setSaved(true);
-      router.refresh();
-      setTimeout(() => setSaved(false), 2000);
-    } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : "Failed to update order.");
-    } finally {
-      setSaving(false);
-    }
+    // "Saving..." lasts until the refreshed order has actually rendered.
+    startTransition(async () => {
+      try {
+        await api.updateOrder(order.id, {
+          status,
+          shippingCarrier: shippingCarrier.trim() || null,
+          trackingNumber: trackingNumber.trim() || null,
+          estimatedDelivery: estimatedDelivery || null,
+          isPaid,
+        });
+        await refreshAdminData();
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } catch (err) {
+        setError(err instanceof ApiRequestError ? err.message : "Failed to update order.");
+      }
+    });
   }
 
   return (
