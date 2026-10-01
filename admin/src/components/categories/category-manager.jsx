@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Check, Plus, Search, Trash2, X } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 
 export function CategoryManager({ initialCategories }) {
   const [categories, setCategories] = useState(initialCategories);
@@ -48,6 +49,7 @@ export function CategoryManager({ initialCategories }) {
       setCategories((prev) =>
         prev.some((c) => c.id === data.id) ? prev : [...prev, data].sort((a, b) => a.name.localeCompare(b.name)),
       );
+      refreshAdminData(); // clear stale client cache; not awaited
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : "Failed to add category.");
     } finally {
@@ -60,10 +62,14 @@ export function CategoryManager({ initialCategories }) {
 
     setDeletingId(category.id);
     setError("");
+    // Optimistic: remove now, restore if the request fails.
+    const previous = categories;
+    setCategories((prev) => prev.filter((c) => c.id !== category.id));
     try {
       await api.deleteCategory(category.id);
-      setCategories((prev) => prev.filter((c) => c.id !== category.id));
+      refreshAdminData();
     } catch (err) {
+      setCategories(previous);
       setError(err instanceof ApiRequestError ? err.message : "Failed to delete category.");
     } finally {
       setDeletingId(null);

@@ -1,6 +1,6 @@
 import { prisma } from "../lib/prisma.js";
 import { ApiError } from "../utils/api-error.js";
-import { cached, invalidate } from "../lib/cache.js";
+import { bumpVersion, cached, cachedVersioned, invalidate } from "../lib/cache.js";
 import { computeSelectionKey, validateVariantPayload } from "../lib/product-variants.js";
 
 const VARIANT_INCLUDE = {
@@ -25,21 +25,17 @@ function serializeProduct(product) {
   };
 }
 
-// List queries have many possible filter/page combinations, so rather than
-// track every cached variant to invalidate on a write (which would cost
-// extra Redis commands on every read just to check a "version" key), this
-// just uses a short TTL and lets each cached listing self-expire — a
-// product edit becomes visible in a catalog listing within a minute,
-// which is an acceptable trade for a small business catalog and keeps
-// every read down to exactly one Redis command.
-const LIST_TTL_SECONDS = 60;
+// List keys embed a "products" version that every create/update/delete
+// bumps (see lib/cache.js), so a catalog edit shows up in listings right
+// away instead of after a TTL — which also lets the TTL be much longer.
+const LIST_TTL_SECONDS = 300;
 // Individual product lookups (id/slug) have exact, cheap-to-invalidate
 // keys, so these ARE actively invalidated on write, on top of a longer TTL.
 const PRODUCT_TTL_SECONDS = 300;
 
 function listCacheKey(query) {
   const { page, limit, category, search, type, isActive } = query;
-  return `products:list:${JSON.stringify({ page, limit, category, search, type, isActive })}`;
+  return `list:${JSON.stringify({ page, limit, category, search, type, isActive })}`;
 }
 
 export async function listProducts(req, res) {
@@ -54,7 +50,7 @@ export async function listProducts(req, res) {
       : {}),
   };
 
-  const body = await cached(listCacheKey(req.validated.query), LIST_TTL_SECONDS, async () => {
+  const body = await cachedVersioned("products", listCacheKey(req.validated.query), LIST_TTL_SECONDS, async () => {
     const [items, total] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -136,6 +132,7 @@ export async function createProduct(req, res) {
     },
     include: VARIANT_INCLUDE,
   });
+  await bumpVersion("products");
   res.status(201).json({ success: true, data: serializeProduct(product) });
 }
 
@@ -182,13 +179,19 @@ export async function updateProduct(req, res) {
     return tx.product.update({ where: { id }, data: productFields, include: VARIANT_INCLUDE });
   });
 
-  await invalidate(`product:id:${id}`, `product:slug:${existing.slug}`, `product:slug:${product.slug}`);
+  await Promise.all([
+    invalidate(`product:id:${id}`, `product:slug:${existing.slug}`, `product:slug:${product.slug}`),
+    bumpVersion("products"),
+  ]);
   res.json({ success: true, data: serializeProduct(product) });
 }
 
 export async function deleteProduct(req, res) {
   const { id } = req.validated.params;
   const product = await prisma.product.delete({ where: { id } });
-  await invalidate(`product:id:${id}`, `product:slug:${product.slug}`);
+  await Promise.all([
+    invalidate(`product:id:${id}`, `product:slug:${product.slug}`),
+    bumpVersion("products"),
+  ]);
   res.status(204).send();
 }

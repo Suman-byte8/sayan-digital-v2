@@ -48,3 +48,35 @@ export async function invalidate(...keys) {
     console.error(`Redis DEL failed for [${keys.join(", ")}]:`, error.message);
   }
 }
+
+// Versioned cache for list endpoints that have many query-string
+// permutations (page/limit/type/category/...). Every list key embeds a
+// per-namespace version number; bumping the version on any write makes all
+// of that namespace's old list keys unreachable at once (they just expire
+// by TTL), so lists can use a long TTL AND still show an admin's edit
+// immediately. Costs one extra Redis GET per read and one INCR per write.
+async function getVersion(redis, namespace) {
+  try {
+    return (await redis.get(`ver:${namespace}`)) ?? 0;
+  } catch (error) {
+    console.error(`Redis GET failed for version "${namespace}":`, error.message);
+    return 0;
+  }
+}
+
+export async function cachedVersioned(namespace, keyPart, ttlSeconds, fn) {
+  const redis = getRedis();
+  if (!redis) return fn();
+  const version = await getVersion(redis, namespace);
+  return cached(`${namespace}:v${version}:${keyPart}`, ttlSeconds, fn);
+}
+
+export async function bumpVersion(namespace) {
+  const redis = getRedis();
+  if (!redis) return;
+  try {
+    await redis.incr(`ver:${namespace}`);
+  } catch (error) {
+    console.error(`Redis INCR failed for version "${namespace}":`, error.message);
+  }
+}

@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useOptimistic, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Eye, Pencil, Trash2 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 
 const currencyFormatter = new Intl.NumberFormat("en-IN", {
   style: "currency",
@@ -13,26 +13,30 @@ const currencyFormatter = new Intl.NumberFormat("en-IN", {
 });
 
 export function ProductTable({ products }) {
-  const router = useRouter();
-  const [deletingId, setDeletingId] = useState(null);
+  const [, startTransition] = useTransition();
+  // The row disappears the instant Delete is confirmed; if the API call
+  // fails the transition ends and the row reappears with the error shown.
+  const [visibleProducts, removeProduct] = useOptimistic(products, (current, id) =>
+    current.filter((p) => p.id !== id),
+  );
   const [error, setError] = useState("");
 
   async function handleDelete(product) {
     if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
 
-    setDeletingId(product.id);
     setError("");
-    try {
-      await api.deleteProduct(product.id);
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : "Failed to delete product.");
-    } finally {
-      setDeletingId(null);
-    }
+    startTransition(async () => {
+      removeProduct(product.id);
+      try {
+        await api.deleteProduct(product.id);
+        await refreshAdminData();
+      } catch (err) {
+        setError(err instanceof ApiRequestError ? err.message : "Failed to delete product.");
+      }
+    });
   }
 
-  if (products.length === 0) {
+  if (visibleProducts.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-border p-10 text-center text-sm text-muted-foreground">
         No products yet. Click &ldquo;Add product&rdquo; to create the first one.
@@ -63,7 +67,7 @@ export function ProductTable({ products }) {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {products.map((product) => (
+            {visibleProducts.map((product) => (
               <tr key={product.id}>
                 <td className="px-4 py-3">
                   <Link href={`/products/${product.id}`}>
@@ -128,11 +132,10 @@ export function ProductTable({ products }) {
                     <button
                       type="button"
                       onClick={() => handleDelete(product)}
-                      disabled={deletingId === product.id}
-                      className="flex items-center gap-1 text-sm font-medium text-destructive hover:underline disabled:opacity-50"
+                      className="flex items-center gap-1 text-sm font-medium text-destructive hover:underline"
                     >
                       <Trash2 size={14} />
-                      {deletingId === product.id ? "Deleting…" : "Delete"}
+                      Delete
                     </button>
                   </div>
                 </td>

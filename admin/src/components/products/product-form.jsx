@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { refreshAdminData } from "@/app/actions";
 import { Plus, Save, Tags, Trash2, Wand2, X } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
 import { ImageUploader } from "@/components/products/image-uploader";
@@ -225,8 +226,9 @@ export function ProductForm({ mode, productId, initialData }) {
       } else {
         await api.updateProduct(productId, payload);
       }
-      router.push("/products");
-      router.refresh();
+      // One round trip: clears the client cache (so the list and this
+      // product's pages are fresh) and navigates to the list.
+      await refreshAdminData("/products");
     } catch (error) {
       if (error instanceof ApiRequestError) {
         setSubmitError(error.message);

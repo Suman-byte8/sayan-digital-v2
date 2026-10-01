@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
+import compression from "compression";
 import morgan from "morgan";
 import { env } from "./config/env.js";
 import { prisma } from "./lib/prisma.js";
@@ -27,6 +28,8 @@ import { errorHandler } from "./middleware/error-handler.js";
 const app = express();
 
 app.use(helmet());
+// gzip JSON responses (product/order lists are large and highly compressible).
+app.use(compression());
 app.use(
   cors({
     // credentials: true + an explicit origin list (not "*") is required

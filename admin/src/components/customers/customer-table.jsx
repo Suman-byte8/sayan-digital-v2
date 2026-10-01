@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Eye, Trash2 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 
 const dateFormatter = new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" });
 
@@ -18,7 +18,7 @@ function initialsOf(name) {
 }
 
 export function CustomerTable({ customers }) {
-  const router = useRouter();
+  const [, startTransition] = useTransition();
   const [deletingId, setDeletingId] = useState(null);
   const [error, setError] = useState("");
 
@@ -27,14 +27,18 @@ export function CustomerTable({ customers }) {
 
     setDeletingId(customer.id);
     setError("");
-    try {
-      await api.deleteUser(customer.id);
-      router.refresh();
-    } catch (err) {
-      setError(err instanceof ApiRequestError ? err.message : "Failed to delete customer.");
-    } finally {
-      setDeletingId(null);
-    }
+    // Not optimistic: deleting an account cascades to orders/addresses, so
+    // the row stays (showing "Deleting...") until the server confirms.
+    startTransition(async () => {
+      try {
+        await api.deleteUser(customer.id);
+        await refreshAdminData();
+      } catch (err) {
+        setError(err instanceof ApiRequestError ? err.message : "Failed to delete customer.");
+      } finally {
+        setDeletingId(null);
+      }
+    });
   }
 
   if (customers.length === 0) {

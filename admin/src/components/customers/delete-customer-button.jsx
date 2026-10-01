@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
 import { api, ApiRequestError } from "@/lib/api";
+import { refreshAdminData } from "@/app/actions";
 
 export function DeleteCustomerButton({ id, name }) {
-  const router = useRouter();
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,8 +16,8 @@ export function DeleteCustomerButton({ id, name }) {
     setError("");
     try {
       await api.deleteUser(id);
-      router.push("/customers");
-      router.refresh();
+      // Clears the client cache and navigates to the list in one round trip.
+      await refreshAdminData("/customers");
     } catch (err) {
       setError(err instanceof ApiRequestError ? err.message : "Failed to delete customer.");
       setDeleting(false);
