@@ -132,6 +132,15 @@ export function ProductForm({ mode, productId, initialData }) {
     );
     setOptionValueDrafts((prev) => ({ ...prev, [index]: "" }));
   }
+  // Options with any not-yet-added typed value merged in, so a value that
+  // was typed but never confirmed with Enter/Add still counts instead of
+  // leaving "Generate variants" disabled with no explanation.
+  function optionsWithDrafts() {
+    return variantOptions.map((o, i) => {
+      const draft = (optionValueDrafts[i] ?? "").trim();
+      return draft && !o.values.includes(draft) ? { ...o, values: [...o.values, draft] } : o;
+    });
+  }
   function handleRemoveOptionValue(index, value) {
     setVariantOptions((prev) =>
       prev.map((o, i) => (i === index ? { ...o, values: o.values.filter((v) => v !== value) } : o)),
@@ -144,8 +153,11 @@ export function ProductForm({ mode, productId, initialData }) {
   // actually sellable (e.g. a frame size that doesn't come in every
   // thickness) and fills in price/stock for the rest.
   function handleGenerateVariants() {
-    const validOptions = variantOptions.filter((o) => o.name.trim() && o.values.length > 0);
+    const merged = optionsWithDrafts();
+    const validOptions = merged.filter((o) => o.name.trim() && o.values.length > 0);
     if (validOptions.length === 0) return;
+    setVariantOptions(merged);
+    setOptionValueDrafts({});
 
     const existingKeys = new Set(variants.map((v) => computeSelectionKey(v.selection)));
     const generated = cartesianProduct(validOptions).filter(
@@ -465,9 +477,17 @@ export function ProductForm({ mode, productId, initialData }) {
                         handleAddOptionValue(index);
                       }
                     }}
-                    placeholder="Add value, press Enter"
-                    className="w-40 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none"
+                    placeholder="Type a value, e.g. 4x6"
+                    className="w-44 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground placeholder:text-muted-foreground focus:border-brand focus:outline-none"
                   />
+                  <button
+                    type="button"
+                    onClick={() => handleAddOptionValue(index)}
+                    disabled={!(optionValueDrafts[index] ?? "").trim()}
+                    className="rounded-md border border-border px-2 py-1 text-xs font-medium text-foreground hover:bg-muted disabled:opacity-40"
+                  >
+                    Add value
+                  </button>
                 </div>
               </div>
             ))}
@@ -475,7 +495,7 @@ export function ProductForm({ mode, productId, initialData }) {
             <button
               type="button"
               onClick={handleGenerateVariants}
-              disabled={!variantOptions.some((o) => o.name.trim() && o.values.length > 0)}
+              disabled={!optionsWithDrafts().some((o) => o.name.trim() && o.values.length > 0)}
               title="Add an option name and at least one value first"
               className="flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-xs font-medium text-brand-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
             >
@@ -483,8 +503,9 @@ export function ProductForm({ mode, productId, initialData }) {
               Generate variants from options above
             </button>
             <p className="mt-1.5 text-[11px] text-muted-foreground">
-              This creates the rows below where you set each combination&rsquo;s price, stock
-              and photos — safe to click again after adding more values.
+              The option name is the category (e.g. &ldquo;Size&rdquo;); the values are its
+              choices (e.g. 4x6, 8x12). Price is set per combination in the rows this creates
+              — safe to click again after adding more values.
             </p>
           </div>
         )}
