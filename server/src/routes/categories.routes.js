@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../utils/async-handler.js";
+import { requireAdmin } from "../middleware/require-admin.js";
 import { validate } from "../middleware/validate.js";
 import {
   createCategorySchema,
@@ -23,10 +24,12 @@ router.get(
   asyncHandler(searchTaxonomyCategories),
 );
 
-router.post("/", validate(createCategorySchema, "body"), asyncHandler(createCategory));
+// Listing is public; creating/deleting categories needs a signed-in admin.
+router.post("/", requireAdmin, validate(createCategorySchema, "body"), asyncHandler(createCategory));
 
 router.delete(
   "/:id",
+  requireAdmin,
   validate(categoryIdParamSchema, "params"),
   asyncHandler(deleteCategory),
 );
