@@ -91,7 +91,9 @@ export function InvoiceSheet({ inv, calc, actions, sheetRef }) {
             type="button"
             onClick={onLogoClick}
             title="Change logo"
-            className="flex h-[60px] max-w-[120px] min-w-[60px] shrink-0 items-center justify-center overflow-hidden"
+            className={`flex shrink-0 items-center justify-center overflow-hidden ${
+              inv.business.logoUrl ? "h-[104px] max-w-[270px]" : "size-[60px]"
+            }`}
           >
             {inv.business.logoUrl ? (
               // eslint-disable-next-line @next/next/no-img-element -- arbitrary uploaded/remote logo, must stay a plain img for the PDF capture
@@ -100,7 +102,7 @@ export function InvoiceSheet({ inv, calc, actions, sheetRef }) {
                 alt="Logo"
                 crossOrigin="anonymous"
                 referrerPolicy="no-referrer"
-                className="h-full w-auto max-w-[120px] object-contain"
+                className="h-full w-auto max-w-[270px] object-contain"
               />
             ) : (
               <span data-no-pdf className="flex size-full items-center justify-center rounded-full border-2 border-dashed border-neutral-300 text-neutral-400">
@@ -108,6 +110,9 @@ export function InvoiceSheet({ inv, calc, actions, sheetRef }) {
               </span>
             )}
           </button>
+          {/* The logo stands alone; the typed name only appears as a fallback
+              when there is no logo, so the header is never empty. */}
+          {!inv.business.logoUrl && (
           <div className="w-[190px]">
             <Field
               value={inv.business.nameLine1}
@@ -123,6 +128,7 @@ export function InvoiceSheet({ inv, calc, actions, sheetRef }) {
               style={{ color: accent }}
             />
           </div>
+          )}
         </div>
 
         <div className="w-[300px] text-right">
