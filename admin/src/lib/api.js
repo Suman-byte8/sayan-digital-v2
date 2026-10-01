@@ -126,6 +126,10 @@ export const api = {
   deleteInvoice: (id) => request(`/admin/invoices/${id}`, { method: "DELETE" }),
   uploadInvoicePdf,
 
+  getInvoiceSettings: () => request("/admin/settings/invoice"),
+  updateInvoiceSettings: (data) =>
+    request("/admin/settings/invoice", { method: "PUT", body: JSON.stringify(data) }),
+
   listTasks: (params = {}) => request(withQuery("/admin/tasks", params)),
   getTask: (id) => request(`/admin/tasks/${id}`),
   createTask: (data) => request("/admin/tasks", { method: "POST", body: JSON.stringify(data) }),

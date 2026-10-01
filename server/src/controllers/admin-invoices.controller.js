@@ -1,6 +1,7 @@
 import { prisma } from "../lib/prisma.js";
 import { ApiError } from "../utils/api-error.js";
 import { calcInvoice } from "../lib/invoice-calc.js";
+import { loadInvoiceSettings } from "../lib/invoice-settings.js";
 import { deleteImageFromDrive, uploadFileToDrive } from "../lib/google-drive.js";
 
 // No auth - same trust model as the rest of the admin-facing endpoints
@@ -47,12 +48,12 @@ function rethrowDuplicateNumber(error) {
   throw error;
 }
 
-// "INV-0007" -> "INV-0008" (keeps the prefix and zero padding of the most
-// recent invoice); falls back to INV-0001.
-function nextNumberAfter(last) {
+// "INV-0007" -> "INV-0008" (keeps the zero padding of the most recent
+// invoice with that prefix); falls back to <prefix>0001.
+function nextNumberAfter(last, prefix) {
   const match = last?.match(/^(.*?)(\d+)$/);
-  if (!match) return "INV-0001";
-  const [, prefix, digits] = match;
+  if (!match) return `${prefix}0001`;
+  const [, , digits] = match;
   return `${prefix}${String(Number(digits) + 1).padStart(digits.length, "0")}`;
 }
 
@@ -99,23 +100,25 @@ export async function listInvoices(req, res) {
   });
 }
 
-// Pre-fills a new invoice: next invoice number + the business/payment/
-// terms block from the most recent invoice, so those never need retyping.
+// Pre-fills a new invoice from the Settings page (business details, payment
+// info, GST/terms defaults) plus the next number for the configured prefix.
 export async function getInvoiceDefaults(req, res) {
+  const settings = await loadInvoiceSettings();
+  const { invoicePrefix, ...defaults } = settings.defaults;
+
   const last = await prisma.invoice.findFirst({
+    where: { invoiceNumber: { startsWith: invoicePrefix } },
     orderBy: { createdAt: "desc" },
-    select: { invoiceNumber: true, business: true, paymentInfo: true, terms: true, thankYou: true, accentColor: true },
+    select: { invoiceNumber: true },
   });
 
   res.json({
     success: true,
     data: {
-      invoiceNumber: nextNumberAfter(last?.invoiceNumber),
-      business: last?.business ?? null,
-      paymentInfo: last?.paymentInfo ?? null,
-      terms: last?.terms ?? null,
-      thankYou: last?.thankYou ?? null,
-      accentColor: last?.accentColor ?? null,
+      invoiceNumber: nextNumberAfter(last?.invoiceNumber, invoicePrefix),
+      business: settings.business,
+      paymentInfo: settings.paymentInfo,
+      ...defaults,
     },
   });
 }

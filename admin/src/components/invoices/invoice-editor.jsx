@@ -525,7 +525,7 @@ export function InvoiceEditor({ initial, invoiceId }) {
               )}
             </div>
             <p className="text-xs text-muted-foreground">
-              Business name, address and bank details are edited on the invoice and carried over to your next one.
+              New invoices start from your <Link href="/settings" className="text-brand hover:underline">Settings</Link> (logo, address, contact, payment info). Edits here only change this invoice.
             </p>
           </Panel>
         </div>

@@ -1,8 +1,8 @@
 import { addDaysYmd, todayYmd } from "@/lib/invoice-format";
 
-// Shop details used the very first time, before any invoice exists to copy
-// from. After that, each new invoice starts from the previous one's
-// business/payment/terms (see the server's /invoices/defaults).
+// Used only if the server's /invoices/defaults can't be reached. Normally a
+// new invoice starts from the Settings page (business, payment info,
+// terms, GST defaults) - see server/src/lib/invoice-settings.js.
 const FALLBACK_BUSINESS = {
   nameLine1: "Sayan",
   nameLine2: "Digital.",
@@ -26,19 +26,19 @@ export function blankInvoice(defaults) {
     clientAddress: "",
     clientGstin: "",
     issueDate,
-    dueDate: addDaysYmd(issueDate, 7),
+    dueDate: addDaysYmd(issueDate, defaults?.dueDays ?? 7),
     items: [{ ...EMPTY_ITEM }],
-    gstEnabled: false,
-    gstMode: "INTRA",
-    gstRate: 18,
-    pricesIncludeGst: false,
+    gstEnabled: defaults?.gstEnabled ?? false,
+    gstMode: defaults?.gstMode ?? "INTRA",
+    gstRate: defaults?.gstRate ?? 18,
+    pricesIncludeGst: defaults?.pricesIncludeGst ?? false,
     discountType: "PERCENT",
     discountValue: "",
-    roundOff: true,
+    roundOff: defaults?.roundOff ?? true,
     amountPaid: "",
     business: { ...FALLBACK_BUSINESS, ...(defaults?.business ?? {}) },
     paymentInfo: { ...EMPTY_PAYMENT, ...(defaults?.paymentInfo ?? {}) },
-    notes: "",
+    notes: defaults?.notes ?? "",
     terms: defaults?.terms ?? "Payment is due by the date shown above.",
     thankYou: defaults?.thankYou ?? "Thank you for your Business",
     accentColor: defaults?.accentColor ?? "#4a3f94",

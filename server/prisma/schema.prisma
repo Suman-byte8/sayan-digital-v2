@@ -469,3 +469,14 @@ model Invoice {
   @@index([status])
   @@map("invoices")
 }
+
+// Key-value store for admin-editable settings (currently just "invoice":
+// business details, payment info and defaults used to pre-fill new
+// invoices). One JSON row per key so new settings need no migration.
+model AdminSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+
+  @@map("admin_settings")
+}

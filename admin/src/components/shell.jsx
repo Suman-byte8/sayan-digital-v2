@@ -6,6 +6,7 @@ const NAV_LINKS = [
   { label: "Invoices", href: "/invoices" },
   { label: "Customers", href: "/customers" },
   { label: "Tasks", href: "/tasks" },
+  { label: "Settings", href: "/settings" },
 ];
 
 export function Shell({ children }) {
