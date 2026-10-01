@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { ArrowLeft, Mail, Phone, Building2, FileText, Coins } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
 import { MembershipToggle } from "@/components/customers/membership-toggle";
 
@@ -51,6 +52,7 @@ export default async function CustomerDetailPage({ params }) {
     const result = await api.getUser(id);
     customer = result.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (error instanceof ApiRequestError && error.status === 404) {
       notFound();
     }

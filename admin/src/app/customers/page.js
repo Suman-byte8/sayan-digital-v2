@@ -1,6 +1,8 @@
+import { unstable_rethrow } from "next/navigation";
 import Link from "next/link";
 import { Search } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { CustomerTable } from "@/components/customers/customer-table";
 
 // Always fetch fresh data — this is an admin tool, never statically cached.
@@ -23,6 +25,7 @@ export default async function CustomersPage({ searchParams }) {
     customers = result.data;
     pagination = result.pagination;
   } catch (error) {
+    unstable_rethrow(error);
     loadError = error instanceof ApiRequestError ? error.message : "Failed to load customers.";
   }
 

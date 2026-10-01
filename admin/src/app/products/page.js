@@ -1,6 +1,8 @@
+import { unstable_rethrow } from "next/navigation";
 import Link from "next/link";
 import { Plus, Tags } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { ProductTable } from "@/components/products/product-table";
 
 // Always fetch fresh data — this is an admin tool, never statically cached.
@@ -26,6 +28,7 @@ export default async function ProductsPage({ searchParams }) {
     const result = await api.listProducts({ limit: 100, type });
     products = result.data;
   } catch (error) {
+    unstable_rethrow(error);
     loadError = error instanceof ApiRequestError ? error.message : "Failed to load products.";
   }
 

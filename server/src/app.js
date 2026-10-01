@@ -22,10 +22,16 @@ import adminOrdersRouter from "./routes/admin-orders.routes.js";
 import adminTasksRouter from "./routes/admin-tasks.routes.js";
 import adminInvoicesRouter from "./routes/admin-invoices.routes.js";
 import adminSettingsRouter from "./routes/admin-settings.routes.js";
+import adminAuthRouter from "./routes/admin-auth.routes.js";
+import { requireAdmin } from "./middleware/require-admin.js";
 import { notFoundHandler } from "./middleware/not-found.js";
 import { errorHandler } from "./middleware/error-handler.js";
 
 const app = express();
+
+// Behind Render's proxy: trust one hop so req.ip is the real client (used by
+// the admin login rate limiter) instead of the proxy.
+app.set("trust proxy", 1);
 
 app.use(helmet());
 // gzip JSON responses (product/order lists are large and highly compressible).
@@ -60,7 +66,8 @@ app.get("/health/db", async (req, res) => {
 });
 
 app.use("/api/products", productsRouter);
-app.use("/api/uploads", uploadsRouter);
+// Admin-only: uploading files is not something the storefront does.
+app.use("/api/uploads", requireAdmin, uploadsRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/profile", profileRouter);
@@ -72,6 +79,8 @@ app.use("/api/payment-methods", paymentMethodsRouter);
 app.use("/api/proofs", proofsRouter);
 // Admin panel only — read (+ delete) access to customer accounts. Unauthenticated,
 // same trust model as the rest of the admin-facing endpoints above.
+app.use("/api/admin/auth", adminAuthRouter); // login is public; the rest of it guards itself
+app.use("/api/admin", requireAdmin); // everything below here needs a signed-in admin
 app.use("/api/admin/users", adminUsersRouter);
 app.use("/api/admin/orders", adminOrdersRouter);
 app.use("/api/admin/tasks", adminTasksRouter);

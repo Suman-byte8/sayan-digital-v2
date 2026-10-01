@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { asyncHandler } from "../utils/async-handler.js";
+import { requireAdmin } from "../middleware/require-admin.js";
 import { validate } from "../middleware/validate.js";
 import {
   createProductSchema,
@@ -36,10 +37,12 @@ router.get(
   asyncHandler(getProduct),
 );
 
-router.post("/", validate(createProductSchema, "body"), asyncHandler(createProduct));
+// Reads are public (the storefront); every write needs a signed-in admin.
+router.post("/", requireAdmin, validate(createProductSchema, "body"), asyncHandler(createProduct));
 
 router.put(
   "/:id",
+  requireAdmin,
   validate(productIdParamSchema, "params"),
   validate(updateProductSchema, "body"),
   asyncHandler(updateProduct),
@@ -47,6 +50,7 @@ router.put(
 
 router.delete(
   "/:id",
+  requireAdmin,
   validate(productIdParamSchema, "params"),
   asyncHandler(deleteProduct),
 );

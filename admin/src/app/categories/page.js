@@ -1,6 +1,8 @@
+import { unstable_rethrow } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { CategoryManager } from "@/components/categories/category-manager";
 
 export const dynamic = "force-dynamic";
@@ -17,6 +19,7 @@ export default async function CategoriesPage() {
     const result = await api.listCategories();
     categories = result.data;
   } catch (error) {
+    unstable_rethrow(error);
     loadError = error instanceof ApiRequestError ? error.message : "Failed to load categories.";
   }
 

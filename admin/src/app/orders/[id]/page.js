@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, unstable_rethrow } from "next/navigation";
 import { ArrowLeft, Mail, Phone, MapPin } from "lucide-react";
-import { api, ApiRequestError } from "@/lib/api";
+import { ApiRequestError } from "@/lib/api";
+import { api } from "@/lib/api-server";
 import { OrderStatusForm } from "@/components/orders/order-status-form";
 import { ORDER_STATUS_STYLES } from "@/components/orders/order-table";
 
@@ -27,6 +28,7 @@ export default async function OrderDetailPage({ params }) {
     const result = await api.getOrder(id);
     order = result.data;
   } catch (error) {
+    unstable_rethrow(error);
     if (error instanceof ApiRequestError && error.status === 404) {
       notFound();
     }
