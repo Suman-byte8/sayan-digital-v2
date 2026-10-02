@@ -165,31 +165,31 @@ export function OrdersTab({ orders, onSelectTab }) {
                   {/* Status Badge */}
                   <div className="flex items-center gap-2">
                     {isPending && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/10 px-3 py-1 text-[11px] font-medium text-slate-700 dark:text-slate-400">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-500/10 px-3 py-1 text-[12px] font-medium text-slate-700 dark:text-slate-400">
                         <Clock size={12} />
                         Order Received
                       </span>
                     )}
                     {isCancelled && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1 text-[11px] font-medium text-red-700 dark:text-red-400">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-red-500/10 px-3 py-1 text-[12px] font-medium text-red-700 dark:text-red-400">
                         <XCircle size={12} />
                         Cancelled
                       </span>
                     )}
                     {isInProduction && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-[11px] font-medium text-amber-700 dark:text-amber-400">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1 text-[12px] font-medium text-amber-700 dark:text-amber-400">
                         <Clock size={12} className="animate-spin" />
                         In Printing
                       </span>
                     )}
                     {isShipped && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[11px] font-medium text-blue-700 dark:text-blue-400">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-500/10 px-3 py-1 text-[12px] font-medium text-blue-700 dark:text-blue-400">
                         <Truck size={12} />
                         Out for Delivery
                       </span>
                     )}
                     {isDelivered && (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-3 py-1 text-[12px] font-medium text-emerald-700 dark:text-emerald-400">
                         <CheckCircle2 size={12} />
                         Delivered
                       </span>
@@ -216,7 +216,7 @@ export function OrdersTab({ orders, onSelectTab }) {
                       <button
                         type="button"
                         onClick={() => handleCopyTracking(order.id, order.trackingNumber)}
-                        className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 text-[11px] text-muted-foreground transition-colors hover:text-foreground"
+                        className="inline-flex items-center gap-1 rounded-md border border-border bg-card px-2.5 py-1 text-[12px] text-muted-foreground transition-colors hover:text-foreground"
                       >
                         {copiedId === order.id ? (
                           <>
@@ -276,7 +276,7 @@ export function OrdersTab({ orders, onSelectTab }) {
                       ₹{order.totalAmount.toLocaleString("en-IN")}
                     </span>
                     <span
-                      className={`text-[11px] px-2 py-0.5 rounded-full border ${
+                      className={`text-[12px] px-2 py-0.5 rounded-full border ${
                         order.isPaid
                           ? "text-emerald-700 bg-emerald-50 border-emerald-200"
                           : "text-muted-foreground bg-muted border-border"

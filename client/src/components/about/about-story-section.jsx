@@ -32,7 +32,7 @@ export function AboutStorySection() {
             </span>
             <div>
               <p className="text-[13px] font-semibold text-foreground">100% In-House</p>
-              <p className="text-[11px] leading-snug text-muted-foreground">
+              <p className="text-[12px] leading-snug text-muted-foreground">
                 Calibrated color profiles &amp; tactile finishing
               </p>
             </div>

@@ -217,7 +217,7 @@ export function CheckoutView() {
             </p>
             <Link
               href="/profile"
-              className="mt-1 inline-block text-[11px] text-(--brand) hover:underline"
+              className="mt-1 inline-block text-[12px] text-(--brand) hover:underline"
             >
               Edit in profile
             </Link>
@@ -232,7 +232,7 @@ export function CheckoutView() {
                 <button
                   type="button"
                   onClick={() => setShowAddressForm((v) => !v)}
-                  className="flex items-center gap-1 text-[11px] font-medium text-(--brand) hover:underline"
+                  className="flex items-center gap-1 text-[12px] font-medium text-(--brand) hover:underline"
                 >
                   <Plus size={12} />
                   Add new address
@@ -472,9 +472,9 @@ export function CheckoutView() {
                   {item.product.name}
                 </p>
                 {item.variantLabel && (
-                  <p className="truncate text-[11px] text-muted-foreground">{item.variantLabel}</p>
+                  <p className="truncate text-[12px] text-muted-foreground">{item.variantLabel}</p>
                 )}
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[12px] text-muted-foreground">
                   Qty: {item.quantity}
                 </p>
               </div>

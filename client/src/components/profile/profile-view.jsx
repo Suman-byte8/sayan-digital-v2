@@ -223,11 +223,11 @@ export function ProfileView() {
               <p className="mt-1 text-xs text-muted-foreground">
                 {user.email} {user.phone ? `· ${user.phone}` : ""}
               </p>
-              <p className="mt-0.5 text-[11px] text-muted-foreground/80">
+              <p className="mt-0.5 text-[12px] text-muted-foreground/80">
                 Customer at Sayan Digital since {memberSince} · Malda, WB
               </p>
               {avatarError && (
-                <p className="mt-1 text-[11px] font-medium text-destructive">{avatarError}</p>
+                <p className="mt-1 text-[12px] font-medium text-destructive">{avatarError}</p>
               )}
             </div>
           </div>
@@ -243,7 +243,7 @@ export function ProfileView() {
                 <div className="flex items-center gap-1.5">
                   <span className="font-serif text-lg font-semibold text-muted-foreground">Coins</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground">Coming soon</p>
+                <p className="text-[12px] text-muted-foreground">Coming soon</p>
               </div>
             </div>
 
@@ -261,9 +261,9 @@ export function ProfileView() {
                   <span className="font-serif text-lg font-semibold text-foreground">
                     {activeOrdersCount}
                   </span>
-                  <span className="text-[11px] font-medium text-muted-foreground">In-Transit</span>
+                  <span className="text-[12px] font-medium text-muted-foreground">In-Transit</span>
                 </div>
-                <p className="text-[11px] text-muted-foreground">
+                <p className="text-[12px] text-muted-foreground">
                   {orders.length} Total orders
                 </p>
               </div>
@@ -330,7 +330,7 @@ export function ProfileView() {
             <div className="space-y-6">
               {NAV_GROUPS.map((group) => (
                 <div key={group.title}>
-                  <p className="px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  <p className="px-3 text-[12px] font-semibold uppercase tracking-wider text-muted-foreground">
                     {group.title}
                   </p>
                   <nav className="mt-2 space-y-1">

@@ -36,14 +36,14 @@ export function ServiceDetailRow({ service, reversed = false }) {
         delay={80}
         className={cn("relative z-10 flex flex-col items-start lg:col-span-6", reversed && "lg:order-1")}
       >
-        <p className="text-[11px] font-bold tracking-widest text-(--gold) uppercase">
+        <p className="text-[12px] font-bold tracking-widest text-(--gold) uppercase">
           {service.tag}
         </p>
         <h2 className="heading-section mt-2 text-3xl md:text-4xl">{service.title}</h2>
         <p className="body-copy mt-4">{service.description}</p>
 
         <div className="mt-5 w-full rounded-xl bg-(--paper-muted) p-4">
-          <p className="text-[11px] font-bold tracking-wide text-(--brand) uppercase">
+          <p className="text-[12px] font-bold tracking-wide text-(--brand) uppercase">
             What&apos;s Included
           </p>
           <ul className="mt-3 grid grid-cols-1 gap-x-4 gap-y-2 sm:grid-cols-2">

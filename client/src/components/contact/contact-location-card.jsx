@@ -20,7 +20,7 @@ export function ContactLocationCard() {
             referrerPolicy="no-referrer-when-downgrade"
             className="size-full border-0"
           />
-          <span className="pointer-events-none absolute top-4 left-4 rounded-md bg-card/90 px-3 py-1 text-[11px] font-bold tracking-widest text-(--brand) uppercase backdrop-blur-sm">
+          <span className="pointer-events-none absolute top-4 left-4 rounded-md bg-card/90 px-3 py-1 text-[12px] font-bold tracking-widest text-(--brand) uppercase backdrop-blur-sm">
             Malda Studio
           </span>
         </div>
@@ -31,7 +31,7 @@ export function ContactLocationCard() {
               <MapPin size={17} />
             </span>
             <div>
-              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+              <p className="text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
                 Studio Address
               </p>
               <p className="mt-0.5 text-[14px] font-medium text-foreground">
@@ -45,7 +45,7 @@ export function ContactLocationCard() {
               <Clock size={17} />
             </span>
             <div>
-              <p className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+              <p className="text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
                 Working Hours
               </p>
               <p className="mt-0.5 text-[14px] font-medium text-foreground">{BRAND.hours}</p>
@@ -55,7 +55,7 @@ export function ContactLocationCard() {
           <div className="rounded-xl bg-(--paper-muted) p-4">
             <div className="flex items-center gap-2">
               <Palette size={16} className="text-(--gold)" />
-              <p className="text-[11px] font-semibold tracking-wide text-foreground uppercase">
+              <p className="text-[12px] font-semibold tracking-wide text-foreground uppercase">
                 In-Studio Capabilities
               </p>
             </div>

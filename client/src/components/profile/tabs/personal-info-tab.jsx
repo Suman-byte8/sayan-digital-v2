@@ -109,7 +109,7 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
                 value={profile.email}
                 className="mt-1.5 w-full cursor-not-allowed rounded-xl border border-border bg-muted p-2.5 text-xs text-muted-foreground"
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">
+              <p className="mt-1 text-[12px] text-muted-foreground">
                 Your sign-in email — contact us to change it.
               </p>
             </div>
@@ -123,7 +123,7 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 className="mt-1.5 w-full rounded-xl border border-border bg-background p-2.5 text-xs text-foreground focus:border-(--brand) focus:outline-none focus:ring-1 focus:ring-(--brand)"
               />
-              <p className="mt-1 text-[11px] text-muted-foreground">Used for delivery courier coordination.</p>
+              <p className="mt-1 text-[12px] text-muted-foreground">Used for delivery courier coordination.</p>
             </div>
           </div>
         </div>
@@ -163,7 +163,7 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
               />
             </div>
           </div>
-          <p className="mt-3 text-[11px] text-muted-foreground">
+          <p className="mt-3 text-[12px] text-muted-foreground">
             Providing your registered GSTIN ensures all commercial printing, ID cards, and corporate
             gift purchases generate a valid B2B tax invoice with eligible input credit.
           </p>
@@ -193,7 +193,7 @@ export function PersonalInfoTab({ profile, onUpdateProfile }) {
             <Key size={16} className="text-(--brand)" />
             <div>
               <h4 className="text-sm font-semibold text-foreground">Password & Security</h4>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-[12px] text-muted-foreground">
                 Manage your credentials and login safety.
               </p>
             </div>

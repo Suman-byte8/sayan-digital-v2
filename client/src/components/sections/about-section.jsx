@@ -11,12 +11,12 @@ const FEATURES = [
 
 export function AboutSection() {
   return (
-    <section id="about" className="section-padding scroll-mt-24 bg-background">
+    <section id="about" className="section-padding scroll-mt-24 overflow-x-clip bg-background">
       <div className="container-premium grid items-center gap-16 lg:grid-cols-2">
         <Reveal className="relative order-2 lg:order-1">
           {/* Soft glow + floating decorative shape behind the image */}
           <div
-            className="absolute -inset-8 -z-10 rounded-[3rem] bg-(--brand)/10 blur-3xl"
+            className="absolute -inset-8 -z-10 rounded-2xl bg-(--brand)/10 blur-3xl"
             aria-hidden
           />
           <div
@@ -24,7 +24,7 @@ export function AboutSection() {
             aria-hidden
           />
 
-          <div className="relative mx-auto aspect-4/3 w-full max-w-md overflow-hidden rounded-3xl shadow-premium-lg">
+          <div className="relative mx-auto aspect-4/3 w-full max-w-md overflow-hidden rounded-2xl shadow-premium-lg">
             <video
               src="https://res.cloudinary.com/iopfstic/video/upload/v1789062620/animate_this_mug_product_20260910231046.mp4"
               autoPlay
@@ -46,7 +46,7 @@ export function AboutSection() {
 
           <div className="absolute -right-6 -bottom-8 flex aspect-square w-32 flex-col items-center justify-center gap-1 rounded-2xl border border-border bg-card shadow-premium-lg sm:w-40">
             <MapPin size={22} className="text-(--brand)" />
-            <span className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+            <span className="text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
               Malda, WB
             </span>
           </div>

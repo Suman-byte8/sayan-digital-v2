@@ -31,7 +31,7 @@ export function MobileMenu({ open, onNavigate }) {
                 initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.3, delay: i * 0.05, ease: "easeOut" }}
-                className="border-b border-border py-3 text-[15px] text-foreground/80"
+                className="border-b border-border py-3 text-[16px] text-foreground/80"
               >
                 {link.label}
               </motion.a>
@@ -43,7 +43,7 @@ export function MobileMenu({ open, onNavigate }) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: NAV_LINKS.length * 0.05, ease: "easeOut" }}
-              className="py-3 text-[15px] font-semibold text-(--brand)"
+              className="py-3 text-[16px] font-semibold text-(--brand)"
             >
               {STATIONERY_LINK.label}
             </motion.a>
@@ -54,14 +54,14 @@ export function MobileMenu({ open, onNavigate }) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: (NAV_LINKS.length + 0.5) * 0.05, ease: "easeOut" }}
-              className="flex items-center justify-between border-t border-border/70 py-3 text-[15px] font-medium text-foreground"
+              className="flex items-center justify-between border-t border-border/70 py-3 text-[16px] font-medium text-foreground"
             >
               <span className="flex items-center gap-2">
                 <Heart size={16} />
                 Wishlist
               </span>
               {wishlistItems.length > 0 && (
-                <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[11px] font-semibold text-(--brand)">
+                <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[12px] font-semibold text-(--brand)">
                   {wishlistItems.length}
                 </span>
               )}
@@ -73,14 +73,14 @@ export function MobileMenu({ open, onNavigate }) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: (NAV_LINKS.length + 0.75) * 0.05, ease: "easeOut" }}
-              className="flex items-center justify-between border-b border-border/70 py-3 text-[15px] font-medium text-foreground"
+              className="flex items-center justify-between border-b border-border/70 py-3 text-[16px] font-medium text-foreground"
             >
               <span className="flex items-center gap-2">
                 <ShoppingCart size={16} />
                 Cart
               </span>
               {cartCount > 0 && (
-                <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[11px] font-semibold text-(--brand)">
+                <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[12px] font-semibold text-(--brand)">
                   {cartCount}
                 </span>
               )}
@@ -92,10 +92,10 @@ export function MobileMenu({ open, onNavigate }) {
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: (NAV_LINKS.length + 1) * 0.05, ease: "easeOut" }}
-              className="flex items-center justify-between py-3 text-[15px] font-medium text-foreground"
+              className="flex items-center justify-between py-3 text-[16px] font-medium text-foreground"
             >
               <span>My Account & Orders</span>
-              <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[11px] font-semibold text-(--brand)">
+              <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[12px] font-semibold text-(--brand)">
                 VIP
               </span>
             </motion.a>

@@ -1,3 +1,6 @@
+// NOT SHOWN ON THE SITE: the home page no longer renders TestimonialsSection
+// (app/(site)/page.js) because this is still placeholder copy. Put real, permitted
+// customer reviews here, then add <TestimonialsSection /> back to the page.
 // Placeholder content only — no real ratings, review counts or customer
 // details exist yet. Swap GOOGLE_RATING and TESTIMONIALS for live data once
 // the Google Business Profile is connected; the shape is intentionally

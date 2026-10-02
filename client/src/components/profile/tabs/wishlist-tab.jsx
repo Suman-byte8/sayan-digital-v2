@@ -101,7 +101,7 @@ export function WishlistTab({ wishlist, onRemove }) {
 
                 {/* Details */}
                 <div className="flex flex-1 flex-col p-4">
-                  <span className="text-[11px] font-medium text-(--brand)">{item.category}</span>
+                  <span className="text-[12px] font-medium text-(--brand)">{item.category}</span>
                   <h4 className="mt-1 font-serif text-base font-normal text-foreground group-hover:text-(--brand) transition-colors">
                     {item.name}
                   </h4>

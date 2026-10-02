@@ -54,10 +54,10 @@ export function QuickContactStrip() {
               >
                 <Icon name={card.icon} size={22} />
               </span>
-              <p className={cn("mt-4 text-[11px] font-bold tracking-widest uppercase", tone.tag)}>
+              <p className={cn("mt-4 text-[12px] font-bold tracking-widest uppercase", tone.tag)}>
                 {card.tag}
               </p>
-              <h3 className="mt-1 text-[15px] font-semibold text-foreground">{card.title}</h3>
+              <h3 className="mt-1 text-[16px] font-semibold text-foreground">{card.title}</h3>
               <p className="mt-1 text-[13px] text-muted-foreground">{card.description}</p>
               <p className="mt-2 text-[13px] font-semibold text-foreground">{ctaValue(card)}</p>
 

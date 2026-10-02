@@ -4,7 +4,10 @@ import { TRUST_HIGHLIGHTS } from "@/constants/highlights";
 
 export function TrustHighlights() {
   return (
-    <section className="border-b border-border bg-background">
+    <section aria-labelledby="trust-heading" className="border-b border-border bg-background">
+      <h2 id="trust-heading" className="sr-only">
+        Why customers choose Sayan Digital
+      </h2>
       <div className="container-premium grid grid-cols-2 gap-8 py-14 md:grid-cols-4 md:py-16">
         {TRUST_HIGHLIGHTS.map((item, i) => (
           <Reveal key={item.title} delay={i * 80} className="flex flex-col items-start gap-3">

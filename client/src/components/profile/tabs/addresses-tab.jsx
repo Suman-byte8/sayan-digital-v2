@@ -167,7 +167,7 @@ export function AddressesTab({ addresses, onCreate, onUpdate, onDelete, onSetDef
                   <button
                     type="button"
                     onClick={() => handleSetDefault(addr.id)}
-                    className="text-(--brand) hover:underline text-[11px] font-medium"
+                    className="text-(--brand) hover:underline text-[12px] font-medium"
                   >
                     Set as Default
                   </button>

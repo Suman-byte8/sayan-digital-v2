@@ -100,7 +100,7 @@ export function CatalogProductCard({ product }) {
         {badge && (
           <span
             className={cn(
-              "absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium backdrop-blur-sm",
+              "absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-medium backdrop-blur-sm",
               badgeTone === "accent"
                 ? "bg-(--gold)/20 text-[#8a6a1f]"
                 : "bg-card/90 text-muted-foreground"
@@ -120,10 +120,7 @@ export function CatalogProductCard({ product }) {
           onClick={handleSave}
           variants={heartVariants}
           animate={isSaved ? "saved" : "rest"}
-          className={cn(
-            "absolute bottom-3 right-3 z-10 flex size-8 items-center justify-center rounded-full bg-card/90 text-foreground shadow-premium backdrop-blur-sm transition-opacity duration-200",
-            isSaved ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
-          )}
+          className={cn("absolute bottom-3 right-3 z-20 flex size-9 items-center justify-center rounded-full bg-white text-neutral-800 shadow-md ring-1 ring-black/10 transition-transform duration-200 hover:scale-105 focus-visible:scale-105")}
         >
           <Heart size={15} className={isSaved ? "fill-red-500 text-red-500" : ""} />
         </motion.button>
@@ -132,7 +129,7 @@ export function CatalogProductCard({ product }) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>
           <Link href={detailHref} data-cursor="hover">
-            <h3 className="text-[15px] font-semibold text-foreground transition-colors group-hover:text-(--brand)">
+            <h3 className="text-[16px] font-semibold text-foreground transition-colors group-hover:text-(--brand)">
               {name}
             </h3>
           </Link>
@@ -151,7 +148,7 @@ export function CatalogProductCard({ product }) {
         <div className="mt-auto flex flex-col gap-3 border-t border-border pt-3">
           <div className="flex items-baseline justify-between">
             <div>
-              <span className="block text-[11px] text-muted-foreground">Starting at</span>
+              <span className="block text-[12px] text-muted-foreground">Starting at</span>
               <span className="text-lg font-bold text-(--brand)">
                 ₹{price}
                 <span className="ml-1 text-[12px] font-normal text-muted-foreground">/ {unit}</span>
@@ -159,7 +156,7 @@ export function CatalogProductCard({ product }) {
             </div>
             <span
               className={cn(
-                "rounded-md px-2.5 py-1 text-[11px] font-medium",
+                "rounded-md px-2.5 py-1 text-[12px] font-medium",
                 minQtyTone === "strong"
                   ? "bg-(--gold)/20 font-semibold text-[#8a6a1f]"
                   : "bg-muted text-muted-foreground"
@@ -199,7 +196,7 @@ export function CatalogProductCard({ product }) {
               </p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-2.5 text-center text-[11px]">
+            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-2.5 text-center text-[12px]">
               <div className="rounded-lg bg-muted/60 p-2">
                 <div className="font-semibold text-foreground">
                   ₹{price} / {unit}

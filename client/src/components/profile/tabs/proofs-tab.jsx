@@ -101,12 +101,12 @@ export function ProofsTab({ proofs, onApprove }) {
                 {/* Status Chip */}
                 <div className="absolute right-3 top-3">
                   {isPending ? (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-[12px] font-semibold text-white shadow-sm backdrop-blur-sm">
                       <AlertCircle size={12} />
                       Action Required
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-[11px] font-semibold text-white shadow-sm backdrop-blur-sm">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-600 px-3 py-1 text-[12px] font-semibold text-white shadow-sm backdrop-blur-sm">
                       <CheckCircle2 size={12} />
                       Approved
                     </span>
@@ -114,7 +114,7 @@ export function ProofsTab({ proofs, onApprove }) {
                 </div>
 
                 {/* Dimensions badge */}
-                <div className="absolute bottom-3 left-3 rounded-lg bg-black/60 px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-md">
+                <div className="absolute bottom-3 left-3 rounded-lg bg-black/60 px-2.5 py-1 text-[12px] font-medium text-white backdrop-blur-md">
                   {proof.dimensions}
                 </div>
               </div>
@@ -133,14 +133,14 @@ export function ProofsTab({ proofs, onApprove }) {
 
                 {/* Designer Notes */}
                 <div className="mt-3.5 rounded-xl border border-border/80 bg-(--paper-muted) p-3 text-xs">
-                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-foreground">
+                  <div className="flex items-center gap-1.5 text-[12px] font-medium text-foreground">
                     <Info size={12} className="text-(--brand)" />
                     <span>Designer Note:</span>
                   </div>
                   <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
                     {proof.notes}
                   </p>
-                  <div className="mt-2 flex items-center justify-between text-[11px] text-muted-foreground/80">
+                  <div className="mt-2 flex items-center justify-between text-[12px] text-muted-foreground/80">
                     <span>Assigned: {proof.designer}</span>
                     <span>Palette: {proof.colorProfile}</span>
                   </div>
