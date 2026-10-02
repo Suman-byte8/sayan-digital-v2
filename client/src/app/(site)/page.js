@@ -8,7 +8,6 @@ import { WhyChooseUs } from "@/components/sections/why-choose-us";
 import { ServicesSection } from "@/components/sections/services-section";
 import { HowItWorks } from "@/components/sections/how-it-works";
 import { CustomizationShowcase } from "@/components/sections/customization-showcase";
-import { TestimonialsSection } from "@/components/sections/testimonials-section";
 import { LocalTrustSection } from "@/components/sections/local-trust-section";
 import { CtaSection } from "@/components/sections/cta-section";
 import { api } from "@/lib/api";
@@ -44,7 +43,6 @@ export default async function Home() {
         <ServicesSection />
         <HowItWorks />
         <CustomizationShowcase />
-        <TestimonialsSection />
         <LocalTrustSection />
         <SitePurposeSection />
         <CtaSection />

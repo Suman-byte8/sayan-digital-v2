@@ -113,7 +113,7 @@ export function PaymentsTab({ paymentMethods: methods, onAdd, onRemove, onSetPri
                   <button
                     type="button"
                     onClick={() => handleSetPrimary(method.id)}
-                    className="text-(--brand) hover:underline text-[11px] font-medium"
+                    className="text-(--brand) hover:underline text-[12px] font-medium"
                   >
                     Make Primary
                   </button>

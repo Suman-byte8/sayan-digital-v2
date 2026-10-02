@@ -8,14 +8,14 @@ export function CtaSection() {
   return (
     <section className="section-padding bg-background">
       <div className="container-premium">
-        <Reveal className="relative overflow-hidden rounded-3xl bg-[#0c2456] px-8 py-16 text-center shadow-premium-lg sm:px-16 sm:py-20">
+        <Reveal className="relative overflow-hidden rounded-2xl bg-[#0c2456] px-8 py-16 text-center shadow-premium-lg sm:px-16 sm:py-20">
           <CtaHoleBackground />
 
           <div className="relative z-10 mx-auto max-w-2xl">
-            <h2 className="font-serif text-4xl font-light tracking-[-0.01em] text-white sm:text-5xl">
+            <h2 className="font-serif text-3xl font-light tracking-[-0.01em] text-white md:text-4xl">
               Turn Your Ideas Into Something <em className="italic">You Can Hold</em>.
             </h2>
-            <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-white/70 md:text-base">
+            <p className="mx-auto mt-5 max-w-xl text-[16px] leading-relaxed text-white/70 md:text-base">
               From personalized gifts to professional printing, we create products made for
               your moments, your brand and your business.
             </p>

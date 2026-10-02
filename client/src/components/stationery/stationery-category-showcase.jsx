@@ -57,7 +57,7 @@ export function StationeryCategoryShowcase({ products, categories, activeCategor
                   <Icon name={CATEGORY_ICONS[category.slug] ?? DEFAULT_CATEGORY_ICON} size={22} />
                 </span>
                 <span className="text-[13px] font-semibold text-foreground">{category.label}</span>
-                <span className="text-[11px] text-muted-foreground">
+                <span className="text-[12px] text-muted-foreground">
                   {count} {count === 1 ? "item" : "items"}
                 </span>
               </button>

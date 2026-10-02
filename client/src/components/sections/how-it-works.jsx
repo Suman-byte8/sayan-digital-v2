@@ -34,7 +34,7 @@ export function HowItWorks() {
               <span className="mt-4 text-xs font-semibold tracking-[0.2em] text-(--brand)">
                 STEP {step.step}
               </span>
-              <h3 className="mt-2 text-[15px] font-semibold text-foreground">{step.title}</h3>
+              <h3 className="mt-2 text-[16px] font-semibold text-foreground">{step.title}</h3>
               <p className="mt-1 max-w-[220px] text-[13px] leading-relaxed text-muted-foreground">
                 {step.description}
               </p>

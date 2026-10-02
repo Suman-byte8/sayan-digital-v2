@@ -81,7 +81,7 @@ export default function ServicesPage() {
             >
               {SERVICE_TELEMETRY.map((item) => (
                 <div key={item.label}>
-                  <span className="block text-[11px] font-semibold tracking-wider text-(--gold) uppercase">
+                  <span className="block text-[12px] font-semibold tracking-wider text-(--gold) uppercase">
                     {item.label}
                   </span>
                   <span className="mt-1 block text-[16px] font-semibold text-foreground">

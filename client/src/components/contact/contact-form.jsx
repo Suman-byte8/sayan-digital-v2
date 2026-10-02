@@ -172,7 +172,7 @@ export function ContactForm() {
               onChange={(e) => update("fileName", e.target.files?.[0]?.name ?? "")}
             />
           </label>
-          <p className="text-[11px] text-muted-foreground/70">
+          <p className="text-[12px] text-muted-foreground/70">
             This form opens an email draft — please attach the file there before sending, since
             it can&apos;t be uploaded directly here yet.
           </p>

@@ -44,7 +44,7 @@ export function InfiniteRibbon({
         >
           {Array.from({ length: repeatCount * 2 }, (_, index) => (
             <span key={index} className="flex items-center select-none">
-              <span className={cn("text-[13px] font-medium tracking-[0.24em] uppercase sm:text-sm", text)}>
+              <span className={cn("text-[13px] font-medium tracking-wide sm:text-sm", text)}>
                 {children}
               </span>
               <Sparkles size={13} className={cn("mx-7 shrink-0", icon)} aria-hidden />

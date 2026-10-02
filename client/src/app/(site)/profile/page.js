@@ -84,7 +84,7 @@ export default function ProfilePage() {
                   <h4 className="text-xs font-semibold text-foreground">
                     {t.title}
                   </h4>
-                  <p className="text-[11px] text-muted-foreground">{t.desc}</p>
+                  <p className="text-[12px] text-muted-foreground">{t.desc}</p>
                 </div>
               </div>
             );

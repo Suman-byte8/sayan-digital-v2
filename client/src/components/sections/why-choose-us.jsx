@@ -34,7 +34,7 @@ export function WhyChooseUs() {
                 <Icon name={item.icon} size={18} strokeWidth={1.75} />
               </span>
               <div>
-                <h3 className="text-[15px] font-semibold text-foreground">{item.title}</h3>
+                <h3 className="text-[16px] font-semibold text-foreground">{item.title}</h3>
                 <p className="mt-1 text-[13px] leading-relaxed text-muted-foreground">
                   {item.description}
                 </p>

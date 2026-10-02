@@ -30,7 +30,7 @@ export function ContactFaqSection() {
           {CONTACT_FAQS.map((faq, i) => (
             <Reveal key={faq.question} delay={(i % 4) * 50}>
               <details className="group rounded-xl border border-border bg-card shadow-premium open:shadow-premium-lg">
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-[15px] font-semibold text-foreground">
+                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 p-5 text-[16px] font-semibold text-foreground">
                   {faq.question}
                   <ChevronDown
                     size={18}

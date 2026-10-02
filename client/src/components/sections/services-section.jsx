@@ -32,7 +32,7 @@ export function ServicesSection() {
                   </span>
                 </div>
                 <div className="relative z-10">
-                  <h3 className="text-[15px] font-semibold text-foreground">{service.name}</h3>
+                  <h3 className="text-[16px] font-semibold text-foreground">{service.name}</h3>
                   <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                     {service.description}
                   </p>

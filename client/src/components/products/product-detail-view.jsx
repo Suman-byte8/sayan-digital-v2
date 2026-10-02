@@ -178,7 +178,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
             className="object-cover"
             priority
           />
-          <span className="absolute top-4 left-4 rounded-full bg-card/90 px-3 py-1 text-[11px] font-bold tracking-widest text-(--brand) uppercase backdrop-blur-sm">
+          <span className="absolute top-4 left-4 rounded-full bg-card/90 px-3 py-1 text-[12px] font-bold tracking-widest text-(--brand) uppercase backdrop-blur-sm">
             {product.categoryLabel}
           </span>
           {product.badge && (
@@ -246,7 +246,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
 
           <Reveal delay={260} className="mt-6 flex items-baseline gap-3 border-y border-border py-5">
             <div>
-              <span className="block text-[11px] text-muted-foreground">
+              <span className="block text-[12px] text-muted-foreground">
                 {product.hasVariants ? "Starting at" : "Price"}
               </span>
               <span className="text-3xl font-bold text-(--brand)">
@@ -272,7 +272,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
             <Reveal delay={275} className="mt-6 space-y-4">
               {product.variantOptions.map((option) => (
                 <div key={option.name}>
-                  <p className="mb-2 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                  <p className="mb-2 text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
                     {option.name}
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -415,7 +415,7 @@ export function ProductDetailView({ product, catalogHref = "/products", catalogL
                 <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                   {specs.map((spec) => (
                     <div key={spec.label} className="rounded-xl bg-muted/60 p-3.5">
-                      <dt className="text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
+                      <dt className="text-[12px] font-semibold tracking-wide text-muted-foreground uppercase">
                         {spec.label}
                       </dt>
                       <dd className="mt-1 text-[13px] font-medium text-foreground">{spec.value}</dd>

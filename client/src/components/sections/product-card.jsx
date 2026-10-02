@@ -91,10 +91,7 @@ export function ProductCard({ product, className }) {
           }
           aria-pressed={isSaved}
           onClick={handleWishlist}
-          className={cn(
-            "absolute top-2.5 right-2.5 z-20 flex size-8 items-center justify-center rounded-full bg-card/90 text-foreground shadow-premium backdrop-blur-sm transition-opacity duration-200",
-            isSaved ? "opacity-100" : "opacity-0 group-hover:opacity-100 group-focus-within:opacity-100"
-          )}
+          className={cn("absolute top-2.5 right-2.5 z-20 flex size-9 items-center justify-center rounded-full bg-white text-neutral-800 shadow-md ring-1 ring-black/10 transition-transform duration-200 hover:scale-105 focus-visible:scale-105")}
           whileTap={reduceMotion ? undefined : { scale: 0.8 }}
         >
           <Heart size={15} className={isSaved ? "fill-red-500 text-red-500" : ""} />
@@ -102,7 +99,7 @@ export function ProductCard({ product, className }) {
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 p-5">
-        <h3 className="text-[15px] font-semibold text-foreground">{product.name}</h3>
+        <h3 className="text-[16px] font-semibold text-foreground">{product.name}</h3>
         <p className="line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
           {truncateWords(product.description, 16)}
         </p>

@@ -193,7 +193,7 @@ export function CartView() {
           <span className="text-muted-foreground">Subtotal</span>
           <span className="font-semibold text-foreground">{currencyFormatter.format(subtotal)}</span>
         </div>
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-[12px] text-muted-foreground">
           Delivery charges are confirmed with you after your order is placed — pay cash on
           delivery, no online payment yet.
         </p>
@@ -206,7 +206,7 @@ export function CartView() {
             </Link>
           </Button>
 
-          <p className="pt-1 text-center text-[11px] text-muted-foreground">
+          <p className="pt-1 text-center text-[12px] text-muted-foreground">
             Or ask us directly —
           </p>
           <div className="flex gap-2">

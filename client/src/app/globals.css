@@ -329,7 +329,7 @@ html.lenis-smooth {
   }
 
   .eyebrow-label {
-    @apply inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-(--brand);
+    @apply inline-flex items-center gap-2 text-[12px] font-semibold tracking-[0.04em] text-(--brand);
   }
 
   .heading-display {
@@ -337,11 +337,11 @@ html.lenis-smooth {
   }
 
   .heading-section {
-    @apply font-serif text-4xl font-light tracking-[-0.01em] text-foreground md:text-5xl;
+    @apply font-serif text-3xl font-light tracking-[-0.01em] text-foreground md:text-4xl;
   }
 
   .body-copy {
-    @apply text-[15px] leading-relaxed text-muted-foreground md:text-base;
+    @apply text-[16px] leading-relaxed text-muted-foreground md:text-base;
   }
 
   .shadow-premium {

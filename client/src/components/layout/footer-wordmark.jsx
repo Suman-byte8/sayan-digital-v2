@@ -15,7 +15,7 @@ export function FooterWordmark() {
     <div className="w-full overflow-hidden border-t border-border py-4 select-none sm:py-8">
       <p
         aria-hidden="true"
-        className="flex items-center justify-center whitespace-nowrap text-[12.5vw] leading-none font-bold tracking-[-0.01em] text-foreground sm:text-[12vw]"
+        className="flex items-center justify-center whitespace-nowrap text-[8.5vw] leading-none font-bold tracking-[-0.01em] text-foreground sm:text-[8vw]"
       >
         <span>SAYAN&nbsp;DIGITA</span>
         <motion.span

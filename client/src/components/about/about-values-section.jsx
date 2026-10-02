@@ -35,14 +35,14 @@ export function AboutValuesSection() {
                 <span className="flex size-11 items-center justify-center rounded-xl bg-(--brand) text-white transition-colors group-hover:bg-(--brand)/85">
                   <Icon name={value.icon} size={20} />
                 </span>
-                <h3 className="mt-4 text-[15px] font-semibold text-foreground">
+                <h3 className="mt-4 text-[16px] font-semibold text-foreground">
                   {value.title}
                 </h3>
                 <p className="mt-2 text-[13px] leading-relaxed text-muted-foreground">
                   {value.description}
                 </p>
               </div>
-              <p className="mt-5 flex items-center gap-1 text-[11px] font-semibold tracking-wide text-(--brand) uppercase">
+              <p className="mt-5 flex items-center gap-1 text-[12px] font-semibold tracking-wide text-(--brand) uppercase">
                 {value.tag}
                 <ArrowRight size={13} />
               </p>

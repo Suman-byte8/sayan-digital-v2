@@ -13,7 +13,7 @@ export function AboutMetricsSection() {
                 <span className="font-serif text-5xl font-bold text-(--brand)">
                   <CountUpNumber target={metric.target} suffix={metric.suffix} />
                 </span>
-                <span className="mt-2 text-[15px] font-semibold text-foreground">
+                <span className="mt-2 text-[16px] font-semibold text-foreground">
                   {metric.label}
                 </span>
                 <span className="mt-1 text-[12px] text-muted-foreground">{metric.sublabel}</span>

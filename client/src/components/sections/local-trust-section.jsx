@@ -68,7 +68,7 @@ export function LocalTrustSection() {
             </div>
 
             <CardContent className="flex flex-col gap-5 p-8">
-              <h3 className="text-sm font-semibold tracking-wide text-foreground uppercase">
+              <h3 className="text-base font-semibold text-foreground">
                 Visit or Reach Us
               </h3>
               <div className="flex items-start gap-3">
