@@ -129,7 +129,7 @@ export function CatalogProductCard({ product }) {
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div>
           <Link href={detailHref} data-cursor="hover">
-            <h3 className="text-[16px] font-semibold text-foreground transition-colors group-hover:text-(--brand)">
+            <h3 className="line-clamp-2 min-h-12 text-[16px] leading-6 font-semibold text-foreground transition-colors group-hover:text-(--brand)">
               {name}
             </h3>
           </Link>

@@ -38,13 +38,13 @@ export default async function Home() {
       <div className="relative z-10 bg-background">
         <TrustHighlights />
         <AboutSection />
+        <SitePurposeSection />
         <ProductCategories products={showcaseProducts} />
         <WhyChooseUs />
         <ServicesSection />
         <HowItWorks />
         <CustomizationShowcase />
         <LocalTrustSection />
-        <SitePurposeSection />
         <CtaSection />
       </div>
     </>
