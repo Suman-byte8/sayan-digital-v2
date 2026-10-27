@@ -48,9 +48,9 @@ export function ProductCatalogExplorer({
 
   return (
     <>
-      <div className="sticky top-20 z-30 border-b border-border bg-background/95 backdrop-blur-md">
-        <div className="container-premium flex flex-col gap-4 py-4 lg:flex-row lg:items-center lg:justify-between">
-          <div className="scrollbar-none flex items-center gap-2 overflow-x-auto pb-1">
+      <div className="border-b border-border bg-background">
+        <div className="container-premium flex flex-col gap-4 py-4 lg:flex-row lg:items-start lg:justify-between">
+          <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
             {categories.map((category) => (
               <button
                 key={category.slug}
@@ -69,7 +69,7 @@ export function ProductCatalogExplorer({
             ))}
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex shrink-0 items-center gap-3">
             <div className="relative">
               <Search
                 size={16}
