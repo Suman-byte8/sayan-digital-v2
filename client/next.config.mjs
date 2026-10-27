@@ -3,6 +3,12 @@ const nextConfig = {
   /* config options here */
   distDir: "build",
   reactCompiler: true,
+  experimental: {
+    // Inline the (Tailwind, ~20 KB compressed) CSS into the HTML instead of
+    // separate render-blocking <link> requests — faster first paint/LCP for
+    // first-time visitors. Trade-off: CSS isn't cached separately.
+    inlineCss: true,
+  },
   images: {
     // next/image hard-rejects any src whose host isn't listed here. Product
     // photos uploaded through the admin panel go through Google Drive

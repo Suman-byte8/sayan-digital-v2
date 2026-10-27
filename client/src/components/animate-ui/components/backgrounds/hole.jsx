@@ -1,6 +1,6 @@
 'use client';;
 import * as React from 'react';
-import { motion } from 'motion/react';
+import { animate, useInView } from 'motion/react';
 
 import { cn } from '@/lib/utils';
 
@@ -15,8 +15,15 @@ function HoleBackground({
   children,
   ...props
 }) {
+  const containerRef = React.useRef(null);
   const canvasRef = React.useRef(null);
+  const haloRef = React.useRef(null);
   const animationFrameIdRef = React.useRef(0);
+  const initializedRef = React.useRef(false);
+  // Only animate while on (or near) screen. This sits in the CTA at the
+  // bottom of every page; running the canvas loop and the blurred halo
+  // repaint from page load kept the main thread busy for many seconds.
+  const inView = useInView(containerRef, { margin: '200px' });
   const stateRef = React.useRef({
     discs: [],
     lines: [],
@@ -278,25 +285,36 @@ function HoleBackground({
   }, [setSize, setDiscs, setLines, setParticles]);
 
   React.useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    init();
+    if (!inView || !canvasRef.current) return;
+    if (!initializedRef.current) {
+      init();
+      initializedRef.current = true;
+    }
     tick();
+    return () => cancelAnimationFrame(animationFrameIdRef.current);
+  }, [inView, init, tick]);
+
+  React.useEffect(() => {
     const handleResize = () => {
-      setSize();
-      setDiscs();
-      setLines();
-      setParticles();
+      if (initializedRef.current) init();
     };
     window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameIdRef.current);
-    };
-  }, [init, tick, setSize, setDiscs, setLines, setParticles]);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [init]);
+
+  React.useEffect(() => {
+    if (!inView || !haloRef.current) return;
+    const controls = animate(
+      haloRef.current,
+      { backgroundPosition: ['0% 100%', '0% 300%'] },
+      { duration: 5, ease: 'linear', repeat: Infinity }
+    );
+    return () => controls.stop();
+  }, [inView]);
 
   return (
     <div
+      ref={containerRef}
       data-slot="hole-background"
       className={cn(
         'relative size-full overflow-hidden',
@@ -310,13 +328,12 @@ function HoleBackground({
       <canvas
         ref={canvasRef}
         className="absolute inset-0 block size-full dark:opacity-20 opacity-10" />
-      <motion.div
+      <div
+        ref={haloRef}
         className={cn(
           'absolute top-[-71.5%] left-1/2 z-[3] w-[30%] h-[140%] rounded-b-full blur-3xl opacity-75 dark:mix-blend-plus-lighter mix-blend-plus-darker [transform:translate3d(-50%,0,0)] [background-position:0%_100%] [background-size:100%_200%]',
           'dark:[background:linear-gradient(20deg,#00f8f1,#ffbd1e20_16.5%,#fe848f_33%,#fe848f20_49.5%,#00f8f1_66%,#00f8f160_85.5%,#ffbd1e_100%)_0_100%_/_100%_200%] [background:linear-gradient(20deg,#00f8f1,#ffbd1e40_16.5%,#fe848f_33%,#fe848f40_49.5%,#00f8f1_66%,#00f8f180_85.5%,#ffbd1e_100%)_0_100%_/_100%_200%]'
-        )}
-        animate={{ backgroundPosition: '0% 300%' }}
-        transition={{ duration: 5, ease: 'linear', repeat: Infinity }} />
+        )} />
       <div
         className="absolute top-0 left-0 z-[7] size-full dark:[background:repeating-linear-gradient(transparent,transparent_1px,white_1px,white_2px)] mix-blend-overlay opacity-50" />
     </div>
