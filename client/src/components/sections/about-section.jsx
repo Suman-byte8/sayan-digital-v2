@@ -1,5 +1,6 @@
 import { Building2, MapPin, Palette, Sparkles, Truck } from "lucide-react";
 import { Reveal } from "@/components/motion/reveal";
+import { LazyVideo } from "@/components/motion/lazy-video";
 import { Badge } from "@/components/ui/badge";
 
 const FEATURES = [
@@ -25,12 +26,9 @@ export function AboutSection() {
           />
 
           <div className="relative mx-auto aspect-4/3 w-full max-w-md overflow-hidden rounded-2xl shadow-premium-lg">
-            <video
-              src="https://res.cloudinary.com/iopfstic/video/upload/v1789062620/animate_this_mug_product_20260910231046.mp4"
-              autoPlay
-              loop
-              muted
-              playsInline
+            {/* q_auto,w_900: Cloudinary resizes for this <=448px-wide box (2x for retina). */}
+            <LazyVideo
+              src="https://res.cloudinary.com/iopfstic/video/upload/q_auto,w_900/v1789062620/animate_this_mug_product_20260910231046.mp4"
               className="absolute inset-0 size-full object-cover"
             />
           </div>
