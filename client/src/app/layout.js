@@ -1,5 +1,5 @@
 import { Cormorant_Garamond, Inter } from "next/font/google";
-import { GoogleAnalytics } from "@next/third-parties/google";
+import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { CustomCursor } from "@/components/motion/custom-cursor";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
@@ -12,6 +12,8 @@ import {
 } from "@/lib/seo";
 import { Providers } from "./providers";
 import "./globals.css";
+
+const GA_ID = "G-QQC8VCXRBG";
 
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
@@ -59,7 +61,20 @@ export default function RootLayout({ children }) {
         <Providers>{children}</Providers>
         <Analytics />
       </body>
-      <GoogleAnalytics gaId="G-QQC8VCXRBG" />
+      {/* lazyOnload: gtag.js waits until the page has loaded and the browser
+          is idle, instead of competing with hydration (it was the largest
+          source of Total Blocking Time). Visits that end within the first
+          second or so may go unrecorded. */}
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA_ID}`}
+        strategy="lazyOnload"
+      />
+      <Script id="ga-init" strategy="lazyOnload">
+        {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GA_ID}');`}
+      </Script>
     </html>
   );
 }
