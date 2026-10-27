@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { animate, motion, useInView, useMotionValue, useTransform } from "framer-motion";
+import { animate, m, useInView, useMotionValue, useTransform } from "framer-motion";
 
 // Not gated behind prefers-reduced-motion, same call as the crossing ribbon
 // and footer wordmark: a single count-up on scroll is decorative, not
@@ -21,7 +21,7 @@ export function CountUpNumber({ target, suffix = "", duration = 1.8 }) {
 
   return (
     <span ref={ref}>
-      <motion.span>{rounded}</motion.span>
+      <m.span>{rounded}</m.span>
       {suffix}
     </span>
   );

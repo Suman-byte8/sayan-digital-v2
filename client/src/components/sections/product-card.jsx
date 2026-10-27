@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ArrowUpRight, Heart } from "lucide-react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { Badge } from "@/components/ui/badge";
@@ -67,7 +67,7 @@ export function ProductCard({ product, className }) {
         <div className="absolute inset-0 bg-linear-to-t from-black/45 via-black/0 to-black/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* Badges spring in once the card is on screen */}
-        <motion.div
+        <m.div
           className="absolute top-2.5 left-2.5 flex max-w-[70%] flex-wrap gap-1.5"
           initial={reduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.6 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -82,9 +82,9 @@ export function ProductCard({ product, className }) {
               Customizable
             </Badge>
           )}
-        </motion.div>
+        </m.div>
 
-        <motion.button
+        <m.button
           type="button"
           aria-label={
             isSaved ? `Remove ${product.name} from saved ideas` : `Save ${product.name} for later`
@@ -95,7 +95,7 @@ export function ProductCard({ product, className }) {
           whileTap={reduceMotion ? undefined : { scale: 0.8 }}
         >
           <Heart size={15} className={isSaved ? "fill-red-500 text-red-500" : ""} />
-        </motion.button>
+        </m.button>
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 p-5">

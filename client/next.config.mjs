@@ -3,12 +3,10 @@ const nextConfig = {
   /* config options here */
   distDir: "build",
   reactCompiler: true,
-  experimental: {
-    // Inline the (Tailwind, ~20 KB compressed) CSS into the HTML instead of
-    // separate render-blocking <link> requests — faster first paint/LCP for
-    // first-time visitors. Trade-off: CSS isn't cached separately.
-    inlineCss: true,
-  },
+  // Don't enable experimental.inlineCss: it embeds the CSS in every page's
+  // HTML about three times (a <style> tag plus twice in the RSC payload),
+  // which measured worse on Lighthouse mobile than the separate, cacheable
+  // stylesheet (document 42 KB -> 101 KB compressed, LCP 4.8 s -> 7.3 s).
   images: {
     // next/image hard-rejects any src whose host isn't listed here. Product
     // photos uploaded through the admin panel go through Google Drive

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { m, useMotionValue, useSpring } from "framer-motion";
 import { useMediaQuery } from "@/hooks/use-media-query";
 
 const INTERACTIVE_SELECTOR = "a, button, [role='button'], [data-cursor='hover']";
@@ -57,13 +57,13 @@ export function CustomCursor() {
 
   return (
     <>
-      <motion.div
+      <m.div
         className="pointer-events-none fixed top-0 left-0 z-9999 rounded-full bg-white mix-blend-difference"
         style={{ x: dotX, y: dotY, translateX: "-50%", translateY: "-50%" }}
         animate={{ width: isHover ? 0 : 6, height: isHover ? 0 : 6, opacity: isHover ? 0 : 1 }}
         transition={{ duration: 0.05, ease: "easeOut" }}
       />
-      <motion.div
+      <m.div
         className="pointer-events-none fixed top-0 left-0 z-9999 rounded-full border border-white mix-blend-difference"
         style={{ x: ringX, y: ringY, translateX: "-50%", translateY: "-50%" }}
         animate={{

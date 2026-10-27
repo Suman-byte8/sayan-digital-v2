@@ -2,6 +2,7 @@ import { Cormorant_Garamond, Inter } from "next/font/google";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { CustomCursor } from "@/components/motion/custom-cursor";
+import { MotionProvider } from "@/components/motion/motion-provider";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { JsonLd } from "@/components/seo/json-ld";
 import {
@@ -57,8 +58,10 @@ export default function RootLayout({ children }) {
       <body className="flex min-h-dvh flex-col bg-background" suppressHydrationWarning>
         <JsonLd data={[buildLocalBusinessJsonLd(), buildWebsiteJsonLd()]} />
         <SmoothScroll />
-        <CustomCursor />
-        <Providers>{children}</Providers>
+        <MotionProvider>
+          <CustomCursor />
+          <Providers>{children}</Providers>
+        </MotionProvider>
         <Analytics />
       </body>
       {/* lazyOnload: gtag.js waits until the page has loaded and the browser
