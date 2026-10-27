@@ -38,8 +38,10 @@ export function Navbar() {
           <Image
             src={BRAND.logoSrc}
             alt={BRAND.name}
-            width={160}
-            height={40}
+            // Rendered size (h-6 = 24px tall, logo is ~4.27:1) so next/image's
+            // srcset picks a ~256px file instead of 384px.
+            width={102}
+            height={24}
             priority
             className="h-6 w-auto object-contain"
           />
