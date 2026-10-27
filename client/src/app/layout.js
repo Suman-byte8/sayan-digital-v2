@@ -1,5 +1,6 @@
 import { Cormorant_Garamond, Inter } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { Analytics } from "@vercel/analytics/next";
 import { CustomCursor } from "@/components/motion/custom-cursor";
 import { SmoothScroll } from "@/components/motion/smooth-scroll";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -56,6 +57,7 @@ export default function RootLayout({ children }) {
         <SmoothScroll />
         <CustomCursor />
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
       <GoogleAnalytics gaId="G-QQC8VCXRBG" />
     </html>
