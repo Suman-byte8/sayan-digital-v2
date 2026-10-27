@@ -1,10 +1,10 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 export function DrawLine({ className, delay = 0 }) {
   return (
-    <motion.div
+    <m.div
       className={className}
       style={{ transformOrigin: "left" }}
       initial={{ scaleX: 0 }}

@@ -1,12 +1,12 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
 const MOTION_TAGS = {
-  div: motion.div,
-  li: motion.li,
-  span: motion.span,
+  div: m.div,
+  li: m.li,
+  span: m.span,
 };
 
 const INITIAL = { opacity: 0, y: 28 };
@@ -17,7 +17,7 @@ export function Reveal({ as = "div", delay = 0, className, children, ...props })
   // between server and client, only the transition timing adjusts.
   const reduceMotion = useReducedMotion();
 
-  const MotionTag = MOTION_TAGS[as] ?? motion.div;
+  const MotionTag = MOTION_TAGS[as] ?? m.div;
   const delaySeconds = delay / 1000;
 
   const transition = reduceMotion

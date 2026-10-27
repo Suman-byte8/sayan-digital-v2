@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Eye, Heart } from "lucide-react";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useAuth } from "@/context/auth-context";
@@ -74,7 +74,7 @@ export function CatalogProductCard({ product }) {
   }
 
   return (
-    <motion.article
+    <m.article
       data-cursor="hover"
       initial="rest"
       whileHover={isHoverDevice ? "hover" : undefined}
@@ -113,7 +113,7 @@ export function CatalogProductCard({ product }) {
           </span>
         )}
 
-        <motion.button
+        <m.button
           type="button"
           aria-label={isSaved ? `Remove ${name} from saved ideas` : `Save ${name} for later`}
           aria-pressed={isSaved}
@@ -123,7 +123,7 @@ export function CatalogProductCard({ product }) {
           className={cn("absolute bottom-3 right-3 z-20 flex size-9 items-center justify-center rounded-full bg-white text-neutral-800 shadow-md ring-1 ring-black/10 transition-transform duration-200 hover:scale-105 focus-visible:scale-105")}
         >
           <Heart size={15} className={isSaved ? "fill-red-500 text-red-500" : ""} />
-        </motion.button>
+        </m.button>
       </div>
 
       <div className="flex flex-1 flex-col gap-3 p-5">
@@ -184,19 +184,19 @@ export function CatalogProductCard({ product }) {
       </div>
 
       {isHoverDevice && (
-        <motion.div
+        <m.div
           variants={overlayVariants}
           className="pointer-events-none absolute inset-0 flex flex-col justify-end bg-background/96 backdrop-blur-xl group-hover:pointer-events-auto"
         >
           <div className="flex flex-col gap-4 p-5">
-            <motion.div variants={itemVariants}>
+            <m.div variants={itemVariants}>
               <h4 className="mb-1.5 text-[13px] font-semibold text-foreground">Product Details</h4>
               <p className="line-clamp-5 text-[13px] leading-relaxed text-muted-foreground">
                 {truncateWords(description, 30)}
               </p>
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={itemVariants} className="grid grid-cols-2 gap-2.5 text-center text-[12px]">
+            <m.div variants={itemVariants} className="grid grid-cols-2 gap-2.5 text-center text-[12px]">
               <div className="rounded-lg bg-muted/60 p-2">
                 <div className="font-semibold text-foreground">
                   ₹{price} / {unit}
@@ -207,9 +207,9 @@ export function CatalogProductCard({ product }) {
                 <div className="font-semibold text-foreground">{minQty}</div>
                 <div className="text-muted-foreground">Order quantity</div>
               </div>
-            </motion.div>
+            </m.div>
 
-            <motion.div variants={itemVariants} className="flex flex-col gap-2">
+            <m.div variants={itemVariants} className="flex flex-col gap-2">
               <Link
                 href={detailHref}
                 className="flex w-full items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-[13px] font-medium text-foreground transition-colors duration-150 hover:bg-muted"
@@ -226,10 +226,10 @@ export function CatalogProductCard({ product }) {
                 <Heart size={15} className={isSaved ? "fill-white" : ""} />
                 {isSaved ? "Wishlisted" : "Wishlist"}
               </button>
-            </motion.div>
+            </m.div>
           </div>
-        </motion.div>
+        </m.div>
       )}
-    </motion.article>
+    </m.article>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionTemplate, useMotionValue } from "framer-motion";
+import { m, useMotionTemplate, useMotionValue } from "framer-motion";
 
 export function SpotlightCard({ children, className = "", ...props }) {
   const ref = useRef(null);
@@ -24,7 +24,7 @@ export function SpotlightCard({ children, className = "", ...props }) {
       className={`group relative isolate ${className}`}
       {...props}
     >
-      <motion.div
+      <m.div
         className="pointer-events-none absolute inset-0 z-0 rounded-[inherit] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
         style={{ background }}
         aria-hidden

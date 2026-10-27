@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, m } from "framer-motion";
 import { Heart, ShoppingBag, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NAV_LINKS, STATIONERY_LINK } from "@/constants/navigation";
@@ -15,7 +15,7 @@ export function MobileMenu({ open, onNavigate }) {
   return (
     <AnimatePresence>
       {open && (
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
@@ -24,7 +24,7 @@ export function MobileMenu({ open, onNavigate }) {
         >
           <div className="flex flex-col gap-1 px-6 py-6">
             {NAV_LINKS.map((link, i) => (
-              <motion.a
+              <m.a
                 key={link.label}
                 href={link.href}
                 onClick={onNavigate}
@@ -34,10 +34,10 @@ export function MobileMenu({ open, onNavigate }) {
                 className="border-b border-border py-3 text-[16px] text-foreground/80"
               >
                 {link.label}
-              </motion.a>
+              </m.a>
             ))}
 
-            <motion.a
+            <m.a
               href={STATIONERY_LINK.href}
               onClick={onNavigate}
               initial={{ opacity: 0, x: -12 }}
@@ -46,9 +46,9 @@ export function MobileMenu({ open, onNavigate }) {
               className="py-3 text-[16px] font-semibold text-(--brand)"
             >
               {STATIONERY_LINK.label}
-            </motion.a>
+            </m.a>
 
-            <motion.a
+            <m.a
               href="/profile?tab=wishlist"
               onClick={onNavigate}
               initial={{ opacity: 0, x: -12 }}
@@ -65,9 +65,9 @@ export function MobileMenu({ open, onNavigate }) {
                   {wishlistItems.length}
                 </span>
               )}
-            </motion.a>
+            </m.a>
 
-            <motion.a
+            <m.a
               href="/cart"
               onClick={onNavigate}
               initial={{ opacity: 0, x: -12 }}
@@ -84,9 +84,9 @@ export function MobileMenu({ open, onNavigate }) {
                   {cartCount}
                 </span>
               )}
-            </motion.a>
+            </m.a>
 
-            <motion.a
+            <m.a
               href="/profile"
               onClick={onNavigate}
               initial={{ opacity: 0, x: -12 }}
@@ -98,9 +98,9 @@ export function MobileMenu({ open, onNavigate }) {
               <span className="rounded-full bg-(--brand)/10 px-2 py-0.5 text-[12px] font-semibold text-(--brand)">
                 VIP
               </span>
-            </motion.a>
+            </m.a>
 
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -12 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: (NAV_LINKS.length + 1.25) * 0.05, ease: "easeOut" }}
@@ -112,9 +112,9 @@ export function MobileMenu({ open, onNavigate }) {
                   {BRAND.navCta}
                 </Link>
               </Button>
-            </motion.div>
+            </m.div>
           </div>
-        </motion.div>
+        </m.div>
       )}
     </AnimatePresence>
   );

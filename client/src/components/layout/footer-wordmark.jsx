@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { usePageEnd } from "@/hooks/use-page-end";
 
 // The "L" (last letter of DIGITAL) lifts once the user actually scrolls to
@@ -18,13 +18,13 @@ export function FooterWordmark() {
         className="flex items-center justify-center whitespace-nowrap text-[8.5vw] leading-none font-bold tracking-[-0.01em] text-foreground sm:text-[8vw]"
       >
         <span>SAYAN&nbsp;DIGITA</span>
-        <motion.span
+        <m.span
           className="inline-block"
           animate={{ y: atPageEnd ? "-14%" : "0%" }}
           transition={{ duration: 0.6, ease: "easeOut" }}
         >
           L
-        </motion.span>
+        </m.span>
       </p>
       <span className="sr-only">Sayan Digital</span>
     </div>

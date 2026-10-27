@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { m, useMotionValue, useSpring } from "framer-motion";
 
 export function Magnetic({ children, strength = 0.35, className }) {
   const ref = useRef(null);
@@ -23,7 +23,7 @@ export function Magnetic({ children, strength = 0.35, className }) {
   }
 
   return (
-    <motion.div
+    <m.div
       ref={ref}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
@@ -31,6 +31,6 @@ export function Magnetic({ children, strength = 0.35, className }) {
       className={className}
     >
       {children}
-    </motion.div>
+    </m.div>
   );
 }
