@@ -57,6 +57,16 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Versioned files (e.g. hero-background-v1.mp4): never replaced in
+        // place, so they can be cached for a year. To change one, add a new
+        // file with a bumped version and point the code at it. Listed after
+        // /assets so this Cache-Control wins for these paths.
+        source: "/assets/immutable/:path*",
+        headers: [
+          { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
+        ],
+      },
     ];
   },
 };
