@@ -78,7 +78,15 @@ export async function refresh(req, res) {
   // moment it's used, so a leaked-but-unused token has a shrinking window
   // of usefulness and reuse is detectable (a second use of the same old
   // token means it was stolen).
-  await prisma.session.delete({ where: { id: session.id } });
+  // deleteMany (not delete) so two concurrent refreshes with the same token
+  // (e.g. two tabs) can't both succeed: the loser sees count 0 and gets a
+  // clean 401 instead of an unhandled not-found error. It must NOT clear the
+  // cookie — the winning request has just set a fresh one, and a clear
+  // arriving after it would sign the user out.
+  const { count } = await prisma.session.deleteMany({ where: { id: session.id } });
+  if (count === 0) {
+    throw new ApiError(401, "Your session was refreshed by another request.");
+  }
   const accessToken = await issueSession(res, session.userId, req.headers["user-agent"]);
 
   res.json({ success: true, data: { accessToken } });

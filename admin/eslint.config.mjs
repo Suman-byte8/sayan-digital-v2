@@ -9,6 +9,8 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    // This app builds into dist/ (see next.config.mjs).
+    "dist/**",
     "next-env.d.ts",
   ]),
 ]);

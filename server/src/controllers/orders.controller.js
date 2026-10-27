@@ -40,6 +40,16 @@ export async function createOrder(req, res) {
   });
   if (cartItems.length === 0) throw new ApiError(400, "Your cart is empty.");
 
+  // Products (or variants) hidden by the admin after being carted can't be
+  // ordered — they may be discontinued or carry a stale price.
+  const unavailable = cartItems.filter((item) => !item.product.isActive || (item.variant && !item.variant.isActive));
+  if (unavailable.length > 0) {
+    throw new ApiError(
+      409,
+      `Some items are no longer available: ${unavailable.map((item) => item.product.name).join(", ")}. Please remove them from your cart.`,
+    );
+  }
+
   function unitPrice(item) {
     return item.variant?.price != null ? Number(item.variant.price) : Number(item.product.price);
   }

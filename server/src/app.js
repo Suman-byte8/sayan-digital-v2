@@ -49,7 +49,7 @@ app.use(cookieParser());
 app.use(morgan(env.NODE_ENV === "development" ? "dev" : "combined"));
 
 app.get("/health", (req, res) => {
-  res.json({ status: "ok", environment: env.NODE_ENV });
+  res.json({ status: "ok" });
 });
 
 // Point an external uptime monitor (e.g. UptimeRobot, every 5-10 min) at this:

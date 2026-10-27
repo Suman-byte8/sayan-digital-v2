@@ -112,7 +112,11 @@ export const productListQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),
   category: z.string().trim().optional(),
-  search: z.string().trim().optional(),
+  search: z.string().trim().max(100).optional(),
   type: z.enum(PRODUCT_TYPES).optional(),
-  isActive: z.coerce.boolean().optional(),
+  // Not z.coerce.boolean(): that turns the string "false" into true.
+  isActive: z
+    .enum(["true", "false"])
+    .transform((value) => value === "true")
+    .optional(),
 });
