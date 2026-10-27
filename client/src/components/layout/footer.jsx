@@ -1,14 +1,13 @@
 import Link from "next/link";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { FooterWordmark } from "@/components/layout/footer-wordmark";
-import { FacebookIcon, GithubIcon, GoogleIcon, InstagramIcon } from "@/components/icons/brand-icons";
+import { FacebookIcon, GoogleIcon, InstagramIcon } from "@/components/icons/brand-icons";
 import { NAV_LINKS, STATIONERY_LINK } from "@/constants/navigation";
 import { BRAND } from "@/constants/brand";
 
 const SOCIAL_LINKS = [
   { key: "instagram", href: BRAND.instagram, label: "Instagram", Icon: InstagramIcon },
   { key: "facebook", href: BRAND.facebook, label: "Facebook", Icon: FacebookIcon },
-  { key: "github", href: BRAND.github, label: "GitHub", Icon: GithubIcon },
   { key: "google", href: BRAND.googleBusiness, label: "Google Business Profile", Icon: GoogleIcon },
 ];
 
@@ -100,7 +99,9 @@ export function Footer() {
                 {BRAND.email}
               </a>
             </li>
-            <li className="flex items-center gap-3 pt-1">
+            {/* 24px icons in 40px tap targets; -ml-2.5 keeps the first icon's
+                edge flush with the text above it. */}
+            <li className="-ml-2.5 flex items-center gap-1 pt-1">
               {SOCIAL_LINKS.map(({ key, href, label, Icon }) => (
                 <a
                   key={key}
@@ -108,9 +109,9 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex size-10 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                 >
-                  <Icon size={17} />
+                  <Icon size={24} />
                 </a>
               ))}
             </li>
@@ -121,24 +122,25 @@ export function Footer() {
       <FooterWordmark />
 
       <div className="border-t border-border">
-        <div className="container-premium flex flex-col items-center justify-between gap-3 py-6 text-center sm:flex-row sm:text-left">
-          <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <p className="text-[12px] text-muted-foreground">
-              © 2026 {BRAND.name}. All rights reserved.
-            </p>
-            <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
-              <Link href="/privacy-policy" className="transition-colors hover:text-foreground">
-                Privacy Policy
-              </Link>
-              <span aria-hidden="true" className="text-border">
-                ·
-              </span>
-              <Link href="/terms-of-service" className="transition-colors hover:text-foreground">
-                Terms of Service
-              </Link>
-            </div>
+        {/* Same grid + gaps as the link columns above: the copyright sits under
+            the brand column and the legal links under "Quick Links". */}
+        <div className="container-premium grid grid-cols-1 gap-3 py-6 sm:grid-cols-2 sm:gap-x-12 lg:grid-cols-4">
+          <p className="text-[12px] text-muted-foreground">
+            © 2026 {BRAND.name}. All rights reserved.
+          </p>
+          <div className="flex items-center gap-3 text-[12px] text-muted-foreground">
+            <Link href="/privacy-policy" className="transition-colors hover:text-foreground">
+              Privacy Policy
+            </Link>
+            <span aria-hidden="true" className="text-border">
+              ·
+            </span>
+            <Link href="/terms-of-service" className="transition-colors hover:text-foreground">
+              Terms of Service
+            </Link>
           </div>
-          <p className="text-[12px] text-muted-foreground/70">
+          <span aria-hidden="true" className="hidden lg:block" />
+          <p className="text-[12px] text-muted-foreground/70 lg:text-left">
             Developed By{" "}
             <a
               href="https://sumancodes.netlify.app"

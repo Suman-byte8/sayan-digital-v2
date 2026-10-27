@@ -99,7 +99,7 @@ export function ProductCard({ product, className }) {
       </div>
 
       <div className="flex flex-1 flex-col gap-1.5 p-5">
-        <h3 className="text-[16px] font-semibold text-foreground">{product.name}</h3>
+        <h3 className="line-clamp-2 min-h-12 text-[16px] leading-6 font-semibold text-foreground">{product.name}</h3>
         <p className="line-clamp-3 text-[13px] leading-relaxed text-muted-foreground">
           {truncateWords(product.description, 16)}
         </p>

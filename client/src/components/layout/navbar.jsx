@@ -31,7 +31,7 @@ export function Navbar() {
         className={`fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-5 transition-all duration-300 md:px-12 ${
           solid
             ? "border-b border-border bg-background/90 py-4 shadow-premium backdrop-blur-lg"
-            : "border-b border-transparent bg-transparent"
+            : "border-b border-transparent bg-transparent before:pointer-events-none before:absolute before:inset-x-0 before:top-0 before:-z-10 before:h-28 before:bg-linear-to-b before:from-black/35 before:to-transparent"
         }`}
       >
         <FadeUp as="a" href="/" delay={0} aria-label={BRAND.name} className="flex items-center">
@@ -54,7 +54,7 @@ export function Navbar() {
               delay={link.delay}
               data-cursor="hover"
               className={`relative text-[13px] font-medium transition-colors duration-300 after:absolute after:-bottom-1 after:left-0 after:h-px after:w-0 after:bg-current after:transition-all after:duration-300 hover:after:w-full ${
-                solid ? "text-muted-foreground hover:text-foreground" : "text-white/75 hover:text-white"
+                solid ? "text-muted-foreground hover:text-foreground" : "text-white/95 hover:text-white"
               }`}
             >
               {link.label}
