@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import { useRouter } from "next/navigation";
 import { animate } from "framer-motion";
 import { TransitionRouter } from "next-transition-router";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
@@ -18,11 +19,16 @@ export function Providers({ children }) {
   const layer1Ref = useRef(null);
   const layer2Ref = useRef(null);
   const reduceMotion = useReducedMotion();
+  const router = useRouter();
 
   return (
     <TransitionRouter
       auto
-      leave={(next) => {
+      leave={(next, from, to) => {
+        // Start fetching the destination while the curtain closes, so it's
+        // ready (or close) by the time `next()` navigates — otherwise the
+        // closed curtain sits on screen for the whole server round-trip.
+        if (to) router.prefetch(to);
         if (reduceMotion || !layer1Ref.current || !layer2Ref.current) {
           next();
           return;
