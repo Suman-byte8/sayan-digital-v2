@@ -69,11 +69,24 @@ async function uploadAvatarRequest(token, file) {
   return body;
 }
 
+// Refresh tokens are single-use (rotated on every refresh), so two
+// overlapping refresh calls — React Strict Mode's double mount in dev, or
+// the silent-refresh timer firing during a page load — would race and one
+// would fail. Callers that overlap share the one in-flight request instead.
+let refreshInFlight = null;
+
+function refreshOnce() {
+  refreshInFlight ??= request("/auth/refresh", { method: "POST" }).finally(() => {
+    refreshInFlight = null;
+  });
+  return refreshInFlight;
+}
+
 export const authApi = {
   signup: (data) => request("/auth/signup", { method: "POST", body: JSON.stringify(data) }),
   login: (data) => request("/auth/login", { method: "POST", body: JSON.stringify(data) }),
   logout: () => request("/auth/logout", { method: "POST" }),
-  refresh: () => request("/auth/refresh", { method: "POST" }),
+  refresh: refreshOnce,
   me: (token) => request("/auth/me", { token }),
 };
 

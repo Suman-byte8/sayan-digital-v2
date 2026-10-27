@@ -2,6 +2,21 @@
 const nextConfig = {
   /* config options here */
   reactCompiler: true,
+  async headers() {
+    return [
+      {
+        // The admin panel is never meant to be framed or indexed.
+        source: "/:path*",
+        headers: [
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "same-origin" },
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
+    ];
+  },
   experimental: {
     // Keep already-visited dynamic pages in the client router cache for 30s
     // so back/forward and quick revisits are instant. Every admin write calls

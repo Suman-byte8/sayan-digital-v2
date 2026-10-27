@@ -2,6 +2,12 @@ import { Prisma } from "../generated/prisma/client.js";
 import { env } from "../config/env.js";
 import { ApiError } from "../utils/api-error.js";
 
+// These Prisma-error messages were written for the products API; other
+// routes get a neutral wording instead of a misleading "Product ..." one.
+function isProductRoute(req) {
+  return req.baseUrl?.startsWith("/api/products") ?? false;
+}
+
 // Centralized error handler — must be the LAST middleware registered.
 // eslint-disable-next-line no-unused-vars
 export function errorHandler(error, req, res, next) {
@@ -11,6 +17,15 @@ export function errorHandler(error, req, res, next) {
       error: error.message,
       details: error.details,
     });
+  }
+
+  // Malformed or oversized JSON bodies (from express.json) are client
+  // errors, not server failures.
+  if (error.type === "entity.parse.failed") {
+    return res.status(400).json({ success: false, error: "Invalid JSON body" });
+  }
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({ success: false, error: "Request body is too large" });
   }
 
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -28,11 +43,11 @@ export function errorHandler(error, req, res, next) {
         : (constraintName?.match(/products_(\w+)_key/)?.[1] ?? "field");
       return res.status(409).json({
         success: false,
-        error: `A product with this ${field} already exists`,
+        error: isProductRoute(req) ? `A product with this ${field} already exists` : "This record already exists",
       });
     }
     if (error.code === "P2025") {
-      return res.status(404).json({ success: false, error: "Product not found" });
+      return res.status(404).json({ success: false, error: isProductRoute(req) ? "Product not found" : "Not found" });
     }
   }
 

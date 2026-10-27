@@ -2,6 +2,7 @@ import { prisma } from "../lib/prisma.js";
 import { ApiError } from "../utils/api-error.js";
 import { bumpVersion, cached, cachedVersioned, invalidate } from "../lib/cache.js";
 import { computeSelectionKey, validateVariantPayload } from "../lib/product-variants.js";
+import { isAdminRequest } from "../lib/admin-auth.js";
 
 const VARIANT_INCLUDE = {
   variantOptions: { orderBy: { position: "asc" } },
@@ -39,7 +40,11 @@ function listCacheKey(query) {
 }
 
 export async function listProducts(req, res) {
-  const { page, limit, category, search, type, isActive } = req.validated.query;
+  const { page, limit, category, search, type } = req.validated.query;
+  // Hidden (inactive) products are only listed for the signed-in admin; the
+  // public storefront always gets active products, whatever it asks for.
+  const isAdmin = await isAdminRequest(req);
+  const isActive = isAdmin ? req.validated.query.isActive : true;
 
   const where = {
     ...(category ? { category } : {}),
@@ -50,7 +55,7 @@ export async function listProducts(req, res) {
       : {}),
   };
 
-  const body = await cachedVersioned("products", listCacheKey(req.validated.query), LIST_TTL_SECONDS, async () => {
+  const body = await cachedVersioned("products", listCacheKey({ ...req.validated.query, isActive }), LIST_TTL_SECONDS, async () => {
     const [items, total] = await Promise.all([
       prisma.product.findMany({
         where,

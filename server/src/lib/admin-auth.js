@@ -74,3 +74,10 @@ export async function verifyAdminToken(token) {
     return null;
   }
 }
+
+// For public routes that show extra data to the admin: true only when the
+// request carries a valid admin token. Never throws.
+export async function isAdminRequest(req) {
+  const header = req.headers.authorization ?? "";
+  return header.startsWith("Bearer ") ? Boolean(await verifyAdminToken(header.slice(7))) : false;
+}
